@@ -67,8 +67,9 @@
 
 .pill-btn.active {
   color: #fff;
-  background: var(--color-accent, #e50914);
-  box-shadow: 0 4px 15px rgba(229, 9, 20, 0.35);
+  background: linear-gradient(135deg, #990a10 0%, #6b0409 100%);
+  border: 1px solid rgba(229, 9, 20, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 /* ─── Icon Filter Button ─── */
@@ -94,10 +95,10 @@
 }
 
 .discover-icon-filter-btn.active {
-  background: var(--color-accent, #e50914);
+  background: linear-gradient(135deg, #990a10 0%, #6b0409 100%);
   color: #fff;
-  border-color: transparent;
-  box-shadow: 0 4px 15px rgba(229, 9, 20, 0.35);
+  border-color: rgba(229, 9, 20, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -227,11 +228,11 @@
 }
 
 .filter-chip--active {
-  background: linear-gradient(135deg, var(--color-accent, #e50914) 0%, #b80710 100%) !important;
+  background: linear-gradient(135deg, #990a10 0%, #6b0409 100%) !important;
   color: #ffffff !important;
-  border-color: transparent !important;
+  border-color: rgba(229, 9, 20, 0.5) !important;
   font-weight: 700 !important;
-  box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
   transform: translateY(-1px);
 }
 

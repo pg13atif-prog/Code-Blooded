@@ -82,10 +82,11 @@
 }
 
 .friends-tab-btn.active {
-  background: var(--color-accent, #e50914);
+  background: linear-gradient(135deg, #990a10 0%, #6b0409 100%);
   color: #fff;
   font-weight: 700;
-  box-shadow: 0 4px 14px rgba(229, 9, 20, 0.35);
+  border: 1px solid rgba(229, 9, 20, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .req-badge {
