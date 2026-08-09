@@ -70,9 +70,9 @@ const Navbar = () => {
   const searchContainerRef = useRef(null);
   const { currentUser, logout } = useAuth();
 
-  // Prevent background scrolling when mobile menu is open
+  // Prevent background scrolling when mobile menu or modals are open
   useEffect(() => {
-    if (isMobileMenuOpen) {
+    if (isMobileMenuOpen || isLogoutModalOpen || isNotificationsOpen || isAuthModalOpen) {
       document.body.style.overflow = 'hidden';
       document.body.style.touchAction = 'none';
     } else {
@@ -83,7 +83,7 @@ const Navbar = () => {
       document.body.style.overflow = '';
       document.body.style.touchAction = '';
     };
-  }, [isMobileMenuOpen]);
+  }, [isMobileMenuOpen, isLogoutModalOpen, isNotificationsOpen, isAuthModalOpen]);
 
   useEffect(() => {
     if (currentUser) {

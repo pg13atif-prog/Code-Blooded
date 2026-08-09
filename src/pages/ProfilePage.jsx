@@ -85,6 +85,20 @@ const ProfilePage = () => {
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
+    if (isLogoutModalOpen) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
+    } else {
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+    };
+  }, [isLogoutModalOpen]);
+
+  useEffect(() => {
     if (!currentUser) { setLoading(false); return; }
 
     const loadProfileData = async () => {
