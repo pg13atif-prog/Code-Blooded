@@ -1,4 +1,4 @@
-import { ref, get, set, remove, update } from 'firebase/database';
+import { ref, get, set, remove, update, query, orderByChild, equalTo } from 'firebase/database';
 import { db } from './firebase';
 import { isInWatchlist, isLiked, isWatched } from './firestore';
 
@@ -87,12 +87,43 @@ export const ensureFriendCode = async (userId, email) => {
   }
 };
 
+
 export const searchByFriendCode = async (code) => {
   const codeToSearch = code.trim().toUpperCase();
-  const codeSnap = await get(ref(db, `friendCodes/${codeToSearch}`));
-  if (!codeSnap.exists()) return null;
+  let friendId = null;
   
-  const friendId = codeSnap.val();
+  try {
+    const codeSnap = await get(ref(db, `friendCodes/${codeToSearch}`));
+    if (codeSnap.exists()) {
+      friendId = codeSnap.val();
+    }
+  } catch (err) {
+    console.warn('Failed to read from friendCodes node. Attempting to query users node...', err);
+  }
+
+  // Fallback: Query users node directly
+  if (!friendId) {
+    try {
+      const usersRef = ref(db, 'users');
+      const q = query(usersRef, orderByChild('friendCode'), equalTo(codeToSearch));
+      const snap = await get(q);
+      
+      if (snap.exists()) {
+        // Get the first matching user
+        const childNodes = [];
+        snap.forEach(child => { childNodes.push(child); });
+        if (childNodes.length > 0) {
+          friendId = childNodes[0].key;
+        }
+      }
+    } catch (queryErr) {
+      console.error('Failed to query users node:', queryErr);
+      throw new Error('Permission denied or network error while searching for friend.');
+    }
+  }
+
+  if (!friendId) return null;
+  
   const userSnap = await get(ref(db, `users/${friendId}`));
   if (!userSnap.exists()) return null;
   

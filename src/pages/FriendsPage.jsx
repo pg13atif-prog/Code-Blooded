@@ -84,7 +84,8 @@ const FriendsPage = () => {
         setSearchResult({ ...res });
       }
     } catch (err) {
-      setSearchError('An error occurred.');
+      console.error('Search error:', err);
+      setSearchError(err.message || 'An error occurred.');
     } finally {
       setSearchLoading(false);
     }
