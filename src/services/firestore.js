@@ -176,15 +176,14 @@ export const addCustomReview = async (movieId, userId, reviewData) => {
   if (!movieId || !userId || !reviewData) return;
   const cleanUserId = String(userId);
   const cleanMovieId = String(movieId);
-  const reviewId = `${Date.now()}_${cleanUserId.slice(0, 8)}`;
-  const reviewRef = ref(db, `reviews/${cleanMovieId}/${reviewId}`);
+  const reviewRef = ref(db, `users/${cleanUserId}/reviews/${cleanMovieId}`);
   
   const payload = {
+    movieId: cleanMovieId,
     content: String(reviewData.content || ''),
     rating: String(reviewData.rating || '5.0'),
     author: String(reviewData.author || 'Anonymous'),
     isAnonymous: Boolean(reviewData.isAnonymous),
-    id: reviewId,
     userId: cleanUserId,
     createdAt: new Date().toISOString()
   };
@@ -194,10 +193,25 @@ export const addCustomReview = async (movieId, userId, reviewData) => {
 
 export const getCustomReviews = async (movieId) => {
   if (!movieId) return [];
-  const reviewsRef = ref(db, `reviews/${movieId}`);
-  const snapshot = await get(reviewsRef);
-  if (snapshot.exists()) {
-    return Object.values(snapshot.val()).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  const cleanMovieId = String(movieId);
+  try {
+    const usersRef = ref(db, 'users');
+    const snapshot = await get(usersRef);
+    if (!snapshot.exists()) return [];
+
+    const allUsers = snapshot.val();
+    const reviewsList = [];
+
+    Object.keys(allUsers).forEach(uId => {
+      const userReviews = allUsers[uId]?.reviews;
+      if (userReviews && userReviews[cleanMovieId]) {
+        reviewsList.push(userReviews[cleanMovieId]);
+      }
+    });
+
+    return reviewsList.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+  } catch (err) {
+    console.error('Error fetching custom reviews:', err);
+    return [];
   }
-  return [];
 };
