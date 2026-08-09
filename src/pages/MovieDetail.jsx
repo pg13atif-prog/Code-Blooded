@@ -1179,32 +1179,7 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
             {/* TMDB Reviews Section */}
             {tmdbReviewsToShow.length > 0 && (
               <div className="detail-section">
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-                  <h3 className="section-title" style={{ margin: 0 }}>Reviews from Web</h3>
-                  <a 
-                    href={`https://www.themoviedb.org/${movie.mediaType || 'movie'}/${movieId}/reviews`} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="btn-secondary btn-sm"
-                    style={{ 
-                      display: 'inline-flex', 
-                      alignItems: 'center', 
-                      gap: '0.4rem',
-                      padding: '0.4rem 0.85rem',
-                      borderRadius: '8px',
-                      fontSize: '0.82rem',
-                      fontWeight: 600,
-                      textDecoration: 'none'
-                    }}
-                  >
-                    <span>See All Reviews</span>
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                      <polyline points="15 3 21 3 21 9"></polyline>
-                      <line x1="10" y1="14" x2="21" y2="3"></line>
-                    </svg>
-                  </a>
-                </div>
+                <h3 className="section-title">Top Reviews from TMDB</h3>
 
                 <div className="reviews-list">
                   {tmdbReviewsToShow.map((review) => (
@@ -1235,32 +1210,6 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
                       </div>
                     </div>
                   ))}
-                </div>
-
-                <div style={{ marginTop: '1.25rem', display: 'flex', justifyContent: 'center' }}>
-                  <a 
-                    href={`https://www.themoviedb.org/${movie.mediaType || 'movie'}/${movieId}/reviews`} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="btn-secondary"
-                    style={{ 
-                      display: 'inline-flex', 
-                      alignItems: 'center', 
-                      gap: '0.5rem',
-                      padding: '0.6rem 1.25rem',
-                      borderRadius: '10px',
-                      fontSize: '0.88rem',
-                      fontWeight: 600,
-                      textDecoration: 'none'
-                    }}
-                  >
-                    <span>See All Reviews on TMDB</span>
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                      <polyline points="15 3 21 3 21 9"></polyline>
-                      <line x1="10" y1="14" x2="21" y2="3"></line>
-                    </svg>
-                  </a>
                 </div>
               </div>
             )}
