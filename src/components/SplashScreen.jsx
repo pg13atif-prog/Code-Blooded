@@ -30,10 +30,10 @@ function SplashScreen({ onComplete }) {
 
         <div className="logo-container">
           {/* Circular border drawing animation */}
-          <svg className="logo-ring-svg" viewBox="0 0 100 100">
+          <svg className="logo-ring-svg" viewBox="0 0 120 120" style={{ overflow: "visible" }}>
             <defs>
-              <filter id="neon-glow" x="-20%" y="-20%" width="140%" height="140%">
-                <feGaussianBlur stdDeviation="3" result="blur" />
+              <filter id="neon-glow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="4" result="blur" />
                 <feMerge>
                   <feMergeNode in="blur" />
                   <feMergeNode in="SourceGraphic" />
@@ -42,20 +42,20 @@ function SplashScreen({ onComplete }) {
             </defs>
             {/* Subtle background track */}
             <circle
-              cx="50"
-              cy="50"
-              r="46"
+              cx="60"
+              cy="60"
+              r="48"
               stroke="rgba(229, 9, 20, 0.15)"
-              strokeWidth="2"
+              strokeWidth="2.5"
               fill="transparent"
             />
             {/* Enhanced glowing animated ring */}
             <motion.circle
-              cx="50"
-              cy="50"
-              r="46"
+              cx="60"
+              cy="60"
+              r="48"
               stroke="#e50914"
-              strokeWidth="3.5"
+              strokeWidth="4"
               fill="transparent"
               strokeLinecap="round"
               filter="url(#neon-glow)"
