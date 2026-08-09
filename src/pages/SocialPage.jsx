@@ -5,7 +5,7 @@ import { db } from '../services/firebase';
 import { getWatchlist, getLiked, getWatched } from '../services/firestore';
 import { getFriendCompatibilityRecs } from '../services/gemini';
 import { searchMedia } from '../services/tmdb';
-import { ensureFriendCode } from '../services/friends';
+import { ensureFriendCode, searchByFriendCode } from '../services/friends';
 import MovieCard from '../components/MovieCard';
 import './SocialPage.css';
 
@@ -88,14 +88,13 @@ const SocialPage = () => {
         throw new Error("You can't match with yourself!");
       }
 
-      // 1. Find Friend's UID
-      const codeRef = ref(db, `friendCodes/${codeToSearch}`);
-      const snap = await get(codeRef);
+      // 1. Find Friend's UID using the central search function to get fallback & healing support
+      const friendData = await searchByFriendCode(codeToSearch);
       
-      if (!snap.exists()) {
+      if (!friendData) {
         throw new Error("Invalid Friend Code");
       }
-      const friendUid = snap.val();
+      const friendUid = friendData.uid;
 
       // 2. Fetch Both Users' Data
       const [myWl, myLiked, myWatched, fWl, fLiked, fWatched] = await Promise.all([
