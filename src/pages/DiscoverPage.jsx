@@ -78,10 +78,14 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
 
     try {
       if (filterMediaType === 'trending') {
-        const trendingItems = await getTrending('all', trendingTimeWindow);
-        setFilterResults(trendingItems || []);
-        setFilterTotalPages(1);
-        setFilterPage(1);
+        const response = await getTrending('all', trendingTimeWindow, targetPage);
+        if (isLoadMore) {
+          setFilterResults(prev => [...prev, ...response.results]);
+        } else {
+          setFilterResults(response.results);
+        }
+        setFilterTotalPages(response.totalPages || 10);
+        setFilterPage(response.page || targetPage);
         setFilterStatus('success');
         return;
       }
@@ -174,7 +178,7 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
               Movies
             </a>
             <a href="#discover/trending" className={`pill-btn ${filterMediaType === 'trending' ? 'active' : ''}`}>
-              🔥 Trending
+              Trending
             </a>
           </div>
 
@@ -193,25 +197,25 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
       </div>
 
       {filterMediaType === 'trending' && (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '1rem 0 1.5rem', flexWrap: 'wrap', gap: '1rem', background: 'rgba(255, 255, 255, 0.03)', padding: '1rem 1.25rem', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'space-between', margin: '1rem 0 1.5rem', flexWrap: 'wrap', gap: '1.25rem', background: 'rgba(255, 255, 255, 0.03)', padding: '0.75rem 1.25rem', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.08)', maxWidth: '100%', width: 'fit-content' }}>
           <div>
-            <h2 style={{ margin: 0, fontSize: '1.25rem', color: '#fff', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700 }}>
-              🔥 Top Trending Titles
+            <h2 style={{ margin: 0, fontSize: '1.15rem', color: '#fff', fontWeight: 700 }}>
+              Top Trending Titles
             </h2>
-            <p style={{ margin: '0.25rem 0 0', fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)' }}>Most popular movies and TV shows across the globe right now</p>
+            <p style={{ margin: '0.2rem 0 0', fontSize: '0.82rem', color: 'rgba(255,255,255,0.6)' }}>Most popular movies and TV shows across the globe right now</p>
           </div>
           <div style={{ display: 'flex', gap: '0.4rem', background: 'rgba(0,0,0,0.4)', padding: '4px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.08)' }}>
             <button 
               className={`pill-btn ${trendingTimeWindow === 'day' ? 'active' : ''}`}
               onClick={() => setTrendingTimeWindow('day')}
-              style={{ padding: '0.45rem 1rem', fontSize: '0.82rem', borderRadius: '9px', cursor: 'pointer' }}
+              style={{ padding: '0.4rem 0.9rem', fontSize: '0.82rem', borderRadius: '9px', cursor: 'pointer' }}
             >
               Today
             </button>
             <button 
               className={`pill-btn ${trendingTimeWindow === 'week' ? 'active' : ''}`}
               onClick={() => setTrendingTimeWindow('week')}
-              style={{ padding: '0.45rem 1rem', fontSize: '0.82rem', borderRadius: '9px', cursor: 'pointer' }}
+              style={{ padding: '0.4rem 0.9rem', fontSize: '0.82rem', borderRadius: '9px', cursor: 'pointer' }}
             >
               This Week
             </button>

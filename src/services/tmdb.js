@@ -127,9 +127,9 @@ export const getPopularTvShows = async (signal) => {
   return results.filter((show) => show.poster_path).map(mapMovie);
 };
 
-export const getTrending = async (mediaType = 'all', timeWindow = 'day', signal) => {
+export const getTrending = async (mediaType = 'all', timeWindow = 'day', page = 1, signal) => {
   const response = await fetchWithTimeout(
-    `${API_BASE_URL}/trending/${mediaType}/${timeWindow}?language=en-US`,
+    `${API_BASE_URL}/trending/${mediaType}/${timeWindow}?language=en-US&page=${page}`,
     { signal },
   );
 
@@ -137,8 +137,13 @@ export const getTrending = async (mediaType = 'all', timeWindow = 'day', signal)
     throw new Error('Unable to load trending items from TMDB.');
   }
 
-  const { results } = await response.json();
-  return results.filter((item) => item.poster_path).map(mapMovie);
+  const data = await response.json();
+  const results = (data.results || []).filter((item) => item.poster_path).map(mapMovie);
+  return {
+    results,
+    page: data.page || page,
+    totalPages: data.total_pages || 10
+  };
 };
 
 export const searchMedia = async (query, signal) => {
