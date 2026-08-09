@@ -129,7 +129,11 @@ const ProfilePage = () => {
           console.error('Profile data error:', e);
         }
         setProfileData(pData);
-        setEditName(pData?.username || '');
+        let derivedUsername = pData?.username;
+        if (!derivedUsername || derivedUsername === 'Guest') {
+          derivedUsername = currentUser.email ? currentUser.email.split('@')[0] : 'Guest';
+        }
+        setEditName(derivedUsername);
       } catch (err) {
         console.error('Profile load error:', err);
       } finally {
@@ -228,7 +232,10 @@ const ProfilePage = () => {
   }
 
   const email = currentUser.email || '';
-  const username = profileData?.username || (email ? email.split('@')[0] : 'Guest');
+  let username = profileData?.username;
+  if (!username || username === 'Guest') {
+    username = email ? email.split('@')[0] : 'Guest';
+  }
   const avatarLetter = username.charAt(0).toUpperCase() || '?';
   const avatarImage = profileData?.avatar || null;
 

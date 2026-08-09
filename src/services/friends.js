@@ -17,6 +17,14 @@ export const ensureFriendCode = async (userId, email) => {
     let userData = userSnap.exists() ? userSnap.val() : {};
     
     if (userData.friendCode) {
+      // If they were a Guest but now have a real email (e.g. they linked an account), update it
+      if (email && email !== 'Guest' && (!userData.email || userData.email === 'Guest')) {
+        try {
+          await set(ref(db, `users/${userId}/email`), email);
+        } catch (e) {
+          console.error('Failed to update email for linked account', e);
+        }
+      }
       return userData.friendCode;
     }
 
@@ -29,9 +37,14 @@ export const ensureFriendCode = async (userId, email) => {
     while (!isUnique && attempts < MAX_ATTEMPTS) {
       attempts++;
       newCode = generateCode();
-      const codeSnap = await get(ref(db, `friendCodes/${newCode}`));
-      if (!codeSnap.exists()) {
-        isUnique = true;
+      try {
+        const codeSnap = await get(ref(db, `friendCodes/${newCode}`));
+        if (!codeSnap.exists()) {
+          isUnique = true;
+        }
+      } catch (checkErr) {
+        console.warn('Could not check code uniqueness (maybe permission denied). Using code anyway.', checkErr);
+        isUnique = true; // Assume unique if we can't read the list
       }
     }
 
@@ -40,13 +53,22 @@ export const ensureFriendCode = async (userId, email) => {
       return null;
     }
 
-    // Set the code
-    const updates = {};
-    updates[`users/${userId}/friendCode`] = newCode;
-    updates[`users/${userId}/email`] = email || 'Guest';
-    updates[`friendCodes/${newCode}`] = userId;
+    // Set the code sequentially to avoid atomic failure if friendCodes rules are restricted
+    try {
+      await set(ref(db, `users/${userId}/friendCode`), newCode);
+      await set(ref(db, `users/${userId}/email`), email || 'Guest');
+    } catch (userWriteErr) {
+      console.error('Failed to write to users node:', userWriteErr);
+      throw userWriteErr;
+    }
 
-    await update(ref(db), updates);
+    try {
+      await set(ref(db, `friendCodes/${newCode}`), userId);
+    } catch (fcWriteErr) {
+      console.error('Failed to write to friendCodes node:', fcWriteErr);
+      // We don't throw here so the user still gets their friendCode and email set
+    }
+
     return newCode;
   } catch (error) {
     console.error('ensureFriendCode error:', error);
