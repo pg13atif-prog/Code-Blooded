@@ -342,9 +342,9 @@ function App() {
 
       {!showSplash && (
         <motion.div
-          initial={{ opacity: 0 }}
+          initial={sessionStorage.getItem('cinescope_splash_seen') ? { opacity: 1 } : { opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.3 }}
         >
           <Navbar />
           {renderContent()}
