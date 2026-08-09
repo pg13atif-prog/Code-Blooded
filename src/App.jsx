@@ -30,7 +30,14 @@ import PickForMe from "./pages/cineai/PickForMe";
 import MovieDebate from "./pages/cineai/MovieDebate";
 
 function App() {
-  const [showSplash, setShowSplash] = useState(true);
+  const [showSplash, setShowSplash] = useState(() => {
+    return !sessionStorage.getItem('cinescope_splash_seen');
+  });
+
+  const handleSplashComplete = () => {
+    sessionStorage.setItem('cinescope_splash_seen', 'true');
+    setShowSplash(false);
+  };
   const [movies, setMovies] = useState([]);
   const [nowPlaying, setNowPlaying] = useState([]);
   const [topRated, setTopRated] = useState([]);
@@ -329,7 +336,7 @@ function App() {
     <>
       <AnimatePresence mode="wait">
         {showSplash && (
-          <SplashScreen key="splash" onComplete={() => setShowSplash(false)} />
+          <SplashScreen key="splash" onComplete={handleSplashComplete} />
         )}
       </AnimatePresence>
 
