@@ -393,7 +393,7 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
 
   const handleSubmitReview = async (e) => {
     e.preventDefault();
-    if (!currentUser || currentUser.isAnonymous) {
+    if (!currentUser) {
       setIsAuthModalOpen(true);
       return;
     }
@@ -401,8 +401,7 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
 
     setIsSubmittingReview(true);
     try {
-      const email = currentUser.email || '';
-      const username = email ? email.split('@')[0] : 'User';
+      const username = currentUser.displayName || (currentUser.email ? currentUser.email.split('@')[0] : 'Guest User');
       const reviewData = {
         content: newReviewContent.trim(),
         rating: newReviewRating,
@@ -910,7 +909,7 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
                     value={newReviewContent}
                     onChange={(e) => setNewReviewContent(e.target.value)}
                     onFocus={() => {
-                      if (!currentUser || currentUser.isAnonymous) {
+                      if (!currentUser) {
                         setIsAuthModalOpen(true);
                       }
                     }}
@@ -920,7 +919,7 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
                   <button 
                     type="submit" 
                     className="btn-primary submit-review-btn"
-                    disabled={isSubmittingReview || (!currentUser || currentUser.isAnonymous)}
+                    disabled={isSubmittingReview || !currentUser}
                   >
                     {isSubmittingReview ? 'Posting...' : 'Post Review'}
                   </button>

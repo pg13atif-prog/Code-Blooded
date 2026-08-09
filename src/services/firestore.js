@@ -174,9 +174,11 @@ export const getLiked = async (userId) => {
 // ── Custom Reviews ──
 export const addCustomReview = async (movieId, userId, reviewData) => {
   if (!movieId || !userId || !reviewData) return;
-  const reviewRef = ref(db, `reviews/${movieId}/${userId}`);
+  const reviewId = `${Date.now()}_${userId.slice(0, 8)}`;
+  const reviewRef = ref(db, `reviews/${movieId}/${reviewId}`);
   await set(reviewRef, {
     ...reviewData,
+    id: reviewId,
     userId,
     createdAt: new Date().toISOString()
   });
