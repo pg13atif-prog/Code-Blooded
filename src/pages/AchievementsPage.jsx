@@ -105,8 +105,8 @@ const AchievementsPage = () => {
         </button>
       </div>
 
-      {/* Grid */}
-      <div className="achievements-full-grid">
+      {/* List Layout */}
+      <div className="achievements-list">
         {filteredAchievements.map(ach => {
           const isUnlocked = !!unlockedAchievements[ach.id];
           
@@ -133,29 +133,35 @@ const AchievementsPage = () => {
             }
             
             pct = Math.min((currentVal / ach.maxProgress) * 100, 100);
-            progressText = `${Math.floor(currentVal)} / ${ach.maxProgress} ${ach.category === 'Hours Watched' ? 'Hours' : ach.id === 'world_explorer' ? 'Countries' : ach.id === 'genre_hopper' ? 'Genres' : 'Titles'}`;
+            progressText = `${Math.floor(currentVal)} / ${ach.maxProgress} ${ach.category === 'Hours Watched' ? 'h' : ''}`;
           }
 
           return (
-            <div key={ach.id} className={`achievement-card-full glass-panel ${isUnlocked ? 'unlocked' : 'locked'}`}>
-              <div className="ach-card-top">
-                <span className="ach-card-icon">{ach.icon}</span>
-                <span className="ach-card-category">{ach.category}</span>
-              </div>
-              <h3 className="ach-card-name">{ach.name}</h3>
-              <p className="ach-card-desc">{ach.description}</p>
-              
-              {!isUnlocked && ach.maxProgress ? (
-                <div className="ach-progress-section">
-                  <div className="ach-progress-bar-wrap">
-                    <div className="ach-progress-bar" style={{ width: `${pct}%` }} />
+            <div key={ach.id} className={`achievement-list-item ${isUnlocked ? 'unlocked' : 'locked'}`}>
+              <div className="ach-item-left">
+                <span className="ach-item-icon">{ach.icon}</span>
+                <div className="ach-item-info">
+                  <div className="ach-item-title-row">
+                    <h3 className="ach-item-name">{ach.name}</h3>
+                    <span className="ach-item-category">{ach.category}</span>
                   </div>
-                  <span className="ach-progress-text">{progressText}</span>
+                  <p className="ach-item-desc">{ach.description}</p>
+                  
+                  {!isUnlocked && ach.maxProgress ? (
+                    <div className="ach-item-progress-wrap">
+                      <div className="ach-item-progress-bar">
+                        <div className="ach-item-progress-fill" style={{ width: `${pct}%` }} />
+                      </div>
+                      <span className="ach-item-progress-txt">{progressText}</span>
+                    </div>
+                  ) : null}
                 </div>
-              ) : null}
+              </div>
 
-              <div className={`ach-status-badge ${isUnlocked ? 'unlocked' : 'locked'}`}>
-                {isUnlocked ? '✓ Unlocked' : '🔒 Locked'}
+              <div className="ach-item-right">
+                <div className={`ach-status-badge ${isUnlocked ? 'unlocked' : 'locked'}`}>
+                  {isUnlocked ? '✓ Unlocked' : '🔒 Locked'}
+                </div>
               </div>
             </div>
           );
