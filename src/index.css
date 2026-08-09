@@ -62,9 +62,9 @@
 :root {
   --color-bg: #0a0a0a;
   --color-surface-hover: rgba(40, 40, 40, 0.9);
-  --color-accent: #e50914;
-  --color-accent-hover: #ff1a27;
-  --color-accent-glow: rgba(229, 9, 20, 0.4);
+  --color-accent: #b9090b;
+  --color-accent-hover: #d10a0d;
+  --color-accent-glow: rgba(185, 9, 11, 0.3);
   --color-text: #fff;
   --color-text-secondary: #b3b3b3;
   --color-text-muted: #808080;

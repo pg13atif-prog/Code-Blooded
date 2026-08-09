@@ -82,11 +82,11 @@
 }
 
 .friends-tab-btn.active {
-  background: linear-gradient(135deg, #990a10 0%, #6b0409 100%);
+  background: linear-gradient(135deg, #6b0509 0%, #440205 100%);
   color: #fff;
   font-weight: 700;
-  border: 1px solid rgba(229, 9, 20, 0.4);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(185, 9, 11, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 .req-badge {
@@ -409,7 +409,7 @@
 
 /* ── Universal Button Styles for Friends Page ────────────────────────────── */
 .friends-page .btn-primary {
-  background: var(--color-accent, #e50914);
+  background: linear-gradient(135deg, #b9090b 0%, #8a0608 100%);
   color: #fff;
   border: none;
   padding: 0.55rem 1.1rem;
@@ -421,14 +421,14 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 3px 10px rgba(229, 9, 20, 0.25);
+  box-shadow: 0 3px 10px rgba(185, 9, 11, 0.25);
   white-space: nowrap;
 }
 
 .friends-page .btn-primary:hover {
-  background: #c80812;
+  background: linear-gradient(135deg, #cf0c0e 0%, #9e070a 100%);
   transform: translateY(-1px);
-  box-shadow: 0 5px 14px rgba(229, 9, 20, 0.35);
+  box-shadow: 0 5px 14px rgba(185, 9, 11, 0.4);
 }
 
 .friends-page .btn-secondary {

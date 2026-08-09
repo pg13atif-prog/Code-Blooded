@@ -95,7 +95,7 @@
 }
 
 .custom-select-option.selected {
-  background: linear-gradient(135deg, #990a10 0%, #6b0409 100%);
+  background: linear-gradient(135deg, #6b0509 0%, #440205 100%);
   color: #ffffff;
   font-weight: 700;
 }
