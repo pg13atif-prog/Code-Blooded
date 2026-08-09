@@ -73,6 +73,7 @@ const ProfilePage = () => {
   });
   const [unlockedAchievements, setUnlockedAchievements] = useState({});
   const [loading,   setLoading]     = useState(true);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [activeTab, setActiveTab]   = useState('liked');
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [sortBy, setSortBy] = useState('recent'); // 'recent' | 'title' | 'rating'
@@ -378,7 +379,7 @@ const ProfilePage = () => {
             )}
           </div>
           
-          <button className="profile-logout-btn" onClick={() => { logout(); window.location.hash = ''; }}>
+          <button className="profile-logout-btn" onClick={() => setIsLogoutModalOpen(true)}>
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
             </svg>
@@ -541,6 +542,29 @@ const ProfilePage = () => {
           </div>
         )}
       </div>
+
+      {isLogoutModalOpen && (
+        <div className="modal-overlay" onClick={() => setIsLogoutModalOpen(false)}>
+          <div className="modal-content logout-confirm-modal" onClick={e => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setIsLogoutModalOpen(false)} aria-label="Close modal">✕</button>
+            <div className="logout-modal-header">
+              <span className="logout-modal-icon">🚪</span>
+              <h2>Log Out of CineScope?</h2>
+            </div>
+            <p className="logout-modal-desc">
+              Are you sure you want to log out? You will need to sign in again to access your watchlist, recommendations, and friends.
+            </p>
+            <div className="logout-modal-actions">
+              <button className="logout-cancel-btn" onClick={() => setIsLogoutModalOpen(false)}>
+                Cancel
+              </button>
+              <button className="logout-confirm-btn" onClick={async () => { await logout(); setIsLogoutModalOpen(false); window.location.hash = '#'; }}>
+                Log Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

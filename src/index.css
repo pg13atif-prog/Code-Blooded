@@ -349,3 +349,93 @@ button {
 .modal-content::-webkit-scrollbar { width: 4px; }
 .modal-content::-webkit-scrollbar-track { background: transparent; }
 .modal-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+
+/* ---------- Logout Confirmation Modal ---------- */
+.logout-confirm-modal {
+  max-width: 420px;
+  width: 90%;
+  padding: 2.25rem 1.75rem;
+  text-align: center;
+}
+
+.logout-modal-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.logout-modal-icon {
+  font-size: 2.4rem;
+  background: rgba(229, 9, 20, 0.12);
+  border: 1px solid rgba(229, 9, 20, 0.3);
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 24px rgba(229, 9, 20, 0.25);
+}
+
+.logout-modal-header h2 {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+}
+
+.logout-modal-desc {
+  font-size: 0.92rem;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.5;
+  margin-bottom: 1.75rem;
+}
+
+.logout-modal-actions {
+  display: flex;
+  gap: 0.85rem;
+  width: 100%;
+}
+
+.logout-cancel-btn {
+  flex: 1;
+  padding: 0.85rem;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logout-cancel-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.logout-confirm-btn {
+  flex: 1;
+  padding: 0.85rem;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #e50914 0%, #ff3b47 100%);
+  border: none;
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(229, 9, 20, 0.4);
+  transition: all 0.2s ease;
+}
+
+.logout-confirm-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(229, 9, 20, 0.6);
+}
+
+.logout-confirm-btn:active {
+  transform: translateY(0);
+}

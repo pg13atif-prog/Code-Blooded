@@ -42,6 +42,7 @@ const Navbar = () => {
   const [currentPath, setCurrentPath] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isProfileDropupOpen, setIsProfileDropupOpen] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   // Desktop hover dropdowns
   const [openDropdown, setOpenDropdown] = useState(null); // 'discover' | 'cineai' | 'social' | null
@@ -231,6 +232,17 @@ const Navbar = () => {
       setIsProfileDropupOpen(false);
       window.location.hash = '#profile';
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handleConfirmLogout = async () => {
+    try {
+      await logout();
+      setIsLogoutModalOpen(false);
+      window.location.hash = '#';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (err) {
+      console.error("Logout error:", err);
     }
   };
 
@@ -673,7 +685,7 @@ const Navbar = () => {
                       Notifications
                     </button>
                     <div className="dropdown-divider"></div>
-                    <button className="dropdown-item logout" onClick={() => { logout(); setIsDropdownOpen(false); }}>
+                    <button className="dropdown-item logout" onClick={() => { setIsLogoutModalOpen(true); setIsDropdownOpen(false); }}>
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
                       Log Out
                     </button>
@@ -818,7 +830,7 @@ const Navbar = () => {
 
             <div className="dropup-divider" />
 
-            <button className="dropup-item logout" onClick={() => { logout(); setIsProfileDropupOpen(false); }}>
+            <button className="dropup-item logout" onClick={() => { setIsLogoutModalOpen(true); setIsProfileDropupOpen(false); }}>
               <span className="dropup-icon">🚪</span>
               <span style={{ color: '#e50914' }}>Log Out</span>
             </button>
@@ -858,6 +870,29 @@ const Navbar = () => {
                 ))}
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {isLogoutModalOpen && (
+        <div className="modal-overlay" onClick={() => setIsLogoutModalOpen(false)}>
+          <div className="modal-content logout-confirm-modal" onClick={e => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setIsLogoutModalOpen(false)} aria-label="Close modal">✕</button>
+            <div className="logout-modal-header">
+              <span className="logout-modal-icon">🚪</span>
+              <h2>Log Out of CineScope?</h2>
+            </div>
+            <p className="logout-modal-desc">
+              Are you sure you want to log out? You will need to sign in again to access your watchlist, recommendations, and friends.
+            </p>
+            <div className="logout-modal-actions">
+              <button className="logout-cancel-btn" onClick={() => setIsLogoutModalOpen(false)}>
+                Cancel
+              </button>
+              <button className="logout-confirm-btn" onClick={handleConfirmLogout}>
+                Log Out
+              </button>
+            </div>
           </div>
         </div>
       )}
