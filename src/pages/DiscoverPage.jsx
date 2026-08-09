@@ -248,23 +248,8 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
             transition={{ duration: 0.3, ease: 'easeInOut' }}
           >
             <div className="discover-filter-card">
-              {/* Top Row: Media toggle + Sort */}
-              <div className="filter-top-row">
-                <div className="filter-media-toggle">
-                  <button
-                    className={`filter-type-btn ${filterMediaType === 'movie' ? 'active' : ''}`}
-                    onClick={() => setFilterMediaType('movie')}
-                  >
-                    Movies
-                  </button>
-                  <button
-                    className={`filter-type-btn ${filterMediaType === 'tv' ? 'active' : ''}`}
-                    onClick={() => setFilterMediaType('tv')}
-                  >
-                    TV Shows
-                  </button>
-                </div>
-
+              {/* Top Row: Sort */}
+              <div className="filter-top-row" style={{ justifyContent: 'flex-end' }}>
                 <div className="filter-sort-group">
                   <span className="filter-sort-label">SORT BY</span>
                   <CustomSelect

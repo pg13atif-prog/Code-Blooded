@@ -107,13 +107,15 @@
   min-height: 100vh;
   background: #0b0d14;
   color: #e2e8f0;
-  padding-top: 68px; /* Offset fixed navbar */
+  padding-top: 0; /* Zero gap — Hero banner extends under fixed glass navbar */
 }
 
 /* Hero banner */
 .profile-hero {
   position: relative;
-  height: 240px;
+  min-height: 260px;
+  padding-top: calc(var(--navbar-height, 68px) + 1.5rem);
+  padding-bottom: 2rem;
   background: linear-gradient(135deg, #1a0a0a 0%, #1e1e3a 50%, #0b0d14 100%);
   overflow: hidden;
 }
