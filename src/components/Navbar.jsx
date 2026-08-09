@@ -768,21 +768,21 @@ const Navbar = () => {
                           onClick={() => handleNotificationAction(notif, 'watchlist')}
                           disabled={!!addedType}
                         >
-                          {addedType === 'watchlist' ? 'Added ✓' : '+ Watchlist'}
+                          {addedType === 'watchlist' ? 'Added' : 'Watchlist'}
                         </button>
                         <button 
                           className={`notif-action-btn ${addedType === 'liked' ? 'added' : ''}`} 
                           onClick={() => handleNotificationAction(notif, 'liked')}
                           disabled={!!addedType}
                         >
-                          {addedType === 'liked' ? 'Added ✓' : 'Liked'}
+                          {addedType === 'liked' ? 'Liked' : 'Like'}
                         </button>
                         <button 
                           className={`notif-action-btn ${addedType === 'watched' ? 'added' : ''}`} 
                           onClick={() => handleNotificationAction(notif, 'watched')}
                           disabled={!!addedType}
                         >
-                          {addedType === 'watched' ? 'Added ✓' : 'Watched'}
+                          Watched
                         </button>
                       </div>
                     </div>
