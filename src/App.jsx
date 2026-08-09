@@ -9,7 +9,7 @@ import MovieDetail from "./pages/MovieDetail";
 import MediaBrowsePage from "./pages/MediaBrowsePage";
 import SearchPage from "./pages/SearchPage";
 import ProfilePage from "./pages/ProfilePage";
-import { getPopularMovies, getPopularTvShows, getTrending, getSimilarMovies } from "./services/tmdb";
+import { getPopularMovies, getPopularTvShows, getTrending, getSimilarMovies, fetchList } from "./services/tmdb";
 import { useAuth } from "./context/AuthContext";
 import { getWatchlist } from "./services/firestore";
 import { MovieRowSkeleton } from "./components/SkeletonLoader";
@@ -32,6 +32,8 @@ import MovieDebate from "./pages/cineai/MovieDebate";
 function App() {
   const [showSplash, setShowSplash] = useState(true);
   const [movies, setMovies] = useState([]);
+  const [nowPlaying, setNowPlaying] = useState([]);
+  const [topRated, setTopRated] = useState([]);
   const [tvShows, setTvShows] = useState([]);
   const [trending, setTrending] = useState([]);
   const [status, setStatus] = useState("loading");
@@ -170,11 +172,15 @@ function App() {
 
     Promise.all([
       getPopularMovies(controller.signal),
+      fetchList('movie/now_playing?language=en-US&page=1', controller.signal),
+      fetchList('movie/top_rated?language=en-US&page=1', controller.signal),
       getTrending('tv', 'day', controller.signal),
       getTrending('movie', 'week', controller.signal)
     ])
-      .then(([popularMovies, trendingTv, trendingMovies]) => {
+      .then(([popularMovies, nowPlayingMovies, topRatedMovies, trendingTv, trendingMovies]) => {
         setMovies(popularMovies);
+        setNowPlaying(nowPlayingMovies);
+        setTopRated(topRatedMovies);
         setTvShows(trendingTv);
         setTrending(trendingMovies);
         setStatus("success");
@@ -300,9 +306,11 @@ function App() {
                   {recommended.length > 0 && (
                     <MovieRow title={`Because you liked "${likedTitle}"`} movies={recommended} />
                   )}
-                  <MovieRow title="Popular Movies" movies={movies} link="#movies" />
-                  <MovieRow title="Trending TV Shows" movies={tvShows} link="#trending-tv" />
-                  <MovieRow title="Trending Movies This Week" movies={trending} link="#trending-movies" />
+                  <MovieRow title="Now Playing" movies={nowPlaying} link="#discover/movies" />
+                  <MovieRow title="Popular Movies" movies={movies} link="#discover/movies" />
+                  <MovieRow title="Top Rated Movies" movies={topRated} link="#discover/movies" />
+                  <MovieRow title="Trending TV Shows" movies={tvShows} link="#discover/tv" />
+                  <MovieRow title="Trending Movies This Week" movies={trending} link="#discover/movies" />
                 </>
               )}
             </main>

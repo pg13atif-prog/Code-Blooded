@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { fetchList, getTrending, discoverMedia, genres } from '../services/tmdb';
-import MovieRow from '../components/MovieRow';
+import { discoverMedia } from '../services/tmdb';
 import MovieCard from '../components/MovieCard';
-import { MovieRowSkeleton, CardSkeleton } from '../components/SkeletonLoader';
+import { CardSkeleton } from '../components/SkeletonLoader';
 import { motion, AnimatePresence } from 'framer-motion';
 import CustomSelect from '../components/CustomSelect';
 import './DiscoverPage.css';
@@ -47,17 +46,9 @@ const DISPLAY_GENRES = [
 ];
 
 const DiscoverPage = ({ activeTab = 'movies' }) => {
-  // --- Curated rows data ---
-  const [data, setData] = useState({
-    movies: { popular: [], topRated: [], upcoming: [], nowPlaying: [] },
-    tv: { popular: [], topRated: [], airingToday: [], onTheAir: [] },
-    trending: { today: [], week: [] }
-  });
-  const [rowsLoading, setRowsLoading] = useState(true);
-
   // --- Filter state ---
   const [showFilters, setShowFilters] = useState(false);
-  const [filterMediaType, setFilterMediaType] = useState('movie');
+  const [filterMediaType, setFilterMediaType] = useState(activeTab === 'tv' ? 'tv' : 'movie');
   const [selectedGenres, setSelectedGenres] = useState([]);
   const [selectedDecade, setSelectedDecade] = useState('');
   const [selectedYears, setSelectedYears] = useState([]);
@@ -66,7 +57,7 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
 
   // --- Filter results ---
   const [filterResults, setFilterResults] = useState([]);
-  const [filterStatus, setFilterStatus] = useState('idle'); // idle | loading | success | error
+  const [filterStatus, setFilterStatus] = useState('loading'); // loading | success | error
   const [filterPage, setFilterPage] = useState(1);
   const [filterTotalPages, setFilterTotalPages] = useState(1);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -76,66 +67,7 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
     setFilterMediaType(activeTab === 'tv' ? 'tv' : 'movie');
   }, [activeTab]);
 
-  // Reset filter results when tab changes
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    setFilterStatus('idle');
-    setFilterResults([]);
-  }, [activeTab]);
-
-  // --- Load curated row data ---
-  useEffect(() => {
-    let isMounted = true;
-    const controller = new AbortController();
-
-    const loadData = async () => {
-      setRowsLoading(true);
-      try {
-        if (activeTab === 'movies') {
-          if (data.movies.popular.length === 0) {
-            const [popular, topRated, upcoming, nowPlaying] = await Promise.all([
-              fetchList('movie/popular?language=en-US&page=1', controller.signal),
-              fetchList('movie/top_rated?language=en-US&page=1', controller.signal),
-              fetchList('movie/upcoming?language=en-US&page=1', controller.signal),
-              fetchList('movie/now_playing?language=en-US&page=1', controller.signal),
-            ]);
-            if (isMounted) setData(prev => ({ ...prev, movies: { popular, topRated, upcoming, nowPlaying } }));
-          }
-        } else if (activeTab === 'tv') {
-          if (data.tv.popular.length === 0) {
-            const [popular, topRated, airingToday, onTheAir] = await Promise.all([
-              fetchList('tv/popular?language=en-US&page=1', controller.signal),
-              fetchList('tv/top_rated?language=en-US&page=1', controller.signal),
-              fetchList('tv/airing_today?language=en-US&page=1', controller.signal),
-              fetchList('tv/on_the_air?language=en-US&page=1', controller.signal),
-            ]);
-            if (isMounted) setData(prev => ({ ...prev, tv: { popular, topRated, airingToday, onTheAir } }));
-          }
-        } else if (activeTab === 'trending') {
-          if (data.trending.today.length === 0) {
-            const [today, week] = await Promise.all([
-              getTrending('all', 'day', controller.signal),
-              getTrending('all', 'week', controller.signal)
-            ]);
-            if (isMounted) setData(prev => ({ ...prev, trending: { today, week } }));
-          }
-        }
-      } catch (err) {
-        if (err.name !== 'AbortError') console.error("Discover load error:", err);
-      } finally {
-        if (isMounted) setRowsLoading(false);
-      }
-    };
-
-    loadData();
-
-    return () => {
-      isMounted = false;
-      controller.abort();
-    };
-  }, [activeTab]);
-
-  // --- Filter apply ---
+  // --- Filter apply function ---
   const applyFilters = useCallback(async (isLoadMore = false, targetPage = 1) => {
     if (!isLoadMore) {
       setFilterStatus('loading');
@@ -176,6 +108,13 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
       setLoadingMore(false);
     }
   }, [filterMediaType, selectedGenres, selectedDecade, selectedYears, minRating, sortBy]);
+
+  // Auto-fetch when mediaType changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    setFilterPage(1);
+    applyFilters(false, 1);
+  }, [filterMediaType, applyFilters]);
 
   const handleApplyFilters = () => {
     setFilterPage(1);
@@ -218,31 +157,29 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
 
         <div className="discover-header-row new-discover-header">
           <div className="discover-pill-toggle">
-            <a href="#discover/tv" className={`pill-btn ${activeTab === 'tv' ? 'active' : ''}`}>
+            <a href="#discover/tv" className={`pill-btn ${filterMediaType === 'tv' ? 'active' : ''}`}>
               TV Shows
             </a>
-            <a href="#discover/movies" className={`pill-btn ${activeTab === 'movies' ? 'active' : ''}`}>
+            <a href="#discover/movies" className={`pill-btn ${filterMediaType === 'movie' ? 'active' : ''}`}>
               Movies
             </a>
           </div>
 
-          {(activeTab === 'movies' || activeTab === 'tv') && (
-            <button 
-              className={`discover-icon-filter-btn ${showFilters ? 'active' : ''}`}
-              onClick={() => setShowFilters(!showFilters)}
-              title="Advanced Filters"
-            >
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-              </svg>
-            </button>
-          )}
+          <button 
+            className={`discover-icon-filter-btn ${showFilters ? 'active' : ''}`}
+            onClick={() => setShowFilters(!showFilters)}
+            title="Advanced Filters"
+          >
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+            </svg>
+          </button>
         </div>
       </div>
 
       {/* ─── Filter Panel ─── */}
       <AnimatePresence>
-        {showFilters && (activeTab === 'movies' || activeTab === 'tv') && (
+        {showFilters && (
           <motion.div
             className="discover-filter-wrapper"
             initial={{ height: 0, opacity: 0 }}
@@ -342,11 +279,11 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
         )}
       </AnimatePresence>
 
-      {/* ─── Filter Results (shown after apply) ─── */}
+      {/* ─── Media Grid (All Movies / TV Shows) ─── */}
       {filterStatus === 'loading' && (
         <div className="discover-filter-results">
           <div className="discover-grid">
-            {Array.from({ length: 10 }).map((_, i) => (
+            {Array.from({ length: 12 }).map((_, i) => (
               <CardSkeleton key={i} />
             ))}
           </div>
@@ -356,8 +293,8 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
       {filterStatus === 'success' && filterResults.length === 0 && (
         <div className="discover-filter-results">
           <div className="discover-empty-state">
-            <h3>No titles match your filters</h3>
-            <p>Try removing a genre or selecting a broader era range.</p>
+            <h3>No titles match your criteria</h3>
+            <p>Try clearing filters or selecting a different category.</p>
           </div>
         </div>
       )}
@@ -392,45 +329,6 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
           )}
         </div>
       )}
-
-      {/* ─── Curated Rows ─── */}
-      <div className="discover-content">
-        {rowsLoading ? (
-          <>
-            <MovieRowSkeleton />
-            <MovieRowSkeleton />
-            <MovieRowSkeleton />
-            <MovieRowSkeleton />
-          </>
-        ) : (
-          <>
-            {activeTab === 'movies' && (
-              <>
-                <MovieRow title="Now Playing" movies={data.movies.nowPlaying} />
-                <MovieRow title="Popular Movies" movies={data.movies.popular} />
-                <MovieRow title="Top Rated" movies={data.movies.topRated} />
-                <MovieRow title="Upcoming" movies={data.movies.upcoming} />
-              </>
-            )}
-
-            {activeTab === 'tv' && (
-              <>
-                <MovieRow title="Airing Today" movies={data.tv.airingToday} />
-                <MovieRow title="Popular TV Shows" movies={data.tv.popular} />
-                <MovieRow title="Top Rated" movies={data.tv.topRated} />
-                <MovieRow title="On The Air" movies={data.tv.onTheAir} />
-              </>
-            )}
-
-            {activeTab === 'trending' && (
-              <>
-                <MovieRow title="Trending Today" movies={data.trending.today} />
-                <MovieRow title="Trending This Week" movies={data.trending.week} />
-              </>
-            )}
-          </>
-        )}
-      </div>
     </div>
   );
 };
