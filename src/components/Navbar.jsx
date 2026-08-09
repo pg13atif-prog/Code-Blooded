@@ -258,8 +258,14 @@ const Navbar = () => {
         await addToWatched(currentUser.uid, notif.movie, 120);
       }
       
-      // Mark as added locally so button turns green & says "Added ✓" while keeping item in list
-      setAddedNotifs(prev => ({ ...prev, [notif.id]: actionType }));
+      // Mark specific action as added locally so other buttons remain active
+      setAddedNotifs(prev => ({ 
+        ...prev, 
+        [notif.id]: {
+          ...(prev[notif.id] || {}),
+          [actionType]: true
+        }
+      }));
 
       // Delete from Firebase DB so it won't re-appear after modal is closed
       await removeNotification(currentUser.uid, notif.id);
@@ -752,7 +758,7 @@ const Navbar = () => {
             ) : (
               <div className="notifications-list">
                 {notifications.map(notif => {
-                  const addedType = addedNotifs[notif.id];
+                  const notifState = addedNotifs[notif.id] || {};
                   return (
                     <div key={notif.id} className="notification-card-item">
                       <div className="notif-card-header">
@@ -764,23 +770,23 @@ const Navbar = () => {
                       </p>
                       <div className="notif-card-actions">
                         <button 
-                          className={`notif-action-btn ${addedType === 'watchlist' ? 'added' : ''}`} 
+                          className={`notif-action-btn ${notifState.watchlist ? 'active-watchlist' : ''}`} 
                           onClick={() => handleNotificationAction(notif, 'watchlist')}
-                          disabled={!!addedType}
+                          disabled={!!notifState.watchlist}
                         >
-                          {addedType === 'watchlist' ? 'Added' : 'Watchlist'}
+                          {notifState.watchlist ? 'Added' : 'Watchlist'}
                         </button>
                         <button 
-                          className={`notif-action-btn ${addedType === 'liked' ? 'added' : ''}`} 
+                          className={`notif-action-btn ${notifState.liked ? 'active-liked' : ''}`} 
                           onClick={() => handleNotificationAction(notif, 'liked')}
-                          disabled={!!addedType}
+                          disabled={!!notifState.liked}
                         >
-                          {addedType === 'liked' ? 'Liked' : 'Like'}
+                          {notifState.liked ? 'Liked' : 'Like'}
                         </button>
                         <button 
-                          className={`notif-action-btn ${addedType === 'watched' ? 'added' : ''}`} 
+                          className={`notif-action-btn ${notifState.watched ? 'active-watched' : ''}`} 
                           onClick={() => handleNotificationAction(notif, 'watched')}
-                          disabled={!!addedType}
+                          disabled={!!notifState.watched}
                         >
                           Watched
                         </button>

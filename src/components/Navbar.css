@@ -1284,12 +1284,32 @@
   transform: translateY(0);
 }
 
-.notif-action-btn.added {
+.notif-action-btn.active-watchlist {
+  background: #ffffff !important;
+  color: #0d111a !important;
+  border-color: #ffffff !important;
+  font-weight: 700 !important;
+  box-shadow: 0 3px 12px rgba(255, 255, 255, 0.3) !important;
+  cursor: default;
+  transform: none !important;
+}
+
+.notif-action-btn.active-liked {
+  background: #dc2626 !important;
+  color: #ffffff !important;
+  border-color: #ef4444 !important;
+  font-weight: 700 !important;
+  box-shadow: 0 3px 12px rgba(239, 68, 68, 0.35) !important;
+  cursor: default;
+  transform: none !important;
+}
+
+.notif-action-btn.active-watched {
   background: #16a34a !important;
   color: #ffffff !important;
   border-color: #22c55e !important;
   font-weight: 700 !important;
-  box-shadow: 0 3px 10px rgba(34, 197, 94, 0.3) !important;
+  box-shadow: 0 3px 12px rgba(34, 197, 94, 0.35) !important;
   cursor: default;
   transform: none !important;
 }
