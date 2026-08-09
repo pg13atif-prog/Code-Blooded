@@ -77,10 +77,30 @@ export const ensureFriendCode = async (userId, email) => {
 
 export const searchByFriendCode = async (code) => {
   const codeToSearch = code.trim().toUpperCase();
-  const codeSnap = await get(ref(db, `friendCodes/${codeToSearch}`));
-  if (!codeSnap.exists()) return null;
+  let friendId = null;
   
-  const friendId = codeSnap.val();
+  const codeSnap = await get(ref(db, `friendCodes/${codeToSearch}`));
+  if (codeSnap.exists()) {
+    friendId = codeSnap.val();
+  } else {
+    // Fallback for codes generated before rules were fixed
+    const usersRef = ref(db, 'users');
+    const q = query(usersRef, orderByChild('friendCode'), equalTo(codeToSearch));
+    const snap = await get(q);
+    
+    if (snap.exists()) {
+      const childNodes = [];
+      snap.forEach(child => { childNodes.push(child); });
+      if (childNodes.length > 0) {
+        friendId = childNodes[0].key;
+        // Heal the mapping node for future lookups
+        set(ref(db, `friendCodes/${codeToSearch}`), friendId).catch(console.error);
+      }
+    }
+  }
+  
+  if (!friendId) return null;
+  
   const userSnap = await get(ref(db, `users/${friendId}`));
   if (!userSnap.exists()) return null;
   
