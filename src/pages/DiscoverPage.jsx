@@ -216,22 +216,25 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
           <h1>Discover</h1>
         </div>
 
-        <div className="discover-header-row">
-          <div className="discover-tabs">
-            <a href="#discover/movies" className={`discover-tab ${activeTab === 'movies' ? 'active' : ''}`}>Movies</a>
-            <a href="#discover/tv" className={`discover-tab ${activeTab === 'tv' ? 'active' : ''}`}>TV Shows</a>
-            <a href="#discover/trending" className={`discover-tab ${activeTab === 'trending' ? 'active' : ''}`}>Trending</a>
+        <div className="discover-header-row new-discover-header">
+          <div className="discover-pill-toggle">
+            <a href="#discover/tv" className={`pill-btn ${activeTab === 'tv' ? 'active' : ''}`}>
+              📺 TV Shows
+            </a>
+            <a href="#discover/movies" className={`pill-btn ${activeTab === 'movies' ? 'active' : ''}`}>
+              🎬 Movies
+            </a>
           </div>
 
           {(activeTab === 'movies' || activeTab === 'tv') && (
             <button 
-              className={`advanced-filter-btn ${showFilters ? 'active' : ''}`}
+              className={`discover-icon-filter-btn ${showFilters ? 'active' : ''}`}
               onClick={() => setShowFilters(!showFilters)}
+              title="Advanced Filters"
             >
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
               </svg>
-              Advanced Filters
             </button>
           )}
         </div>

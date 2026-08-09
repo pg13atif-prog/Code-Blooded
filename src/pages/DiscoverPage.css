@@ -39,67 +39,64 @@
   gap: 1rem;
 }
 
-/* ─── Tab Pills ─── */
-.discover-tabs {
+/* ─── Tab Pills (Like mockup) ─── */
+.discover-pill-toggle {
   display: flex;
-  gap: 0.65rem;
-}
-
-.discover-tab {
-  color: rgba(255, 255, 255, 0.6);
-  text-decoration: none;
-  font-size: 0.92rem;
-  font-weight: 600;
-  padding: 0.5rem 1.25rem;
-  border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(255, 255, 255, 0.04);
-  transition: all 0.22s ease;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 40px;
+  padding: 4px;
 }
 
-.discover-tab:hover {
-  color: rgba(255, 255, 255, 0.9);
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.2);
-}
-
-.discover-tab.active {
-  color: #fff;
-  background: rgba(229, 9, 20, 0.2);
-  border-color: rgba(229, 9, 20, 0.4);
-}
-
-/* ─── Advanced Filter Toggle Button ─── */
-.advanced-filter-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55rem;
-  background: rgba(15, 23, 42, 0.7);
-  color: #ffffff;
-  border: 1.5px solid rgba(229, 9, 20, 0.35);
-  padding: 0.55rem 1.2rem;
-  border-radius: 28px;
-  font-size: 0.88rem;
+.pill-btn {
+  color: #94a3b8;
+  text-decoration: none;
+  font-size: 0.95rem;
   font-weight: 600;
+  padding: 0.65rem 1.5rem;
+  border-radius: 36px;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pill-btn:hover {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.pill-btn.active {
+  color: #fff;
+  background: #fc4a6a; /* Pinkish-red from mockup */
+  box-shadow: 0 4px 15px rgba(252, 74, 106, 0.35);
+}
+
+/* ─── Icon Filter Button ─── */
+.discover-icon-filter-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #94a3b8;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  backdrop-filter: var(--glass-med-filter);
-  -webkit-backdrop-filter: var(--glass-med-filter);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  transition: all 0.25s ease;
 }
 
-.advanced-filter-btn:hover {
-  background: rgba(229, 9, 20, 0.12);
-  border-color: #e50914;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(229, 9, 20, 0.3);
+.discover-icon-filter-btn:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.1);
 }
 
-.advanced-filter-btn.active {
-  background: linear-gradient(135deg, #e50914 0%, #ff3b47 100%);
+.discover-icon-filter-btn.active {
+  background: #fc4a6a;
+  color: #fff;
   border-color: transparent;
-  color: #ffffff;
-  box-shadow: 0 6px 20px rgba(229, 9, 20, 0.45);
+  box-shadow: 0 4px 15px rgba(252, 74, 106, 0.35);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -403,13 +400,21 @@
 }
 
 @media (max-width: 480px) {
-  .discover-tabs {
+  .discover-pill-toggle {
     flex-wrap: wrap;
+    border-radius: 20px;
   }
 
-  .discover-tab {
+  .pill-btn {
     font-size: 0.84rem;
-    padding: 0.4rem 1rem;
+    padding: 0.5rem 1rem;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .discover-icon-filter-btn {
+    width: 44px;
+    height: 44px;
   }
 
   .discover-page {
