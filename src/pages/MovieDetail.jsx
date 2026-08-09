@@ -158,7 +158,8 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
 
   const [customReviews, setCustomReviews] = useState([]);
   const [newReviewContent, setNewReviewContent] = useState('');
-  const [newReviewRating, setNewReviewRating] = useState(5);
+  const [newReviewRating, setNewReviewRating] = useState('5.0');
+  const [postAnonymously, setPostAnonymously] = useState(false);
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [showAllCast, setShowAllCast] = useState(false);
@@ -393,19 +394,28 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
 
   const handleSubmitReview = async (e) => {
     e.preventDefault();
-    if (!currentUser) {
+    if (!currentUser || currentUser.isAnonymous) {
       setIsAuthModalOpen(true);
       return;
     }
     if (!newReviewContent.trim()) return;
 
+    const parsedRating = parseFloat(newReviewRating);
+    if (isNaN(parsedRating) || parsedRating < 0.1 || parsedRating > 5.0) {
+      alert("Please enter a valid rating between 0.1 and 5.0");
+      return;
+    }
+    const finalRating = parsedRating.toFixed(1);
+
     setIsSubmittingReview(true);
     try {
-      const username = currentUser.displayName || (currentUser.email ? currentUser.email.split('@')[0] : 'Guest User');
+      const realUsername = currentUser.displayName || (currentUser.email ? currentUser.email.split('@')[0] : 'User');
+      const authorName = postAnonymously ? 'Anonymous' : realUsername;
       const reviewData = {
         content: newReviewContent.trim(),
-        rating: newReviewRating,
-        author: username,
+        rating: finalRating,
+        author: authorName,
+        isAnonymous: postAnonymously
       };
       await addCustomReview(movieId, currentUser.uid, reviewData);
       setCustomReviews(prev => [
@@ -413,7 +423,8 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
         ...prev
       ]);
       setNewReviewContent('');
-      setNewReviewRating(5);
+      setNewReviewRating('5.0');
+      setPostAnonymously(false);
     } catch (err) {
       console.error("Failed to post review", err);
       alert("Failed to post review.");
@@ -892,38 +903,63 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
               <h3 className="section-title">Reviews by CineScope Users</h3>
               
               <div className="write-review-card">
-                <form onSubmit={handleSubmitReview} className="write-review-form">
-                  <div className="review-rating-input">
-                    <label>Your Rating:</label>
-                    <CustomSelect 
-                      value={newReviewRating} 
-                      onChange={e => setNewReviewRating(Number(e.target.value))}
-                      options={[5, 4.5, 4, 3.5, 3, 2.5, 2, 1.5, 1, 0.5].map(r => ({
-                        value: r,
-                        label: `${r} Stars`
-                      }))}
-                    />
+                {(!currentUser || currentUser.isAnonymous) ? (
+                  <div style={{ background: 'rgba(255, 255, 255, 0.04)', border: '1px solid rgba(255, 255, 255, 0.12)', borderRadius: '14px', padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+                    <div>
+                      <h4 style={{ margin: 0, color: '#fff', fontSize: '1rem', fontWeight: 600 }}>Sign in to write a review</h4>
+                      <p style={{ margin: '0.25rem 0 0', color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem' }}>Guest accounts cannot post reviews. Create a free account or sign in to share your rating.</p>
+                    </div>
+                    <button className="btn-primary btn-sm" onClick={() => setIsAuthModalOpen(true)}>Sign In / Register</button>
                   </div>
-                  <textarea
-                    placeholder="What did you think about this title?"
-                    value={newReviewContent}
-                    onChange={(e) => setNewReviewContent(e.target.value)}
-                    onFocus={() => {
-                      if (!currentUser) {
-                        setIsAuthModalOpen(true);
-                      }
-                    }}
-                    rows={4}
-                    required
-                  ></textarea>
-                  <button 
-                    type="submit" 
-                    className="btn-primary submit-review-btn"
-                    disabled={isSubmittingReview || !currentUser}
-                  >
-                    {isSubmittingReview ? 'Posting...' : 'Post Review'}
-                  </button>
-                </form>
+                ) : (
+                  <form onSubmit={handleSubmitReview} className="write-review-form" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+                      <div className="review-rating-input" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                        <label style={{ fontWeight: 600, fontSize: '0.9rem', color: '#fff' }}>Your Rating (0.1 - 5.0):</label>
+                        <input 
+                          type="number" 
+                          min="0.1" 
+                          max="5.0" 
+                          step="0.1" 
+                          placeholder="e.g. 4.8" 
+                          value={newReviewRating} 
+                          onChange={e => setNewReviewRating(e.target.value)}
+                          style={{ width: '85px', padding: '0.45rem 0.75rem', borderRadius: '8px', background: 'rgba(255,255,255,0.08)', color: '#fff', border: '1px solid rgba(255,255,255,0.16)', outline: 'none', fontWeight: 700, fontSize: '0.95rem' }}
+                          required
+                        />
+                        <span style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)' }}>/ 5.0</span>
+                      </div>
+
+                      <label style={{ display: 'inline-flex', alignItems: 'center', gap: '0.55rem', cursor: 'pointer', fontSize: '0.88rem', color: 'rgba(255,255,255,0.85)', userSelect: 'none' }}>
+                        <input 
+                          type="checkbox" 
+                          checked={postAnonymously} 
+                          onChange={e => setPostAnonymously(e.target.checked)}
+                          style={{ width: '16px', height: '16px', accentColor: 'var(--color-accent, #b9090b)', cursor: 'pointer' }}
+                        />
+                        Post anonymously
+                      </label>
+                    </div>
+
+                    <textarea
+                      placeholder="What did you think about this title?"
+                      value={newReviewContent}
+                      onChange={(e) => setNewReviewContent(e.target.value)}
+                      rows={4}
+                      required
+                    ></textarea>
+
+                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                      <button 
+                        type="submit" 
+                        className="btn-primary submit-review-btn"
+                        disabled={isSubmittingReview}
+                      >
+                        {isSubmittingReview ? 'Posting...' : 'Post Review'}
+                      </button>
+                    </div>
+                  </form>
+                )}
               </div>
 
               {customReviews.length > 0 ? (
