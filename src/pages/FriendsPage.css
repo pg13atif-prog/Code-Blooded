@@ -475,6 +475,20 @@
   transform: translateY(-1px);
 }
 
+.btn-unsend {
+  background: #16a34a !important;
+  color: #ffffff !important;
+  border: 1px solid #22c55e !important;
+  font-weight: 700 !important;
+  box-shadow: 0 3px 10px rgba(34, 197, 94, 0.3) !important;
+  transition: all 0.2s ease;
+}
+
+.btn-unsend:hover {
+  background: #15803d !important;
+  transform: translateY(-1px);
+}
+
 /* ── Modal / Mobile Bottom Sheet Styles ────────────────────────────────── */
 .friends-page .modal-overlay {
   position: fixed;
@@ -505,15 +519,12 @@
 
 @media (max-width: 640px) {
   .friends-page .modal-overlay {
-    align-items: flex-end;
-    padding: 0;
+    align-items: center;
+    padding: 1rem;
   }
   .friends-page .modal-content {
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    border-top-left-radius: 24px;
-    border-top-right-radius: 24px;
-    padding: 1.5rem 1.25rem 2rem;
+    border-radius: 20px;
+    padding: 1.5rem 1.25rem 1.75rem;
     max-height: 85vh;
   }
 }

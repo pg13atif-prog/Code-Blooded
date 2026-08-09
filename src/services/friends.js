@@ -213,8 +213,8 @@ export const recommendMovie = async (fromId, fromName, toId, movieData) => {
     throw new Error(`Your friend already has this movie in their ${listName} list!`);
   }
 
-  // Push notification
-  const notifId = Date.now().toString();
+  // Push notification with deterministic key for un-sending
+  const notifId = `rec_${fromId}_${movieData.id}`;
   const updates = {};
   updates[`users/${toId}/notifications/${notifId}`] = {
     id: notifId,
@@ -224,7 +224,7 @@ export const recommendMovie = async (fromId, fromName, toId, movieData) => {
     movie: {
       id: movieData.id,
       title: movieData.title || movieData.name,
-      poster: movieData.poster || movieData.poster_path ? (movieData.poster || `https://image.tmdb.org/t/p/w500${movieData.poster_path}`) : null,
+      poster: movieData.poster || (movieData.poster_path ? `https://image.tmdb.org/t/p/w500${movieData.poster_path}` : null),
       mediaType: movieData.mediaType || movieData.media_type || 'movie',
       year: movieData.year || movieData.release_date?.split('-')[0] || movieData.first_air_date?.split('-')[0] || '',
       category: movieData.category || ''
@@ -232,6 +232,14 @@ export const recommendMovie = async (fromId, fromName, toId, movieData) => {
     timestamp: Date.now()
   };
   
+  await update(ref(db), updates);
+};
+
+export const unsendRecommendation = async (fromId, toId, movieId) => {
+  if (!fromId || !toId || !movieId) return;
+  const notifId = `rec_${fromId}_${movieId}`;
+  const updates = {};
+  updates[`users/${toId}/notifications/${notifId}`] = null;
   await update(ref(db), updates);
 };
 
