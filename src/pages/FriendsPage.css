@@ -115,25 +115,35 @@
 }
 
 .friends-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .friend-card {
   background: rgba(15, 23, 42, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
-  padding: 1.5rem;
+  padding: 1.25rem 1.5rem;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
   gap: 1.5rem;
+  transition: transform 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.friend-card:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(15, 23, 42, 0.7);
 }
 
 .friend-card-header {
   display: flex;
   align-items: center;
   gap: 1rem;
+  flex: 1;
+  min-width: 0;
 }
 
 .friend-avatar, .friend-avatar-lg, .friend-avatar-sm {
@@ -178,15 +188,17 @@
 
 .friend-card-actions {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
 }
 
 .btn-sm {
-  padding: 0.4rem 0.8rem;
-  font-size: 0.8rem;
-  flex: 1;
+  padding: 0.55rem 1.1rem;
+  font-size: 0.85rem;
+  white-space: nowrap;
   text-align: center;
+  flex: initial;
 }
 
 .requests-list {
@@ -235,6 +247,21 @@
 }
 
 @media (max-width: 600px) {
+  .friend-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .friend-card-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .friend-card-actions .btn-sm {
+    flex: 1;
+  }
+
   .add-friend-form {
     flex-direction: column;
     width: 100%;
