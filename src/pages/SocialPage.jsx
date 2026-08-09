@@ -233,28 +233,30 @@ const SocialPage = () => {
 
           {matchResult.sharedFavorites.length > 0 && (
             <div className="shared-favorites">
-              <h3>You Both Loved</h3>
+              <div className="section-header">
+                <h3>You Both Loved</h3>
+                {matchResult.sharedFavorites.length > 5 && (
+                  <button 
+                    className="match-btn" 
+                    style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', padding: '0.4rem 1rem', fontSize: '0.9rem', marginTop: 0 }}
+                    onClick={() => setShowAllShared(!showAllShared)}
+                  >
+                    {showAllShared ? 'Show Less' : `See All (${matchResult.sharedFavorites.length})`}
+                  </button>
+                )}
+              </div>
               <div className="social-grid">
                 {(showAllShared ? matchResult.sharedFavorites : matchResult.sharedFavorites.slice(0, 5)).map(movie => (
                   <MovieCard key={movie.id} {...movie} />
                 ))}
               </div>
-              {matchResult.sharedFavorites.length > 5 && (
-                <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
-                  <button 
-                    className="match-btn" 
-                    style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', padding: '0.5rem 1.5rem' }}
-                    onClick={() => setShowAllShared(!showAllShared)}
-                  >
-                    {showAllShared ? 'Show Less' : `See All (${matchResult.sharedFavorites.length})`}
-                  </button>
-                </div>
-              )}
             </div>
           )}
 
           <div className="ai-recommendations">
-            <h3>AI Top Picks For Both Of You</h3>
+            <div className="section-header">
+              <h3>AI Top Picks For Both Of You</h3>
+            </div>
             <div className="social-grid">
               {matchResult.recommendations.map((movie) => (
                 <div key={movie.id} className="social-rec-card-wrapper" style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
