@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { discoverMedia } from '../services/tmdb';
+import { discoverMedia, getTrending } from '../services/tmdb';
 import MovieCard from '../components/MovieCard';
 import { CardSkeleton } from '../components/SkeletonLoader';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -48,7 +48,8 @@ const DISPLAY_GENRES = [
 const DiscoverPage = ({ activeTab = 'movies' }) => {
   // --- Filter state ---
   const [showFilters, setShowFilters] = useState(false);
-  const [filterMediaType, setFilterMediaType] = useState(activeTab === 'tv' ? 'tv' : 'movie');
+  const [filterMediaType, setFilterMediaType] = useState(activeTab === 'tv' ? 'tv' : (activeTab === 'trending' ? 'trending' : 'movie'));
+  const [trendingTimeWindow, setTrendingTimeWindow] = useState('day'); // 'day' | 'week'
   const [selectedGenres, setSelectedGenres] = useState([]);
   const [selectedDecade, setSelectedDecade] = useState('');
   const [selectedYears, setSelectedYears] = useState([]);
@@ -64,7 +65,7 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
 
   // Sync filter media type with active tab
   useEffect(() => {
-    setFilterMediaType(activeTab === 'tv' ? 'tv' : 'movie');
+    setFilterMediaType(activeTab === 'tv' ? 'tv' : (activeTab === 'trending' ? 'trending' : 'movie'));
   }, [activeTab]);
 
   // --- Filter apply function ---
@@ -76,6 +77,15 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
     }
 
     try {
+      if (filterMediaType === 'trending') {
+        const trendingItems = await getTrending('all', trendingTimeWindow);
+        setFilterResults(trendingItems || []);
+        setFilterTotalPages(1);
+        setFilterPage(1);
+        setFilterStatus('success');
+        return;
+      }
+
       let yearsParam = [];
       if (selectedDecade) {
         yearsParam = selectedDecade;
@@ -107,7 +117,7 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
     } finally {
       setLoadingMore(false);
     }
-  }, [filterMediaType, selectedGenres, selectedDecade, selectedYears, minRating, sortBy]);
+  }, [filterMediaType, trendingTimeWindow, selectedGenres, selectedDecade, selectedYears, minRating, sortBy]);
 
   // Auto-fetch when mediaType changes
   useEffect(() => {
@@ -163,19 +173,51 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
             <a href="#discover/movies" className={`pill-btn ${filterMediaType === 'movie' ? 'active' : ''}`}>
               Movies
             </a>
+            <a href="#discover/trending" className={`pill-btn ${filterMediaType === 'trending' ? 'active' : ''}`}>
+              🔥 Trending
+            </a>
           </div>
 
-          <button 
-            className={`discover-icon-filter-btn ${showFilters ? 'active' : ''}`}
-            onClick={() => setShowFilters(!showFilters)}
-            title="Advanced Filters"
-          >
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-            </svg>
-          </button>
+          {filterMediaType !== 'trending' && (
+            <button 
+              className={`discover-icon-filter-btn ${showFilters ? 'active' : ''}`}
+              onClick={() => setShowFilters(!showFilters)}
+              title="Advanced Filters"
+            >
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+              </svg>
+            </button>
+          )}
         </div>
       </div>
+
+      {filterMediaType === 'trending' && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '1rem 0 1.5rem', flexWrap: 'wrap', gap: '1rem', background: 'rgba(255, 255, 255, 0.03)', padding: '1rem 1.25rem', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+          <div>
+            <h2 style={{ margin: 0, fontSize: '1.25rem', color: '#fff', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700 }}>
+              🔥 Top Trending Titles
+            </h2>
+            <p style={{ margin: '0.25rem 0 0', fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)' }}>Most popular movies and TV shows across the globe right now</p>
+          </div>
+          <div style={{ display: 'flex', gap: '0.4rem', background: 'rgba(0,0,0,0.4)', padding: '4px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <button 
+              className={`pill-btn ${trendingTimeWindow === 'day' ? 'active' : ''}`}
+              onClick={() => setTrendingTimeWindow('day')}
+              style={{ padding: '0.45rem 1rem', fontSize: '0.82rem', borderRadius: '9px', cursor: 'pointer' }}
+            >
+              Today
+            </button>
+            <button 
+              className={`pill-btn ${trendingTimeWindow === 'week' ? 'active' : ''}`}
+              onClick={() => setTrendingTimeWindow('week')}
+              style={{ padding: '0.45rem 1rem', fontSize: '0.82rem', borderRadius: '9px', cursor: 'pointer' }}
+            >
+              This Week
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ─── Filter Panel ─── */}
       <AnimatePresence>
@@ -309,7 +351,46 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.2 }}
+                  style={{ position: 'relative' }}
                 >
+                  {filterMediaType === 'trending' && (
+                    <>
+                      <div style={{
+                        position: 'absolute',
+                        top: '10px',
+                        left: '10px',
+                        zIndex: 10,
+                        background: 'linear-gradient(135deg, #b9090b 0%, #8a0608 100%)',
+                        color: '#fff',
+                        fontWeight: 800,
+                        fontSize: '0.78rem',
+                        padding: '3px 8px',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
+                        border: '1px solid rgba(255,255,255,0.2)'
+                      }}>
+                        #{index + 1}
+                      </div>
+                      <div style={{
+                        position: 'absolute',
+                        top: '10px',
+                        right: '10px',
+                        zIndex: 10,
+                        background: 'rgba(10, 15, 26, 0.85)',
+                        backdropFilter: 'blur(8px)',
+                        color: '#e2e8f0',
+                        fontWeight: 700,
+                        fontSize: '0.68rem',
+                        padding: '3px 7px',
+                        borderRadius: '6px',
+                        border: '1px solid rgba(255,255,255,0.15)',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.5px'
+                      }}>
+                        {item.mediaType === 'tv' ? 'TV Show' : 'Movie'}
+                      </div>
+                    </>
+                  )}
                   <MovieCard {...item} />
                 </motion.div>
               ))}
