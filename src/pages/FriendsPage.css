@@ -300,3 +300,79 @@
 .w-full {
   width: 100%;
 }
+
+/* ── Button styles for Friends page ──────────────────────────────────── */
+.friends-page .btn-primary {
+  background: #e50914;
+  color: #fff;
+  border: none;
+  padding: 0.65rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  font-size: 0.95rem;
+}
+
+.friends-page .btn-primary:hover {
+  background: #f6121d;
+  transform: translateY(-1px);
+}
+
+.friends-page .btn-secondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 0.65rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  font-size: 0.95rem;
+}
+
+.friends-page .btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+.friends-page .btn-danger {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  padding: 0.65rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, transform 0.15s;
+  font-size: 0.95rem;
+}
+
+.friends-page .btn-danger:hover {
+  background: rgba(239, 68, 68, 0.3);
+  color: #ff6b6b;
+  transform: translateY(-1px);
+}
+
+/* ── Modal styles (local to friends page) ────────────────────────────── */
+.friends-page .modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.friends-page .modal-close:hover {
+  color: #fff;
+}
+
+.friends-page .error-text {
+  color: #ef4444;
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+}

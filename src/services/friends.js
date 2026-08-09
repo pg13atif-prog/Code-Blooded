@@ -9,34 +9,60 @@ const generateCode = () => {
 
 export const ensureFriendCode = async (userId, email) => {
   if (!userId) return null;
-  const userRef = ref(db, `users/${userId}`);
-  const userSnap = await get(userRef);
   
-  let userData = userSnap.exists() ? userSnap.val() : {};
-  
-  if (userData.friendCode) {
-    return userData.friendCode;
-  }
-
-  // Generate unique code
-  let newCode = '';
-  let isUnique = false;
-  while (!isUnique) {
-    newCode = generateCode();
-    const codeSnap = await get(ref(db, `friendCodes/${newCode}`));
-    if (!codeSnap.exists()) {
-      isUnique = true;
+  try {
+    const userRef = ref(db, `users/${userId}`);
+    const userSnap = await get(userRef);
+    
+    let userData = userSnap.exists() ? userSnap.val() : {};
+    
+    if (userData.friendCode) {
+      return userData.friendCode;
     }
+
+    // Generate unique code with max attempts guard
+    let newCode = '';
+    let isUnique = false;
+    let attempts = 0;
+    const MAX_ATTEMPTS = 20;
+    
+    while (!isUnique && attempts < MAX_ATTEMPTS) {
+      attempts++;
+      newCode = generateCode();
+      const codeSnap = await get(ref(db, `friendCodes/${newCode}`));
+      if (!codeSnap.exists()) {
+        isUnique = true;
+      }
+    }
+
+    if (!isUnique) {
+      console.error('Failed to generate unique friend code after', MAX_ATTEMPTS, 'attempts');
+      return null;
+    }
+
+    // Set the code
+    const updates = {};
+    updates[`users/${userId}/friendCode`] = newCode;
+    updates[`users/${userId}/email`] = email || 'Guest';
+    updates[`friendCodes/${newCode}`] = userId;
+
+    await update(ref(db), updates);
+    return newCode;
+  } catch (error) {
+    console.error('ensureFriendCode error:', error);
+    
+    // Try to read existing code even if write failed
+    try {
+      const userSnap = await get(ref(db, `users/${userId}`));
+      if (userSnap.exists() && userSnap.val().friendCode) {
+        return userSnap.val().friendCode;
+      }
+    } catch (readError) {
+      console.error('Fallback read error:', readError);
+    }
+    
+    return null;
   }
-
-  // Set the code
-  const updates = {};
-  updates[`users/${userId}/friendCode`] = newCode;
-  updates[`users/${userId}/email`] = email || 'Guest'; // Save email or fallback
-  updates[`friendCodes/${newCode}`] = userId;
-
-  await update(ref(db), updates);
-  return newCode;
 };
 
 export const searchByFriendCode = async (code) => {

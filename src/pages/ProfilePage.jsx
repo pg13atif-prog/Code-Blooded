@@ -85,32 +85,59 @@ const ProfilePage = () => {
 
   useEffect(() => {
     if (!currentUser) { setLoading(false); return; }
-    Promise.all([
-      getWatchlist(currentUser.uid),
-      getLiked(currentUser.uid),
-      getWatched(currentUser.uid),
-      getUserStats(currentUser.uid),
-      get(ref(db, `users/${currentUser.uid}/unlockedAchievements`)),
-      ensureFriendCode(currentUser.uid, currentUser.email),
-      getFriendData(currentUser.uid)
-    ]).then(([wl, lk, wa, userStats, unlockedSnap, code, pData]) => {
-      setWatchlist(wl || []);
-      setLiked(lk || []);
-      setWatched(wa || []);
-      setStats(userStats || {
-        aiSearchesCount: 0,
-        trailersWatchedCount: 0,
-        detailViewsCount: 0,
-        uniqueViewedIds: [],
-        viewedCountries: [],
-        searchesCount: 0
-      });
-      setUnlockedAchievements(unlockedSnap.exists() ? unlockedSnap.val() : {});
-      setFriendCode(code || '');
-      setProfileData(pData);
-      setEditName(pData?.username || '');
-      setLoading(false);
-    }).catch(err => { console.error(err); setLoading(false); });
+
+    const loadProfileData = async () => {
+      try {
+        // Load independent data in parallel — each with its own error handling
+        // so a single failure doesn't break the entire profile
+        const [wl, lk, wa, userStats, unlockedSnap] = await Promise.all([
+          getWatchlist(currentUser.uid).catch(e => { console.error('Watchlist load error:', e); return []; }),
+          getLiked(currentUser.uid).catch(e => { console.error('Liked load error:', e); return []; }),
+          getWatched(currentUser.uid).catch(e => { console.error('Watched load error:', e); return []; }),
+          getUserStats(currentUser.uid).catch(e => { console.error('Stats load error:', e); return null; }),
+          get(ref(db, `users/${currentUser.uid}/unlockedAchievements`)).catch(e => { console.error('Achievements load error:', e); return null; }),
+        ]);
+
+        setWatchlist(wl || []);
+        setLiked(lk || []);
+        setWatched(wa || []);
+        setStats(userStats || {
+          aiSearchesCount: 0,
+          trailersWatchedCount: 0,
+          detailViewsCount: 0,
+          uniqueViewedIds: [],
+          viewedCountries: [],
+          searchesCount: 0
+        });
+        setUnlockedAchievements(unlockedSnap?.exists?.() ? unlockedSnap.val() : {});
+
+        // Ensure friend code FIRST, then fetch profile data
+        // This avoids the race condition where getFriendData reads
+        // before ensureFriendCode has finished writing
+        let code = '';
+        try {
+          code = await ensureFriendCode(currentUser.uid, currentUser.email);
+        } catch (e) {
+          console.error('Friend code error:', e);
+        }
+        setFriendCode(code || '');
+
+        let pData = null;
+        try {
+          pData = await getFriendData(currentUser.uid);
+        } catch (e) {
+          console.error('Profile data error:', e);
+        }
+        setProfileData(pData);
+        setEditName(pData?.username || '');
+      } catch (err) {
+        console.error('Profile load error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProfileData();
   }, [currentUser]);
 
   // Total watch time from "Already Watched" list only

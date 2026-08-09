@@ -80,6 +80,13 @@ function App() {
         return;
       }
 
+      // Handle #social with optional ?match= parameter
+      if (hash.startsWith('#social')) {
+        setCurrentRoute('social');
+        setCurrentParams(null);
+        return;
+      }
+
       switch (hash) {
         case '#discover':
           setCurrentRoute('discover');
