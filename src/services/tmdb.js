@@ -127,10 +127,22 @@ export const getPopularTvShows = async (signal) => {
   return results.filter((show) => show.poster_path).map(mapMovie);
 };
 
-export const getTrending = async (mediaType = 'all', timeWindow = 'day', page = 1, signal) => {
+export const getTrending = async (mediaType = 'all', timeWindow = 'day', pageOrSignal = 1, signal = null) => {
+  let page = 1;
+  let actualSignal = signal;
+
+  if (typeof pageOrSignal === 'number') {
+    page = pageOrSignal;
+  } else if (typeof pageOrSignal === 'string' && !isNaN(Number(pageOrSignal))) {
+    page = Number(pageOrSignal);
+  } else if (pageOrSignal && typeof pageOrSignal === 'object') {
+    actualSignal = pageOrSignal;
+    page = 1;
+  }
+
   const response = await fetchWithTimeout(
     `${API_BASE_URL}/trending/${mediaType}/${timeWindow}?language=en-US&page=${page}`,
-    { signal },
+    { signal: actualSignal },
   );
 
   if (!response.ok) {
@@ -139,11 +151,11 @@ export const getTrending = async (mediaType = 'all', timeWindow = 'day', page = 
 
   const data = await response.json();
   const results = (data.results || []).filter((item) => item.poster_path).map(mapMovie);
-  return {
-    results,
-    page: data.page || page,
-    totalPages: data.total_pages || 10
-  };
+  results.page = data.page || page;
+  results.totalPages = data.total_pages || 10;
+  results.results = results;
+
+  return results;
 };
 
 export const searchMedia = async (query, signal) => {
