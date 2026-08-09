@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { discoverMedia, getTrending } from '../services/tmdb';
 import MovieCard from '../components/MovieCard';
 import { CardSkeleton } from '../components/SkeletonLoader';
@@ -62,6 +62,7 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
   const [filterPage, setFilterPage] = useState(1);
   const [filterTotalPages, setFilterTotalPages] = useState(1);
   const [loadingMore, setLoadingMore] = useState(false);
+  const sentinelRef = useRef(null);
 
   // Sync filter media type with active tab
   useEffect(() => {
@@ -129,6 +130,29 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
     setFilterPage(1);
     applyFilters(false, 1);
   }, [filterMediaType, applyFilters]);
+
+  // Infinite scroll IntersectionObserver
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && filterPage < filterTotalPages && !loadingMore && filterStatus === 'success') {
+          applyFilters(true, filterPage + 1);
+        }
+      },
+      { rootMargin: '350px' }
+    );
+
+    const currentSentinel = sentinelRef.current;
+    if (currentSentinel) {
+      observer.observe(currentSentinel);
+    }
+
+    return () => {
+      if (currentSentinel) {
+        observer.unobserve(currentSentinel);
+      }
+    };
+  }, [filterPage, filterTotalPages, loadingMore, filterStatus, applyFilters]);
 
   const handleApplyFilters = () => {
     setFilterPage(1);
@@ -402,14 +426,15 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
           </div>
 
           {filterPage < filterTotalPages && (
-            <div className="discover-load-more">
-              <button
-                className="discover-load-more-btn"
-                onClick={handleLoadMore}
-                disabled={loadingMore}
-              >
-                {loadingMore ? 'Loading More...' : 'Load More'}
-              </button>
+            <div ref={sentinelRef} className="infinite-scroll-sentinel" style={{ padding: '2rem 0', textAlign: 'center', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              {loadingMore && (
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.6rem', background: 'rgba(255, 255, 255, 0.05)', padding: '0.6rem 1.2rem', borderRadius: '30px', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.7)', fontSize: '0.88rem' }}>
+                  <svg style={{ animation: 'spin 1s linear infinite' }} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+                  </svg>
+                  <span>Loading titles...</span>
+                </div>
+              )}
             </div>
           )}
         </div>

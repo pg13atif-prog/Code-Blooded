@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import MovieCard from '../components/MovieCard';
 import { CardSkeleton } from '../components/SkeletonLoader';
 import CustomSelect from '../components/CustomSelect';
@@ -48,6 +48,7 @@ const AdvancedBrowsePage = ({ initialMediaType = 'movie', hideHeaderTitle = fals
   const [totalResults, setTotalResults] = useState(0);
   const [status, setStatus] = useState('loading');
   const [loadingMore, setLoadingMore] = useState(false);
+  const sentinelRef = useRef(null);
 
   const currentYear = new Date().getFullYear();
   const yearOptions = Array.from(new Array(currentYear - 1980 + 1), (_, index) => currentYear - index);
@@ -100,6 +101,29 @@ const AdvancedBrowsePage = ({ initialMediaType = 'movie', hideHeaderTitle = fals
     setPage(1);
     fetchFilterResults(false, 1);
   }, [mediaType, selectedGenres, selectedDecade, selectedYears, minRating, sortBy, fetchFilterResults]);
+
+  // Infinite scroll IntersectionObserver
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && page < totalPages && !loadingMore && status === 'success') {
+          fetchFilterResults(true, page + 1);
+        }
+      },
+      { rootMargin: '350px' }
+    );
+
+    const currentSentinel = sentinelRef.current;
+    if (currentSentinel) {
+      observer.observe(currentSentinel);
+    }
+
+    return () => {
+      if (currentSentinel) {
+        observer.unobserve(currentSentinel);
+      }
+    };
+  }, [page, totalPages, loadingMore, status, fetchFilterResults]);
 
   const handleLoadMore = () => {
     if (page < totalPages && !loadingMore) {
@@ -382,22 +406,17 @@ const AdvancedBrowsePage = ({ initialMediaType = 'movie', hideHeaderTitle = fals
             </AnimatePresence>
           </div>
 
-          {/* Load More Button */}
+          {/* Automatic Infinite Scroll Sentinel */}
           {page < totalPages && (
-            <div className="load-more-container">
-              <button
-                className="load-more-btn"
-                onClick={handleLoadMore}
-                disabled={loadingMore}
-              >
-                {loadingMore ? (
-                  <span className="btn-loading">
-                    <span className="spinner-sm"></span> Loading More...
-                  </span>
-                ) : (
-                  'Load More Titles'
-                )}
-              </button>
+            <div ref={sentinelRef} className="infinite-scroll-sentinel" style={{ padding: '2rem 0', textAlign: 'center', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              {loadingMore && (
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.6rem', background: 'rgba(255, 255, 255, 0.05)', padding: '0.6rem 1.2rem', borderRadius: '30px', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.7)', fontSize: '0.88rem' }}>
+                  <svg style={{ animation: 'spin 1s linear infinite' }} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+                  </svg>
+                  <span>Loading titles...</span>
+                </div>
+              )}
             </div>
           )}
         </>
