@@ -16,7 +16,7 @@ import {
   addToLiked, removeFromLiked, isLiked,
   addCustomReview, getCustomReviews
 } from '../services/firestore';
-import { getRelationships, getFriendData, recommendMovie } from '../services/friends';
+import { getRelationships, getFriendData, recommendMovie, unsendRecommendation } from '../services/friends';
 import AuthModal from '../components/AuthModal';
 import CustomSelect from '../components/CustomSelect';
 import { useAuth } from '../context/AuthContext';
@@ -169,6 +169,7 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
   const [recLoading, setRecLoading] = useState(false);
   const [recFeedback, setRecFeedback] = useState('');
   const [friendSearch, setFriendSearch] = useState('');
+  const [sentFriends, setSentFriends] = useState({});
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -348,14 +349,22 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
     }
   };
 
-  const handleSendRec = async (friendId) => {
+  const handleToggleSendRec = async (friendId) => {
     setRecFeedback('');
+    const isCurrentlySent = !!sentFriends[friendId];
     try {
-      await recommendMovie(currentUser.uid, currentUser.email?.split('@')[0] || 'Friend', friendId, movie);
-      setRecFeedback('Recommendation sent successfully!');
-      setTimeout(() => { setShowRecModal(false); setRecFeedback(''); }, 1500);
+      if (isCurrentlySent) {
+        await unsendRecommendation(currentUser.uid, friendId, movie.id);
+        setSentFriends(prev => ({ ...prev, [friendId]: false }));
+        setRecFeedback('Recommendation unsent successfully.');
+      } else {
+        await recommendMovie(currentUser.uid, currentUser.email?.split('@')[0] || 'Friend', friendId, movie);
+        setSentFriends(prev => ({ ...prev, [friendId]: true }));
+        setRecFeedback('Recommendation sent successfully!');
+      }
+      // Note: Modal intentionally left open until explicitly closed by the user
     } catch(err) {
-      setRecFeedback(err.message || 'Failed to send.');
+      setRecFeedback(err.message || 'Failed to update recommendation.');
     }
   };
 
@@ -1131,7 +1140,7 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
       )}
 
       {showRecModal && (
-        <div className="modal-overlay" onClick={() => { setShowRecModal(false); setFriendSearch(''); }}>
+        <div className="modal-overlay rec-modal-overlay" onClick={() => { setShowRecModal(false); setFriendSearch(''); }}>
           <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '440px' }}>
             <button className="modal-close" onClick={() => { setShowRecModal(false); setFriendSearch(''); }}>✕</button>
             <h2>Recommend to a Friend</h2>
@@ -1159,26 +1168,35 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', maxHeight: '280px', overflowY: 'auto' }}>
                   {friendsList
                     .filter(f => !friendSearch || f.username.toLowerCase().includes(friendSearch.toLowerCase()))
-                    .map(f => (
-                    <div key={f.uid} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.04)', padding: '0.65rem 0.75rem', borderRadius: '10px', transition: 'background 0.15s' }}
-                      onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
-                      onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.04)'}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                        <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'linear-gradient(135deg, rgba(229,9,20,0.3), rgba(99,102,241,0.3))', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', fontSize: '0.95rem', fontWeight: '600', color: '#fff', flexShrink: 0 }}>
-                          {f.avatar ? <img src={f.avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : f.username.charAt(0).toUpperCase()}
+                    .map(f => {
+                      const isSent = !!sentFriends[f.uid];
+                      return (
+                        <div key={f.uid} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.04)', padding: '0.65rem 0.75rem', borderRadius: '10px', transition: 'background 0.15s' }}
+                          onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
+                          onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.04)'}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                            <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'linear-gradient(135deg, rgba(229,9,20,0.3), rgba(99,102,241,0.3))', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', fontSize: '0.95rem', fontWeight: '600', color: '#fff', flexShrink: 0 }}>
+                              {f.avatar ? <img src={f.avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : f.username.charAt(0).toUpperCase()}
+                            </div>
+                            <span style={{ fontWeight: '500', fontSize: '0.95rem' }}>{f.username}</span>
+                          </div>
+                          <button 
+                            className={`btn-sm ${isSent ? 'btn-unsend' : 'btn-primary'}`} 
+                            onClick={() => handleToggleSendRec(f.uid)} 
+                            style={{ padding: '0.4rem 1rem', fontSize: '0.8rem', borderRadius: '8px', minWidth: '70px' }}
+                          >
+                            {isSent ? 'Unsend' : 'Send'}
+                          </button>
                         </div>
-                        <span style={{ fontWeight: '500', fontSize: '0.95rem' }}>{f.username}</span>
-                      </div>
-                      <button className="btn-primary btn-sm" onClick={() => handleSendRec(f.uid)} style={{ padding: '0.4rem 1rem', fontSize: '0.8rem', borderRadius: '8px' }}>Send</button>
-                    </div>
-                  ))}
+                      );
+                    })}
                   {friendsList.filter(f => !friendSearch || f.username.toLowerCase().includes(friendSearch.toLowerCase())).length === 0 && (
                     <p style={{ textAlign: 'center', color: '#64748b', padding: '1rem 0', fontSize: '0.9rem' }}>No friends match "{friendSearch}"</p>
                   )}
                 </div>
               </>
             )}
-            {recFeedback && <p style={{ color: recFeedback.includes('successfully') ? '#4ade80' : '#ef4444', marginTop: '1rem', textAlign: 'center', fontSize: '0.9rem', fontWeight: '500' }}>{recFeedback}</p>}
+            {recFeedback && <p style={{ color: recFeedback.includes('successfully') ? '#4ade80' : (recFeedback.includes('unsent') ? '#f87171' : '#ef4444'), marginTop: '1rem', textAlign: 'center', fontSize: '0.9rem', fontWeight: '500' }}>{recFeedback}</p>}
           </div>
         </div>
       )}
