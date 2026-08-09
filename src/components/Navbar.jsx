@@ -224,15 +224,8 @@ const Navbar = () => {
       setIsAuthModalOpen(true);
       return;
     }
-
-    const currentHash = window.location.hash || '';
-    if (currentHash === '#profile') {
-      setIsProfileDropupOpen(prev => !prev);
-    } else {
-      setIsProfileDropupOpen(false);
-      window.location.hash = '#profile';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    window.location.hash = '#profile';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleConfirmLogout = async () => {
@@ -437,6 +430,12 @@ const Navbar = () => {
 
           {/* ── Mobile Menu Utility Items ─────────────────── */}
           <li className="mobile-drawer-item">
+            <a href="#achievements" onClick={(e) => { handleNavClick(e, '#achievements'); setIsMobileMenuOpen(false); }}>
+              <span className="mobile-drawer-icon">🏆</span>
+              <span>Achievements</span>
+            </a>
+          </li>
+          <li className="mobile-drawer-item">
             <button type="button" onClick={() => { setIsNotificationsOpen(true); setIsMobileMenuOpen(false); }}>
               <span className="mobile-drawer-icon">🔔</span>
               <span>Notifications {notifications.length > 0 ? `(${notifications.length})` : ''}</span>
@@ -458,7 +457,6 @@ const Navbar = () => {
                 setIsAuthModalOpen(true);
                 setIsMobileMenuOpen(false);
               }}>
-                <span className="mobile-drawer-icon">🔐</span>
                 <span>Sign In / Register</span>
               </button>
             </li>
@@ -724,54 +722,6 @@ const Navbar = () => {
           <span>Profile</span>
         </a>
       </nav>
-
-      {/* Mobile Profile Dropup Menu (Triggers on 2nd tap of Profile button) */}
-      <AnimatePresence>
-        {isProfileDropupOpen && currentUser && (
-          <motion.div
-            className="mobile-profile-dropup"
-            initial={{ opacity: 0, y: 15, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            ref={dropupRef}
-          >
-            <div className="dropup-header">
-              <span className="mobile-profile-avatar">{avatarLetter}</span>
-              <div className="dropup-user-info">
-                <span className="dropup-username">{currentUser.isAnonymous ? 'Guest User' : (currentUser.email?.split('@')[0] || 'Profile')}</span>
-                <small className="dropup-email">{currentUser.email || 'Guest Account'}</small>
-              </div>
-            </div>
-            <div className="dropup-divider" />
-
-            <a href="#profile" className="dropup-item" onClick={(e) => { handleNavClick(e, '#profile'); setIsProfileDropupOpen(false); }}>
-              <span className="dropup-icon">👤</span>
-              <span>My Profile</span>
-            </a>
-
-            <a href="#achievements" className="dropup-item" onClick={(e) => { handleNavClick(e, '#achievements'); setIsProfileDropupOpen(false); }}>
-              <span className="dropup-icon">🏆</span>
-              <span>Achievements</span>
-            </a>
-
-            <button className="dropup-item" onClick={() => { setIsNotificationsOpen(true); setIsProfileDropupOpen(false); }}>
-              <span className="dropup-icon" style={{ position: 'relative' }}>
-                🔔
-                {hasUnreadNotifications && <span className="mobile-notif-dot"></span>}
-              </span>
-              <span>Notifications {notifications.length > 0 ? `(${notifications.length})` : ''}</span>
-            </button>
-
-            <div className="dropup-divider" />
-
-            <button className="dropup-item logout" onClick={() => { setIsLogoutModalOpen(true); setIsProfileDropupOpen(false); }}>
-              <span className="dropup-icon">🚪</span>
-              <span style={{ color: '#e50914' }}>Log Out</span>
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       <AuthModal
         isOpen={isAuthModalOpen}
