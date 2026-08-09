@@ -174,14 +174,22 @@ export const getLiked = async (userId) => {
 // ── Custom Reviews ──
 export const addCustomReview = async (movieId, userId, reviewData) => {
   if (!movieId || !userId || !reviewData) return;
-  const reviewId = `${Date.now()}_${userId.slice(0, 8)}`;
-  const reviewRef = ref(db, `reviews/${movieId}/${reviewId}`);
-  await set(reviewRef, {
-    ...reviewData,
+  const cleanUserId = String(userId);
+  const cleanMovieId = String(movieId);
+  const reviewId = `${Date.now()}_${cleanUserId.slice(0, 8)}`;
+  const reviewRef = ref(db, `reviews/${cleanMovieId}/${reviewId}`);
+  
+  const payload = {
+    content: String(reviewData.content || ''),
+    rating: String(reviewData.rating || '5.0'),
+    author: String(reviewData.author || 'Anonymous'),
+    isAnonymous: Boolean(reviewData.isAnonymous),
     id: reviewId,
-    userId,
+    userId: cleanUserId,
     createdAt: new Date().toISOString()
-  });
+  };
+
+  await set(reviewRef, payload);
 };
 
 export const getCustomReviews = async (movieId) => {

@@ -426,8 +426,8 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
       setNewReviewRating('5.0');
       setPostAnonymously(false);
     } catch (err) {
-      console.error("Failed to post review", err);
-      alert("Failed to post review.");
+      console.error("Failed to post review:", err);
+      alert(`Failed to post review: ${err.message || 'Unknown error'}`);
     } finally {
       setIsSubmittingReview(false);
     }
