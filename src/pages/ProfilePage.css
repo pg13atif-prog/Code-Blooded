@@ -1100,79 +1100,95 @@
   }
 }
 
-/* ── Interactive Stats Card & Detailed Analytics Modal ───────────────────── */
-.clickable-stats-card {
-  cursor: pointer;
-  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
-}
-
-.clickable-stats-card:hover {
-  border-color: rgba(229, 9, 20, 0.4);
-  box-shadow: 0 10px 30px rgba(229, 9, 20, 0.15);
-  transform: translateY(-2px);
-}
-
-.stats-title-row {
+/* ── CineScope Stats Banner (Clean Wireframe Banner Layout) ─────────────── */
+.cinescope-stats-banner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-}
-
-.stats-arrow-badge {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #ff3b50;
-  background: rgba(229, 9, 20, 0.12);
-  border: 1px solid rgba(229, 9, 20, 0.25);
-  padding: 0.35rem 0.75rem;
+  gap: 1.5rem;
+  background: rgba(18, 24, 38, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 20px;
-  white-space: nowrap;
-  transition: background 0.2s, transform 0.2s;
+  padding: 1.5rem 2rem;
+  margin-bottom: 2rem;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  box-sizing: border-box;
 }
 
-.clickable-stats-card:hover .stats-arrow-badge {
-  background: rgba(229, 9, 20, 0.25);
-  transform: translateX(3px);
+.cinescope-stats-banner:hover {
+  border-color: rgba(229, 9, 20, 0.45);
+  background: rgba(24, 32, 50, 0.8);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(229, 9, 20, 0.18);
 }
 
-/* Hide/Show logic for desktop breakdown vs mobile preview */
-.mobile-stats-preview {
-  display: none;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  margin-top: 0.75rem;
+.cs-stats-left {
+  flex: 1;
+  min-width: 0;
 }
 
-.stat-chip {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 0.35rem 0.75rem;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.85);
-}
-
-.stat-chip.highlight-chip {
-  background: #e50914;
+.cs-stats-title {
+  font-size: 1.65rem;
+  font-weight: 800;
   color: #fff;
-  border-color: #ff3b50;
+  margin: 0 0 0.35rem 0;
+  letter-spacing: -0.01em;
+}
+
+.cs-stats-desc {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.95rem;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.cs-stats-right {
+  flex-shrink: 0;
+}
+
+.cs-stats-btn {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  padding: 0.7rem 1.5rem;
+  border-radius: 30px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.cinescope-stats-banner:hover .cs-stats-btn,
+.cs-stats-btn:hover {
+  background: #e50914;
+  border-color: #e50914;
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
 }
 
 @media (max-width: 640px) {
-  .desktop-only-stats {
-    display: none !important;
+  .cinescope-stats-banner {
+    padding: 1.25rem 1.25rem;
+    gap: 1rem;
+    flex-direction: row; /* Stays clean & horizontal on mobile! */
+    align-items: center;
   }
-  .mobile-stats-preview {
-    display: flex;
+
+  .cs-stats-title {
+    font-size: 1.3rem;
   }
-  .watchtime-card.compact-stats {
-    padding: 1.25rem 1rem;
-    align-items: flex-start;
+
+  .cs-stats-desc {
+    font-size: 0.82rem;
   }
-  .watchtime-card.compact-stats .watchtime-badge {
-    margin: 0;
+
+  .cs-stats-btn {
+    padding: 0.6rem 1.1rem;
+    font-size: 0.82rem;
   }
 }
 

@@ -436,64 +436,16 @@ const ProfilePage = () => {
           </div>
         )}
 
-        {/* ── Watch Time & Stats Box (Clickable for Detailed View) ── */}
-        <div className="watchtime-card compact-stats clickable-stats-card" onClick={() => setIsStatsModalOpen(true)}>
-          <div className="watchtime-badge">
-            <div className="watchtime-badge-inner">
-              <div className="watchtime-badge-val">{totalHours}h</div>
-              <div className="watchtime-badge-lbl">watched</div>
-            </div>
+        {/* ── CineScope Stats Banner ─────────────────────────────── */}
+        <div className="cinescope-stats-banner glass-panel" onClick={() => setIsStatsModalOpen(true)}>
+          <div className="cs-stats-left">
+            <h2 className="cs-stats-title">CineScope Stats</h2>
+            <p className="cs-stats-desc">Tap to view your detailed stats breakdown, top genre &amp; activity statistics.</p>
           </div>
-          <div className="watchtime-stats">
-            <div className="stats-title-row">
-              <h2 className="watchtime-title">Your Watch Analytics</h2>
-              <span className="stats-arrow-badge">View Stats →</span>
-            </div>
-            <p className="watchtime-subtitle">Tap to view your detailed stats breakdown, top genre &amp; activity statistics.</p>
-            
-            {/* Desktop breakdown grid */}
-            <div className="watchtime-breakdown desktop-only-stats">
-              <div className="wt-stat">
-                <span className="wt-val">{watchlist.length}</span>
-                <span className="wt-label">Saved</span>
-              </div>
-              <div className="wt-stat">
-                <span className="wt-val">{watched.length}</span>
-                <span className="wt-label">Watched</span>
-              </div>
-              <div className="wt-stat">
-                <span className="wt-val">{liked.length}</span>
-                <span className="wt-label">Liked</span>
-              </div>
-              <div className="wt-stat">
-                <span className="wt-val">{topGenre}</span>
-                <span className="wt-label">Top Genre</span>
-              </div>
-              <div className="wt-stat">
-                <span className="wt-val">{stats.aiSearchesCount}</span>
-                <span className="wt-label">AI Searches</span>
-              </div>
-              <div className="wt-stat">
-                <span className="wt-val">{stats.trailersWatchedCount}</span>
-                <span className="wt-label">Trailers</span>
-              </div>
-              <div className="wt-stat">
-                <span className="wt-val">{unlockedCount}</span>
-                <span className="wt-label">Earned</span>
-              </div>
-              <div className="wt-stat">
-                <span className="wt-val">{totalDays > 0 ? `${totalDays}d` : `${totalHours}h`}</span>
-                <span className="wt-label">Total Time</span>
-              </div>
-            </div>
-
-            {/* Mobile preview chips */}
-            <div className="mobile-stats-preview">
-              <span className="stat-chip">❤️ {liked.length} Liked</span>
-              <span className="stat-chip">🔖 {watchlist.length} Saved</span>
-              <span className="stat-chip">🎬 {topGenre}</span>
-              <span className="stat-chip highlight-chip">📊 Open Stats →</span>
-            </div>
+          <div className="cs-stats-right">
+            <button className="cs-stats-btn" onClick={(e) => { e.stopPropagation(); setIsStatsModalOpen(true); }}>
+              View Stats
+            </button>
           </div>
         </div>
 
