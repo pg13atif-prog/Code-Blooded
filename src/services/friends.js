@@ -213,6 +213,21 @@ export const recommendMovie = async (fromId, fromName, toId, movieData) => {
     throw new Error(`Your friend already has this movie in their ${listName} list!`);
   }
 
+  // Max 10 recommendations limit check: delete oldest if limit reached
+  try {
+    const existingNotifs = await getNotifications(toId);
+    const recNotifs = existingNotifs.filter(n => n.type === 'recommendation');
+    if (recNotifs.length >= 10) {
+      recNotifs.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+      const overLimitCount = recNotifs.length - 9;
+      for (let i = 0; i < overLimitCount; i++) {
+        await removeNotification(toId, recNotifs[i].id);
+      }
+    }
+  } catch (e) {
+    console.error('Error enforcing max 10 recommendations limit:', e);
+  }
+
   // Push notification with deterministic key for un-sending
   const notifId = `rec_${fromId}_${movieData.id}`;
   const updates = {};

@@ -53,6 +53,7 @@ const Navbar = () => {
   // Notifications
   const [notifications, setNotifications] = useState([]);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [addedNotifs, setAddedNotifs] = useState({});
   const hasUnreadNotifications = notifications.length > 0;
 
   // Autocomplete state
@@ -254,10 +255,14 @@ const Navbar = () => {
       } else if (actionType === 'liked') {
         await addToLiked(currentUser.uid, notif.movie);
       } else if (actionType === 'watched') {
-        await addToWatched(currentUser.uid, notif.movie, 120); // Dummy runtime
+        await addToWatched(currentUser.uid, notif.movie, 120);
       }
+      
+      // Mark as added locally so button turns green & says "Added ✓" while keeping item in list
+      setAddedNotifs(prev => ({ ...prev, [notif.id]: actionType }));
+
+      // Delete from Firebase DB so it won't re-appear after modal is closed
       await removeNotification(currentUser.uid, notif.id);
-      setNotifications(prev => prev.filter(n => n.id !== notif.id));
     } catch (err) {
       console.error(err);
       alert('Failed to process recommendation.');
@@ -267,6 +272,15 @@ const Navbar = () => {
   const handleDismissNotification = async (notif) => {
     await removeNotification(currentUser.uid, notif.id);
     setNotifications(prev => prev.filter(n => n.id !== notif.id));
+  };
+
+  const handleCloseNotificationsModal = () => {
+    setIsNotificationsOpen(false);
+    const addedIds = Object.keys(addedNotifs);
+    if (addedIds.length > 0) {
+      setNotifications(prev => prev.filter(n => !addedIds.includes(n.id)));
+      setAddedNotifs({});
+    }
   };
 
   const email = currentUser?.email || '';
@@ -729,30 +743,51 @@ const Navbar = () => {
       />
 
       {isNotificationsOpen && (
-        <div className="modal-overlay" onClick={() => setIsNotificationsOpen(false)}>
+        <div className="modal-overlay notif-modal-overlay" onClick={handleCloseNotificationsModal}>
           <div className="modal-content notifications-modal" onClick={e => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setIsNotificationsOpen(false)}>✕</button>
+            <button className="modal-close" onClick={handleCloseNotificationsModal}>✕</button>
             <h2>Notifications</h2>
             {notifications.length === 0 ? (
               <p style={{ color: 'rgba(255,255,255,0.5)', textAlign: 'center', padding: '2rem' }}>You have no notifications.</p>
             ) : (
               <div className="notifications-list">
-                {notifications.map(notif => (
-                  <div key={notif.id} className="notification-card-item">
-                    <div className="notif-card-header">
-                      <strong>{notif.fromName}</strong>
-                      <button onClick={() => handleDismissNotification(notif)} className="notif-dismiss-btn" title="Dismiss">✕</button>
+                {notifications.map(notif => {
+                  const addedType = addedNotifs[notif.id];
+                  return (
+                    <div key={notif.id} className="notification-card-item">
+                      <div className="notif-card-header">
+                        <strong>{notif.fromName}</strong>
+                        <button onClick={() => handleDismissNotification(notif)} className="notif-dismiss-btn" title="Dismiss">✕</button>
+                      </div>
+                      <p className="notif-card-body">
+                        recommended you <strong>{notif.movie?.title || 'a movie'}</strong>
+                      </p>
+                      <div className="notif-card-actions">
+                        <button 
+                          className={`notif-action-btn ${addedType === 'watchlist' ? 'added' : ''}`} 
+                          onClick={() => handleNotificationAction(notif, 'watchlist')}
+                          disabled={!!addedType}
+                        >
+                          {addedType === 'watchlist' ? 'Added ✓' : '+ Watchlist'}
+                        </button>
+                        <button 
+                          className={`notif-action-btn ${addedType === 'liked' ? 'added' : ''}`} 
+                          onClick={() => handleNotificationAction(notif, 'liked')}
+                          disabled={!!addedType}
+                        >
+                          {addedType === 'liked' ? 'Added ✓' : 'Liked'}
+                        </button>
+                        <button 
+                          className={`notif-action-btn ${addedType === 'watched' ? 'added' : ''}`} 
+                          onClick={() => handleNotificationAction(notif, 'watched')}
+                          disabled={!!addedType}
+                        >
+                          {addedType === 'watched' ? 'Added ✓' : 'Watched'}
+                        </button>
+                      </div>
                     </div>
-                    <p className="notif-card-body">
-                      recommended you <strong>{notif.movie?.title || 'a movie'}</strong>
-                    </p>
-                    <div className="notif-card-actions">
-                      <button className="notif-action-btn" onClick={() => handleNotificationAction(notif, 'watchlist')}>+ Watchlist</button>
-                      <button className="notif-action-btn" onClick={() => handleNotificationAction(notif, 'liked')}>❤️ Liked</button>
-                      <button className="notif-action-btn" onClick={() => handleNotificationAction(notif, 'watched')}>👁️ Watched</button>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>

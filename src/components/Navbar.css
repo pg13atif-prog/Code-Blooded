@@ -1172,10 +1172,21 @@
 }
 
 /* ---------- Notifications Modal & Action Buttons ---------- */
+.notif-modal-overlay {
+  backdrop-filter: blur(32px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(200%) !important;
+  background: rgba(4, 6, 12, 0.85) !important;
+}
+
 .notifications-modal {
   max-width: 440px;
   width: 90%;
   padding: 1.75rem 1.5rem;
+  background: rgba(14, 19, 32, 0.88);
+  backdrop-filter: blur(36px) saturate(220%);
+  -webkit-backdrop-filter: blur(36px) saturate(220%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85);
 }
 
 .notifications-list {
@@ -1263,7 +1274,7 @@
   line-height: 1.2;
 }
 
-.notif-action-btn:hover {
+.notif-action-btn:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.16);
   border-color: rgba(255, 255, 255, 0.28);
   transform: translateY(-1px);
@@ -1271,4 +1282,14 @@
 
 .notif-action-btn:active {
   transform: translateY(0);
+}
+
+.notif-action-btn.added {
+  background: #16a34a !important;
+  color: #ffffff !important;
+  border-color: #22c55e !important;
+  font-weight: 700 !important;
+  box-shadow: 0 3px 10px rgba(34, 197, 94, 0.3) !important;
+  cursor: default;
+  transform: none !important;
 }
