@@ -221,7 +221,7 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
       </div>
 
       {filterMediaType === 'trending' && (
-        <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'space-between', margin: '1rem 0 1.5rem', flexWrap: 'wrap', gap: '1.25rem', background: 'rgba(255, 255, 255, 0.03)', padding: '0.75rem 1.25rem', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.08)', maxWidth: '100%', width: 'fit-content' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '1rem 0 1.5rem', flexWrap: 'wrap', gap: '1rem', width: '100%', background: 'rgba(255, 255, 255, 0.03)', padding: '0.85rem 1.25rem', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
           <div>
             <h2 style={{ margin: 0, fontSize: '1.15rem', color: '#fff', fontWeight: 700 }}>
               Top Trending Titles
