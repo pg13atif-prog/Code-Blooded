@@ -37,14 +37,9 @@ export const ensureFriendCode = async (userId, email) => {
     while (!isUnique && attempts < MAX_ATTEMPTS) {
       attempts++;
       newCode = generateCode();
-      try {
-        const codeSnap = await get(ref(db, `friendCodes/${newCode}`));
-        if (!codeSnap.exists()) {
-          isUnique = true;
-        }
-      } catch (checkErr) {
-        console.warn('Could not check code uniqueness (maybe permission denied). Using code anyway.', checkErr);
-        isUnique = true; // Assume unique if we can't read the list
+      const codeSnap = await get(ref(db, `friendCodes/${newCode}`));
+      if (!codeSnap.exists()) {
+        isUnique = true;
       }
     }
 
@@ -53,21 +48,13 @@ export const ensureFriendCode = async (userId, email) => {
       return null;
     }
 
-    // Set the code sequentially to avoid atomic failure if friendCodes rules are restricted
-    try {
-      await set(ref(db, `users/${userId}/friendCode`), newCode);
-      await set(ref(db, `users/${userId}/email`), email || 'Guest');
-    } catch (userWriteErr) {
-      console.error('Failed to write to users node:', userWriteErr);
-      throw userWriteErr;
-    }
+    // Set the code atomically
+    const updates = {};
+    updates[`users/${userId}/friendCode`] = newCode;
+    updates[`users/${userId}/email`] = email || 'Guest';
+    updates[`friendCodes/${newCode}`] = userId;
 
-    try {
-      await set(ref(db, `friendCodes/${newCode}`), userId);
-    } catch (fcWriteErr) {
-      console.error('Failed to write to friendCodes node:', fcWriteErr);
-      // We don't throw here so the user still gets their friendCode and email set
-    }
+    await update(ref(db), updates);
 
     return newCode;
   } catch (error) {
@@ -90,40 +77,10 @@ export const ensureFriendCode = async (userId, email) => {
 
 export const searchByFriendCode = async (code) => {
   const codeToSearch = code.trim().toUpperCase();
-  let friendId = null;
+  const codeSnap = await get(ref(db, `friendCodes/${codeToSearch}`));
+  if (!codeSnap.exists()) return null;
   
-  try {
-    const codeSnap = await get(ref(db, `friendCodes/${codeToSearch}`));
-    if (codeSnap.exists()) {
-      friendId = codeSnap.val();
-    }
-  } catch (err) {
-    console.warn('Failed to read from friendCodes node. Attempting to query users node...', err);
-  }
-
-  // Fallback: Query users node directly
-  if (!friendId) {
-    try {
-      const usersRef = ref(db, 'users');
-      const q = query(usersRef, orderByChild('friendCode'), equalTo(codeToSearch));
-      const snap = await get(q);
-      
-      if (snap.exists()) {
-        // Get the first matching user
-        const childNodes = [];
-        snap.forEach(child => { childNodes.push(child); });
-        if (childNodes.length > 0) {
-          friendId = childNodes[0].key;
-        }
-      }
-    } catch (queryErr) {
-      console.error('Failed to query users node:', queryErr);
-      throw new Error('Permission denied or network error while searching for friend.');
-    }
-  }
-
-  if (!friendId) return null;
-  
+  const friendId = codeSnap.val();
   const userSnap = await get(ref(db, `users/${friendId}`));
   if (!userSnap.exists()) return null;
   
