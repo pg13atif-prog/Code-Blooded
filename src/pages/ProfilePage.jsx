@@ -440,7 +440,6 @@ const ProfilePage = () => {
         <div className="cinescope-stats-banner glass-panel" onClick={() => setIsStatsModalOpen(true)}>
           <div className="cs-stats-left">
             <h2 className="cs-stats-title">CineScope Stats</h2>
-            <p className="cs-stats-desc">Tap to view your detailed stats breakdown, top genre &amp; activity statistics.</p>
           </div>
           <div className="cs-stats-right">
             <button className="cs-stats-btn" onClick={(e) => { e.stopPropagation(); setIsStatsModalOpen(true); }}>
@@ -450,17 +449,15 @@ const ProfilePage = () => {
         </div>
 
         {/* ── Achievements Banner (Links to #achievements) ───────── */}
-        <div className="profile-achievements-banner glass-panel" onClick={() => window.location.hash = 'achievements'}>
-          <div className="ach-banner-left">
-            <span className="ach-banner-icon">🏆</span>
-            <div>
-              <h3>Achievements &amp; Badges</h3>
-              <p>{unlockedCount} of {totalAchievements} Unlocked ({Math.round((unlockedCount / totalAchievements) * 100)}%)</p>
-            </div>
+        <div className="cinescope-stats-banner glass-panel" onClick={() => window.location.hash = 'achievements'}>
+          <div className="cs-stats-left">
+            <h2 className="cs-stats-title">Achievements &amp; Badges</h2>
           </div>
-          <button className="btn-secondary ach-banner-btn" onClick={(e) => { e.stopPropagation(); window.location.hash = 'achievements'; }}>
-            View Achievements →
-          </button>
+          <div className="cs-stats-right">
+            <button className="cs-stats-btn" onClick={(e) => { e.stopPropagation(); window.location.hash = 'achievements'; }}>
+              View Achievements →
+            </button>
+          </div>
         </div>
 
         {/* ── My Media Lists (3 Clean Minimal List Cards) ────────────── */}
