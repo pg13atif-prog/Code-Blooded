@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "./components/Navbar";
+import SplashScreen from "./components/SplashScreen";
 import Hero from "./components/Hero";
 import { checkAndUnlockAchievements } from "./services/achievements";
 import MovieRow from "./components/MovieRow";
@@ -27,6 +29,7 @@ import PickForMe from "./pages/cineai/PickForMe";
 import MovieDebate from "./pages/cineai/MovieDebate";
 
 function App() {
+  const [showSplash, setShowSplash] = useState(true);
   const [movies, setMovies] = useState([]);
   const [tvShows, setTvShows] = useState([]);
   const [trending, setTrending] = useState([]);
@@ -301,9 +304,23 @@ function App() {
 
   return (
     <>
-      <Navbar />
-      {renderContent()}
-      <AchievementToasts />
+      <AnimatePresence mode="wait">
+        {showSplash && (
+          <SplashScreen key="splash" onComplete={() => setShowSplash(false)} />
+        )}
+      </AnimatePresence>
+
+      {!showSplash && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Navbar />
+          {renderContent()}
+          <AchievementToasts />
+        </motion.div>
+      )}
     </>
   );
 }
