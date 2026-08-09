@@ -558,54 +558,73 @@ const ProfilePage = () => {
             <button className="modal-close" onClick={() => setIsStatsModalOpen(false)} aria-label="Close stats modal">✕</button>
             
             <div className="stats-modal-header">
-              <div className="stats-modal-badge">
-                <div className="watchtime-badge-val">{totalHours}h</div>
-                <div className="watchtime-badge-lbl">watched</div>
-              </div>
               <h2>Your Watch Analytics</h2>
               <p>Detailed breakdown of your viewing habits and platform interactions</p>
             </div>
 
-            <div className="stats-modal-grid">
-              <div className="stats-modal-card">
-                <span className="sm-icon">🔖</span>
-                <span className="sm-val">{watchlist.length}</span>
-                <span className="sm-lbl">Watchlist Saved</span>
+            <div className="stats-modal-list">
+              <div className="stats-modal-item">
+                <div className="sm-item-left">
+                  <span className="sm-icon">⏳</span>
+                  <span className="sm-lbl">Total Watch Time</span>
+                </div>
+                <span className="sm-val">{totalDays > 0 ? `${totalDays}d ${remHours}h` : `${totalHours}h`}</span>
               </div>
-              <div className="stats-modal-card">
-                <span className="sm-icon">✅</span>
+
+              <div className="stats-modal-item">
+                <div className="sm-item-left">
+                  <span className="sm-icon">✅</span>
+                  <span className="sm-lbl">Titles Watched</span>
+                </div>
                 <span className="sm-val">{watched.length}</span>
-                <span className="sm-lbl">Titles Watched</span>
               </div>
-              <div className="stats-modal-card">
-                <span className="sm-icon">❤️</span>
+
+              <div className="stats-modal-item">
+                <div className="sm-item-left">
+                  <span className="sm-icon">🔖</span>
+                  <span className="sm-lbl">Watchlist Saved</span>
+                </div>
+                <span className="sm-val">{watchlist.length}</span>
+              </div>
+
+              <div className="stats-modal-item">
+                <div className="sm-item-left">
+                  <span className="sm-icon">❤️</span>
+                  <span className="sm-lbl">Titles Liked</span>
+                </div>
                 <span className="sm-val">{liked.length}</span>
-                <span className="sm-lbl">Titles Liked</span>
               </div>
-              <div className="stats-modal-card">
-                <span className="sm-icon">🎬</span>
+
+              <div className="stats-modal-item">
+                <div className="sm-item-left">
+                  <span className="sm-icon">🎬</span>
+                  <span className="sm-lbl">Top Favorite Genre</span>
+                </div>
                 <span className="sm-val">{topGenre}</span>
-                <span className="sm-lbl">Top Favorite Genre</span>
               </div>
-              <div className="stats-modal-card">
-                <span className="sm-icon">🤖</span>
-                <span className="sm-val">{stats.aiSearchesCount}</span>
-                <span className="sm-lbl">CineAI Searches</span>
+
+              <div className="stats-modal-item">
+                <div className="sm-item-left">
+                  <span className="sm-icon">🤖</span>
+                  <span className="sm-lbl">CineAI Searches</span>
+                </div>
+                <span className="sm-val">{stats.aiSearchesCount || 0}</span>
               </div>
-              <div className="stats-modal-card">
-                <span className="sm-icon">🍿</span>
-                <span className="sm-val">{stats.trailersWatchedCount}</span>
-                <span className="sm-lbl">Trailers Watched</span>
+
+              <div className="stats-modal-item">
+                <div className="sm-item-left">
+                  <span className="sm-icon">🍿</span>
+                  <span className="sm-lbl">Trailers Watched</span>
+                </div>
+                <span className="sm-val">{stats.trailersWatchedCount || 0}</span>
               </div>
-              <div className="stats-modal-card">
-                <span className="sm-icon">🏆</span>
+
+              <div className="stats-modal-item">
+                <div className="sm-item-left">
+                  <span className="sm-icon">🏆</span>
+                  <span className="sm-lbl">Badges Earned</span>
+                </div>
                 <span className="sm-val">{unlockedCount}</span>
-                <span className="sm-lbl">Badges Earned</span>
-              </div>
-              <div className="stats-modal-card">
-                <span className="sm-icon">👀</span>
-                <span className="sm-val">{stats.detailViewsCount || stats.uniqueViewedIds?.length || 0}</span>
-                <span className="sm-lbl">Media Explored</span>
               </div>
             </div>
 
