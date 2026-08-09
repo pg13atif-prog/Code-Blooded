@@ -14,7 +14,7 @@ import {
   addToWatchlist, removeFromWatchlist, isInWatchlist, addRecentlyViewed,
   addToWatched, removeFromWatched, isWatched,
   addToLiked, removeFromLiked, isLiked,
-  addCustomReview, getCustomReviews
+  addCustomReview, getCustomReviews, deleteCustomReview
 } from '../services/firestore';
 import { getRelationships, getFriendData, recommendMovie, unsendRecommendation } from '../services/friends';
 import AuthModal from '../components/AuthModal';
@@ -160,6 +160,7 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
   const [newReviewContent, setNewReviewContent] = useState('');
   const [newReviewRating, setNewReviewRating] = useState('5.0');
   const [postAnonymously, setPostAnonymously] = useState(false);
+  const [isEditingReview, setIsEditingReview] = useState(false);
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [showAllCast, setShowAllCast] = useState(false);
@@ -392,6 +393,50 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
     return `var(--color-genre-${safeGenre}, var(--color-genre-default))`;
   };
 
+  const myReview = useMemo(() => {
+    if (!currentUser || !customReviews.length) return null;
+    return customReviews.find(r => r.userId === currentUser.uid) || null;
+  }, [currentUser, customReviews]);
+
+  const sortedCustomReviews = useMemo(() => {
+    if (!currentUser || !customReviews.length) return customReviews;
+    const userRev = customReviews.find(r => r.userId === currentUser.uid);
+    if (!userRev) return customReviews;
+    const others = customReviews.filter(r => r.userId !== currentUser.uid);
+    return [userRev, ...others];
+  }, [customReviews, currentUser]);
+
+  const handleStartEditReview = () => {
+    if (!myReview) return;
+    setNewReviewContent(myReview.content || '');
+    setNewReviewRating(myReview.rating || '5.0');
+    setPostAnonymously(Boolean(myReview.isAnonymous));
+    setIsEditingReview(true);
+  };
+
+  const handleCancelEditReview = () => {
+    setIsEditingReview(false);
+    setNewReviewContent('');
+    setNewReviewRating('5.0');
+    setPostAnonymously(false);
+  };
+
+  const handleDeleteMyReview = async () => {
+    if (!currentUser || !myReview) return;
+    if (!window.confirm("Are you sure you want to delete your review?")) return;
+    try {
+      await deleteCustomReview(movieId, currentUser.uid);
+      setCustomReviews(prev => prev.filter(r => r.userId !== currentUser.uid));
+      setIsEditingReview(false);
+      setNewReviewContent('');
+      setNewReviewRating('5.0');
+      setPostAnonymously(false);
+    } catch (err) {
+      console.error("Failed to delete review:", err);
+      alert("Failed to delete review.");
+    }
+  };
+
   const handleSubmitReview = async (e) => {
     e.preventDefault();
     if (!currentUser || currentUser.isAnonymous) {
@@ -432,10 +477,11 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
         isAnonymous: Boolean(postAnonymously)
       };
       await addCustomReview(movieId, currentUser.uid, reviewData);
-      setCustomReviews(prev => [
-        { ...reviewData, userId: currentUser.uid, createdAt: new Date().toISOString() },
-        ...prev
-      ]);
+      setCustomReviews(prev => {
+        const filtered = prev.filter(r => r.userId !== currentUser.uid);
+        return [{ ...reviewData, userId: currentUser.uid, createdAt: new Date().toISOString() }, ...filtered];
+      });
+      setIsEditingReview(false);
       setNewReviewContent('');
       setNewReviewRating('5.0');
       setPostAnonymously(false);
@@ -912,160 +958,211 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
               </div>
             )}
 
-            {/* Custom Reviews Form & List */}
+            {/* Custom Reviews Section */}
             <div className="detail-section">
               <h3 className="section-title">Reviews by CineScope Users</h3>
               
-              <div className="write-review-card">
-                {(!currentUser || currentUser.isAnonymous) ? (
-                  <div style={{ background: 'rgba(255, 255, 255, 0.04)', border: '1px solid rgba(255, 255, 255, 0.12)', borderRadius: '14px', padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
-                    <div>
-                      <h4 style={{ margin: 0, color: '#fff', fontSize: '1rem', fontWeight: 600 }}>Sign in to write a review</h4>
-                      <p style={{ margin: '0.25rem 0 0', color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem' }}>Guest accounts cannot post reviews. Create a free account or sign in to share your rating.</p>
+              {/* Write or Edit Review Form / Banner */}
+              {(isEditingReview || !myReview) && (
+                <div className="write-review-card" style={{ marginBottom: '1.5rem' }}>
+                  {(!currentUser || currentUser.isAnonymous) ? (
+                    <div style={{ background: 'rgba(255, 255, 255, 0.04)', border: '1px solid rgba(255, 255, 255, 0.12)', borderRadius: '14px', padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+                      <div>
+                        <h4 style={{ margin: 0, color: '#fff', fontSize: '1rem', fontWeight: 600 }}>Sign in to write a review</h4>
+                        <p style={{ margin: '0.25rem 0 0', color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem' }}>Guest accounts cannot post reviews. Create a free account or sign in to share your rating.</p>
+                      </div>
+                      <button className="btn-primary btn-sm" onClick={() => setIsAuthModalOpen(true)}>Sign In / Register</button>
                     </div>
-                    <button className="btn-primary btn-sm" onClick={() => setIsAuthModalOpen(true)}>Sign In / Register</button>
-                  </div>
-                ) : (
-                  <form onSubmit={handleSubmitReview} className="write-review-form" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
-                      <div className="review-rating-input" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                        <label style={{ fontWeight: 600, fontSize: '0.92rem', color: '#fff' }}>Your Rating:</label>
-                        <div style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          background: 'rgba(255, 255, 255, 0.06)',
-                          border: '1px solid rgba(255, 255, 255, 0.14)',
-                          borderRadius: '12px',
-                          padding: '3px',
-                          gap: '2px',
-                          boxShadow: '0 4px 14px rgba(0,0,0,0.3)'
-                        }}>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const val = Math.max(0.1, (parseFloat(newReviewRating) || 5.0) - 0.1);
-                              setNewReviewRating(val.toFixed(1));
-                            }}
-                            style={{
-                              width: '32px',
-                              height: '32px',
-                              borderRadius: '9px',
-                              border: 'none',
-                              background: 'rgba(255,255,255,0.08)',
-                              color: '#fff',
-                              fontWeight: 'bold',
-                              fontSize: '1.1rem',
-                              cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              transition: 'all 0.15s ease'
-                            }}
-                            onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.18)'}
-                            onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
-                          >
-                            −
-                          </button>
+                  ) : (
+                    <form onSubmit={handleSubmitReview} className="write-review-form" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                      {isEditingReview && (
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <span style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--color-accent, #e50914)' }}>Editing Your Review</span>
+                          <button type="button" onClick={handleCancelEditReview} className="btn-secondary btn-sm" style={{ padding: '0.25rem 0.65rem' }}>Cancel</button>
+                        </div>
+                      )}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+                        <div className="review-rating-input" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                          <label style={{ fontWeight: 600, fontSize: '0.92rem', color: '#fff' }}>Your Rating:</label>
+                          <div style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            background: 'rgba(255, 255, 255, 0.06)',
+                            border: '1px solid rgba(255, 255, 255, 0.14)',
+                            borderRadius: '12px',
+                            padding: '3px',
+                            gap: '2px',
+                            boxShadow: '0 4px 14px rgba(0,0,0,0.3)'
+                          }}>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const val = Math.max(0.1, (parseFloat(newReviewRating) || 5.0) - 0.1);
+                                setNewReviewRating(val.toFixed(1));
+                              }}
+                              style={{
+                                width: '32px',
+                                height: '32px',
+                                borderRadius: '9px',
+                                border: 'none',
+                                background: 'rgba(255,255,255,0.08)',
+                                color: '#fff',
+                                fontWeight: 'bold',
+                                fontSize: '1.1rem',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                transition: 'all 0.15s ease'
+                              }}
+                              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.18)'}
+                              onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
+                            >
+                              −
+                            </button>
+                            <input 
+                              type="number" 
+                              min="0.1" 
+                              max="5.0" 
+                              step="0.1" 
+                              value={newReviewRating} 
+                              onChange={e => setNewReviewRating(e.target.value)}
+                              className="modern-rating-input"
+                              style={{ 
+                                width: '54px', 
+                                textAlign: 'center', 
+                                background: 'transparent', 
+                                color: '#fff', 
+                                border: 'none', 
+                                outline: 'none', 
+                                fontWeight: 700, 
+                                fontSize: '1.05rem',
+                                fontFamily: 'inherit'
+                              }}
+                              required
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const val = Math.min(5.0, (parseFloat(newReviewRating) || 5.0) + 0.1);
+                                setNewReviewRating(val.toFixed(1));
+                              }}
+                              style={{
+                                width: '32px',
+                                height: '32px',
+                                borderRadius: '9px',
+                                border: 'none',
+                                background: 'rgba(255,255,255,0.08)',
+                                color: '#fff',
+                                fontWeight: 'bold',
+                                fontSize: '1.1rem',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                transition: 'all 0.15s ease'
+                              }}
+                              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.18)'}
+                              onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
+
+                        <label style={{ display: 'inline-flex', alignItems: 'center', gap: '0.55rem', cursor: 'pointer', fontSize: '0.88rem', color: 'rgba(255,255,255,0.85)', userSelect: 'none' }}>
                           <input 
-                            type="number" 
-                            min="0.1" 
-                            max="5.0" 
-                            step="0.1" 
-                            value={newReviewRating} 
-                            onChange={e => setNewReviewRating(e.target.value)}
-                            className="modern-rating-input"
-                            style={{ 
-                              width: '54px', 
-                              textAlign: 'center', 
-                              background: 'transparent', 
-                              color: '#fff', 
-                              border: 'none', 
-                              outline: 'none', 
-                              fontWeight: 700, 
-                              fontSize: '1.05rem',
-                              fontFamily: 'inherit'
-                            }}
-                            required
+                            type="checkbox" 
+                            checked={postAnonymously} 
+                            onChange={e => setPostAnonymously(e.target.checked)}
+                            style={{ width: '16px', height: '16px', accentColor: 'var(--color-accent, #b9090b)', cursor: 'pointer' }}
                           />
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const val = Math.min(5.0, (parseFloat(newReviewRating) || 5.0) + 0.1);
-                              setNewReviewRating(val.toFixed(1));
-                            }}
-                            style={{
-                              width: '32px',
-                              height: '32px',
-                              borderRadius: '9px',
-                              border: 'none',
-                              background: 'rgba(255,255,255,0.08)',
-                              color: '#fff',
-                              fontWeight: 'bold',
-                              fontSize: '1.1rem',
-                              cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              transition: 'all 0.15s ease'
-                            }}
-                            onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.18)'}
-                            onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
-                          >
-                            +
+                          Post anonymously
+                        </label>
+                      </div>
+
+                      <textarea
+                        placeholder="What did you think about this title?"
+                        value={newReviewContent}
+                        onChange={(e) => setNewReviewContent(e.target.value)}
+                        rows={4}
+                        required
+                      ></textarea>
+
+                      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+                        {isEditingReview && (
+                          <button type="button" onClick={handleCancelEditReview} className="btn-secondary">
+                            Cancel
                           </button>
-                        </div>
+                        )}
+                        <button 
+                          type="submit" 
+                          className="btn-primary submit-review-btn"
+                          disabled={isSubmittingReview}
+                        >
+                          {isSubmittingReview ? 'Saving...' : (isEditingReview ? 'Update Review' : 'Post Review')}
+                        </button>
                       </div>
+                    </form>
+                  )}
+                </div>
+              )}
 
-                      <label style={{ display: 'inline-flex', alignItems: 'center', gap: '0.55rem', cursor: 'pointer', fontSize: '0.88rem', color: 'rgba(255,255,255,0.85)', userSelect: 'none' }}>
-                        <input 
-                          type="checkbox" 
-                          checked={postAnonymously} 
-                          onChange={e => setPostAnonymously(e.target.checked)}
-                          style={{ width: '16px', height: '16px', accentColor: 'var(--color-accent, #b9090b)', cursor: 'pointer' }}
-                        />
-                        Post anonymously
-                      </label>
-                    </div>
-
-                    <textarea
-                      placeholder="What did you think about this title?"
-                      value={newReviewContent}
-                      onChange={(e) => setNewReviewContent(e.target.value)}
-                      rows={4}
-                      required
-                    ></textarea>
-
-                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                      <button 
-                        type="submit" 
-                        className="btn-primary submit-review-btn"
-                        disabled={isSubmittingReview}
-                      >
-                        {isSubmittingReview ? 'Posting...' : 'Post Review'}
-                      </button>
-                    </div>
-                  </form>
-                )}
-              </div>
-
-              {customReviews.length > 0 ? (
+              {sortedCustomReviews.length > 0 ? (
                 <div className="reviews-list custom-reviews-list">
-                  {customReviews.map((review, i) => (
-                    <div key={i} className="review-card">
-                      <div className="review-header">
-                        <div className="review-avatar">
-                          <span>{review.author.charAt(0).toUpperCase()}</span>
+                  {sortedCustomReviews.map((review, i) => {
+                    const isMyOwnReview = currentUser && review.userId === currentUser.uid;
+                    return (
+                      <div key={i} className="review-card" style={isMyOwnReview ? { border: '1px solid rgba(229, 9, 20, 0.4)', background: 'rgba(229, 9, 20, 0.04)' } : {}}>
+                        <div className="review-header" style={{ justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                            <div className="review-avatar">
+                              <span>{review.author.charAt(0).toUpperCase()}</span>
+                            </div>
+                            <div className="review-meta">
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <h4 style={{ margin: 0 }}>{review.author}</h4>
+                                {isMyOwnReview && (
+                                  <span style={{
+                                    background: 'rgba(229, 9, 20, 0.25)',
+                                    color: '#ff4d4d',
+                                    border: '1px solid rgba(229, 9, 20, 0.4)',
+                                    borderRadius: '10px',
+                                    padding: '2px 8px',
+                                    fontSize: '0.72rem',
+                                    fontWeight: 700
+                                  }}>Your Review</span>
+                                )}
+                              </div>
+                              <span className="review-rating">★ {review.rating}</span>
+                            </div>
+                          </div>
+
+                          {isMyOwnReview && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                              <button 
+                                onClick={handleStartEditReview} 
+                                className="btn-secondary btn-sm"
+                                style={{ padding: '0.3rem 0.75rem', fontSize: '0.8rem', borderRadius: '8px' }}
+                              >
+                                Edit
+                              </button>
+                              <button 
+                                onClick={handleDeleteMyReview} 
+                                className="btn-secondary btn-sm"
+                                style={{ padding: '0.3rem 0.75rem', fontSize: '0.8rem', borderRadius: '8px', color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.3)' }}
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          )}
                         </div>
-                        <div className="review-meta">
-                          <h4>{review.author}</h4>
-                          <span className="review-rating">★ {review.rating}</span>
+                        <div className="review-content">
+                          <p>{review.content}</p>
                         </div>
                       </div>
-                      <div className="review-content">
-                        <p>{review.content}</p>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <p className="no-reviews-msg" style={{color: 'rgba(255,255,255,0.5)', fontStyle: 'italic', marginTop: '1rem'}}>No user reviews yet. Be the first to review!</p>

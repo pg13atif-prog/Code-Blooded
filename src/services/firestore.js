@@ -215,3 +215,11 @@ export const getCustomReviews = async (movieId) => {
     return [];
   }
 };
+
+export const deleteCustomReview = async (movieId, userId) => {
+  if (!movieId || !userId) return;
+  const cleanUserId = String(userId);
+  const cleanMovieId = String(movieId);
+  const reviewRef = ref(db, `users/${cleanUserId}/reviews/${cleanMovieId}`);
+  await remove(reviewRef);
+};
