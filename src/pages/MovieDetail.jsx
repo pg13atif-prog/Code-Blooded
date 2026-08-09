@@ -409,13 +409,27 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
 
     setIsSubmittingReview(true);
     try {
-      const realUsername = currentUser.displayName || (currentUser.email ? currentUser.email.split('@')[0] : 'User');
+      let realUsername = currentUser.displayName;
+      if (!realUsername) {
+        try {
+          const friendData = await getFriendData(currentUser.uid);
+          if (friendData?.username) {
+            realUsername = friendData.username;
+          }
+        } catch (e) {
+          console.error("Could not fetch user profile username:", e);
+        }
+      }
+      if (!realUsername) {
+        realUsername = currentUser.email ? currentUser.email.split('@')[0] : 'User';
+      }
+
       const authorName = postAnonymously ? 'Anonymous' : realUsername;
       const reviewData = {
         content: newReviewContent.trim(),
         rating: finalRating,
         author: authorName,
-        isAnonymous: postAnonymously
+        isAnonymous: Boolean(postAnonymously)
       };
       await addCustomReview(movieId, currentUser.uid, reviewData);
       setCustomReviews(prev => [
@@ -914,20 +928,92 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
                 ) : (
                   <form onSubmit={handleSubmitReview} className="write-review-form" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
-                      <div className="review-rating-input" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                        <label style={{ fontWeight: 600, fontSize: '0.9rem', color: '#fff' }}>Your Rating (0.1 - 5.0):</label>
-                        <input 
-                          type="number" 
-                          min="0.1" 
-                          max="5.0" 
-                          step="0.1" 
-                          placeholder="e.g. 4.8" 
-                          value={newReviewRating} 
-                          onChange={e => setNewReviewRating(e.target.value)}
-                          style={{ width: '85px', padding: '0.45rem 0.75rem', borderRadius: '8px', background: 'rgba(255,255,255,0.08)', color: '#fff', border: '1px solid rgba(255,255,255,0.16)', outline: 'none', fontWeight: 700, fontSize: '0.95rem' }}
-                          required
-                        />
-                        <span style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)' }}>/ 5.0</span>
+                      <div className="review-rating-input" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <label style={{ fontWeight: 600, fontSize: '0.92rem', color: '#fff' }}>Your Rating:</label>
+                        <div style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          background: 'rgba(255, 255, 255, 0.06)',
+                          border: '1px solid rgba(255, 255, 255, 0.14)',
+                          borderRadius: '12px',
+                          padding: '3px',
+                          gap: '2px',
+                          boxShadow: '0 4px 14px rgba(0,0,0,0.3)'
+                        }}>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const val = Math.max(0.1, (parseFloat(newReviewRating) || 5.0) - 0.1);
+                              setNewReviewRating(val.toFixed(1));
+                            }}
+                            style={{
+                              width: '32px',
+                              height: '32px',
+                              borderRadius: '9px',
+                              border: 'none',
+                              background: 'rgba(255,255,255,0.08)',
+                              color: '#fff',
+                              fontWeight: 'bold',
+                              fontSize: '1.1rem',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              transition: 'all 0.15s ease'
+                            }}
+                            onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.18)'}
+                            onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
+                          >
+                            −
+                          </button>
+                          <input 
+                            type="number" 
+                            min="0.1" 
+                            max="5.0" 
+                            step="0.1" 
+                            value={newReviewRating} 
+                            onChange={e => setNewReviewRating(e.target.value)}
+                            className="modern-rating-input"
+                            style={{ 
+                              width: '54px', 
+                              textAlign: 'center', 
+                              background: 'transparent', 
+                              color: '#fff', 
+                              border: 'none', 
+                              outline: 'none', 
+                              fontWeight: 700, 
+                              fontSize: '1.05rem',
+                              fontFamily: 'inherit'
+                            }}
+                            required
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const val = Math.min(5.0, (parseFloat(newReviewRating) || 5.0) + 0.1);
+                              setNewReviewRating(val.toFixed(1));
+                            }}
+                            style={{
+                              width: '32px',
+                              height: '32px',
+                              borderRadius: '9px',
+                              border: 'none',
+                              background: 'rgba(255,255,255,0.08)',
+                              color: '#fff',
+                              fontWeight: 'bold',
+                              fontSize: '1.1rem',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              transition: 'all 0.15s ease'
+                            }}
+                            onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.18)'}
+                            onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
+                          >
+                            +
+                          </button>
+                        </div>
                       </div>
 
                       <label style={{ display: 'inline-flex', alignItems: 'center', gap: '0.55rem', cursor: 'pointer', fontSize: '0.88rem', color: 'rgba(255,255,255,0.85)', userSelect: 'none' }}>
@@ -971,7 +1057,7 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
                           <span>{review.author.charAt(0).toUpperCase()}</span>
                         </div>
                         <div className="review-meta">
-                          <h4>A review by {review.author}</h4>
+                          <h4>{review.author}</h4>
                           <span className="review-rating">★ {review.rating}</span>
                         </div>
                       </div>
@@ -1008,7 +1094,7 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
                           )}
                         </div>
                         <div className="review-meta">
-                          <h4>A review by {review.author}</h4>
+                          <h4>{review.author}</h4>
                           {review.author_details?.rating && (
                             <span className="review-rating">★ {review.author_details.rating}</span>
                           )}

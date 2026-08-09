@@ -1328,3 +1328,13 @@
   border: 1px solid rgba(255, 255, 255, 0.16) !important;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85) !important;
 }
+
+/* ── Hide native number spinner arrows for rating input ── */
+.modern-rating-input::-webkit-outer-spin-button,
+.modern-rating-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.modern-rating-input[type=number] {
+  -moz-appearance: textfield;
+}
