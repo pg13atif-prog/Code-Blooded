@@ -491,7 +491,7 @@ export const getAiMovieDebate = async (movieA, movieB) => {
   }
 };
 
-export const getFriendCompatibilityRecs = async (myProfile, friendProfile) => {
+export const getFriendCompatibilityRecs = async (myProfile, friendProfile, myName = 'User A', friendName = 'User B') => {
   // 1. Sort profiles deterministically so identical inputs produce identical prompt strings
   const sortedMyProfile = [...myProfile].sort();
   const sortedFriendProfile = [...friendProfile].sort();
@@ -531,7 +531,7 @@ export const getFriendCompatibilityRecs = async (myProfile, friendProfile) => {
   const mathEraScore = eraUnion > 0 ? Math.round((eraIntersection / eraUnion) * 100) : 60;
 
   const systemInstruction = `
-    You are CineAI, the world's leading movie taste analyst. Perform a deterministic, accurate compatibility analysis between two users.
+    You are CineAI, the world's leading movie taste analyst. Perform a deterministic, accurate compatibility analysis between two users: "${myName}" and "${friendName}".
 
     Mathematically computed baseline scores for reference:
     - Genre Overlap Baseline: ${mathGenreScore}%
@@ -548,13 +548,14 @@ export const getFriendCompatibilityRecs = async (myProfile, friendProfile) => {
         "ratingStandards": ${mathRatingScore},
         "thematicTaste": ${Math.round((mathGenreScore + mathEraScore) / 2)}
       },
-      "summary": "A 1-2 sentence accurate summary of how their tastes complement or clash.",
+      "summary": "A 1-2 sentence accurate summary of how their tastes complement or clash, using the usernames '${myName}' and '${friendName}'.",
       "recommendations": [
-        { "title": "Exact Movie Title", "rationale": "A personalized 2-sentence explanation connecting this pick to BOTH users' specific tastes." }
+        { "title": "Exact Movie Title", "rationale": "A personalized 2-sentence explanation connecting this pick to BOTH users' specific tastes, using '${myName}' and '${friendName}'." }
       ]
     }
 
     Rules:
+    - Refer to the first user as "${myName}" and the second user as "${friendName}". NEVER use generic placeholders like "User A" or "User B".
     - Return exactly 5 recommendations.
     - Recommendations should be highly-rated movies NEITHER user has listed — suggest something new.
     - Be consistent, deterministic, and precise.
@@ -562,10 +563,10 @@ export const getFriendCompatibilityRecs = async (myProfile, friendProfile) => {
   `;
 
   const prompt = `
-    ## User A's Movie Profile:
+    ## ${myName}'s Movie Profile:
     ${sortedMyProfile.join('\n    ')}
 
-    ## User B's Movie Profile:
+    ## ${friendName}'s Movie Profile:
     ${sortedFriendProfile.join('\n    ')}
   `;
 

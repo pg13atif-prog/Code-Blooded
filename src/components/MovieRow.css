@@ -7,9 +7,11 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  max-width: var(--content-max-width);
+  max-width: var(--content-max-width, 1400px);
   margin: 0 auto var(--space-md);
-  padding: 0 var(--space-xl);
+  padding: 0 2rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .row-title {
@@ -51,10 +53,13 @@
   display: flex;
   gap: var(--space-lg);
   width: 100%;
+  max-width: var(--content-max-width, 1400px);
+  margin: 0 auto;
   overflow-x: auto;
-  padding: 10px max(var(--space-xl), calc((100vw - var(--content-max-width)) / 2 + var(--space-xl)));
+  padding: 10px 2rem;
   scroll-behavior: smooth;
   scrollbar-width: none;
+  box-sizing: border-box;
 }
 
 .movie-row::-webkit-scrollbar {

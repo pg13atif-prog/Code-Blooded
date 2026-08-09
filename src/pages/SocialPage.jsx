@@ -70,7 +70,8 @@ const SocialPage = () => {
       const code = hash.split('?match=')[1];
       if (code) {
         setSearchCode(code);
-        setTimeout(() => executeMatch(code), 100);
+        setMatchLoading(true);
+        setTimeout(() => executeMatch(code), 50);
       }
     }
   }, []);
@@ -115,16 +116,30 @@ const SocialPage = () => {
       const myProfile = buildProfile(myLiked, myWatched, myWl);
       const friendProfile = buildProfile(fLiked, fWatched, fWl);
 
-      const compatibilityData = await getFriendCompatibilityRecs(myProfile, friendProfile);
+      const myName = currentUser.displayName || (currentUser.email ? currentUser.email.split('@')[0] : 'You');
+      const friendName = friendData.username || (friendData.email ? friendData.email.split('@')[0] : 'Friend');
+
+      const compatibilityData = await getFriendCompatibilityRecs(myProfile, friendProfile, myName, friendName);
+
+      const cleanSummary = (compatibilityData.summary || '')
+        .replaceAll("User A's", `${myName}'s`)
+        .replaceAll("User B's", `${friendName}'s`)
+        .replaceAll('User A', myName)
+        .replaceAll('User B', friendName);
 
       const tmdbPromises = compatibilityData.recommendations.map(async (rec) => {
         try {
           const searchData = await searchMedia(rec.title);
           const match = searchData.find(item => item.mediaType === rec.mediaType) || searchData[0];
           if (match) {
+            const cleanRationale = (rec.rationale || '')
+              .replaceAll("User A's", `${myName}'s`)
+              .replaceAll("User B's", `${friendName}'s`)
+              .replaceAll('User A', myName)
+              .replaceAll('User B', friendName);
             return {
               ...match,
-              rationale: rec.rationale
+              rationale: cleanRationale
             };
           }
           return null;
@@ -138,7 +153,7 @@ const SocialPage = () => {
 
       setMatchResult({
         compatibility: compatibilityData.compatibility,
-        summary: compatibilityData.summary,
+        summary: cleanSummary,
         breakdown: compatibilityData.breakdown,
         sharedFavorites,
         recommendations: hydratedRecs
@@ -166,7 +181,7 @@ const SocialPage = () => {
         <p>Compare tastes with friends and find the perfect movie to watch together.</p>
       </div>
 
-      {!matchResult && (
+      {!matchResult && !matchLoading && (
         <div className="social-content" style={{ display: 'flex', justifyContent: 'center' }}>
           <div className="match-card" style={{ maxWidth: '600px', width: '100%' }}>
             <h2>Match with a Friend</h2>
@@ -257,22 +272,39 @@ const SocialPage = () => {
             <div className="section-header">
               <h3>AI Top Picks For Both Of You</h3>
             </div>
-            <div className="social-grid">
+            <div className="ai-rec-list">
               {matchResult.recommendations.map((movie) => (
-                <div key={movie.id} className="social-rec-card-wrapper" style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
-                  <MovieCard {...movie} />
-                  <div className="social-rec-rationale" style={{
-                    marginTop: '0.75rem',
-                    fontSize: '0.85rem',
-                    lineHeight: '1.4',
-                    color: 'rgba(255, 255, 255, 0.7)',
-                    fontStyle: 'italic',
-                    background: 'rgba(255, 255, 255, 0.03)',
-                    padding: '0.75rem',
-                    borderRadius: '8px',
-                    borderLeft: '3px solid var(--color-accent, #e50914)'
-                  }}>
-                    "{movie.rationale}"
+                <div key={movie.id} className="ai-rec-card glass-panel">
+                  <div 
+                    className="ai-rec-poster"
+                    onClick={() => window.location.hash = `#${movie.mediaType || 'movie'}/${movie.id}`}
+                  >
+                    {movie.poster ? (
+                      <img src={movie.poster} alt={movie.title} />
+                    ) : (
+                      <div className="ai-rec-no-poster">🎬</div>
+                    )}
+                  </div>
+                  <div className="ai-rec-content">
+                    <div className="ai-rec-header-row">
+                      <h4 
+                        className="ai-rec-title"
+                        onClick={() => window.location.hash = `#${movie.mediaType || 'movie'}/${movie.id}`}
+                      >
+                        {movie.title}
+                      </h4>
+                      {movie.rating && (
+                        <span className="ai-rec-rating">★ {movie.rating}</span>
+                      )}
+                    </div>
+                    <div className="ai-rec-tags">
+                      {movie.year && <span className="ai-rec-tag">{movie.year}</span>}
+                      {movie.category && <span className="ai-rec-tag">{movie.category}</span>}
+                      <span className="ai-rec-tag type">{movie.mediaType === 'tv' ? 'TV Show' : 'Movie'}</span>
+                    </div>
+                    <p className="ai-rec-rationale-text">
+                      "{movie.rationale}"
+                    </p>
                   </div>
                 </div>
               ))}

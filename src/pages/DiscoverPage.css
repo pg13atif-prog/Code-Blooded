@@ -9,8 +9,11 @@
 
 /* ─── Header ─── */
 .discover-header {
-  padding: 0 4%;
-  margin-bottom: 1.75rem;
+  max-width: var(--content-max-width, 1400px);
+  margin: 0 auto 1.75rem;
+  padding: 0 2rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .discover-header-top {
@@ -105,8 +108,11 @@
 
 .discover-filter-wrapper {
   overflow: hidden;
-  padding: 0 4%;
-  margin-bottom: 1.5rem;
+  max-width: var(--content-max-width, 1400px);
+  margin: 0 auto 1.5rem;
+  padding: 0 2rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .discover-filter-card {
