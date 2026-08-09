@@ -74,6 +74,7 @@ const ProfilePage = () => {
   const [unlockedAchievements, setUnlockedAchievements] = useState({});
   const [loading,   setLoading]     = useState(true);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isStatsModalOpen, setIsStatsModalOpen] = useState(false);
   const [activeTab, setActiveTab]   = useState('liked');
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [sortBy, setSortBy] = useState('recent'); // 'recent' | 'title' | 'rating'
@@ -85,7 +86,7 @@ const ProfilePage = () => {
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
-    if (isLogoutModalOpen) {
+    if (isLogoutModalOpen || isStatsModalOpen) {
       document.body.style.overflow = 'hidden';
       document.body.style.touchAction = 'none';
     } else {
@@ -96,7 +97,7 @@ const ProfilePage = () => {
       document.body.style.overflow = '';
       document.body.style.touchAction = '';
     };
-  }, [isLogoutModalOpen]);
+  }, [isLogoutModalOpen, isStatsModalOpen]);
 
   useEffect(() => {
     if (!currentUser) { setLoading(false); return; }
@@ -435,8 +436,8 @@ const ProfilePage = () => {
           </div>
         )}
 
-        {/* ── Compact Watch Time & Stats Box ──────────────────────── */}
-        <div className="watchtime-card compact-stats">
+        {/* ── Watch Time & Stats Box (Clickable for Detailed View) ── */}
+        <div className="watchtime-card compact-stats clickable-stats-card" onClick={() => setIsStatsModalOpen(true)}>
           <div className="watchtime-badge">
             <div className="watchtime-badge-inner">
               <div className="watchtime-badge-val">{totalHours}h</div>
@@ -444,8 +445,14 @@ const ProfilePage = () => {
             </div>
           </div>
           <div className="watchtime-stats">
-            <h2 className="watchtime-title">Your Watch Stats</h2>
-            <div className="watchtime-breakdown">
+            <div className="stats-title-row">
+              <h2 className="watchtime-title">Your Watch Analytics</h2>
+              <span className="stats-arrow-badge">View Stats →</span>
+            </div>
+            <p className="watchtime-subtitle">Tap to view your detailed stats breakdown, top genre &amp; activity statistics.</p>
+            
+            {/* Desktop breakdown grid */}
+            <div className="watchtime-breakdown desktop-only-stats">
               <div className="wt-stat">
                 <span className="wt-val">{watchlist.length}</span>
                 <span className="wt-label">Saved</span>
@@ -474,6 +481,18 @@ const ProfilePage = () => {
                 <span className="wt-val">{unlockedCount}</span>
                 <span className="wt-label">Earned</span>
               </div>
+              <div className="wt-stat">
+                <span className="wt-val">{totalDays > 0 ? `${totalDays}d` : `${totalHours}h`}</span>
+                <span className="wt-label">Total Time</span>
+              </div>
+            </div>
+
+            {/* Mobile preview chips */}
+            <div className="mobile-stats-preview">
+              <span className="stat-chip">❤️ {liked.length} Liked</span>
+              <span className="stat-chip">🔖 {watchlist.length} Saved</span>
+              <span className="stat-chip">🎬 {topGenre}</span>
+              <span className="stat-chip highlight-chip">📊 Open Stats →</span>
             </div>
           </div>
         </div>
@@ -576,6 +595,71 @@ const ProfilePage = () => {
                 Log Out
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Detailed Watch Analytics Modal ──────────────────────── */}
+      {isStatsModalOpen && (
+        <div className="modal-overlay stats-modal-overlay" onClick={() => setIsStatsModalOpen(false)}>
+          <div className="modal-content stats-modal-content" onClick={e => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setIsStatsModalOpen(false)} aria-label="Close stats modal">✕</button>
+            
+            <div className="stats-modal-header">
+              <div className="stats-modal-badge">
+                <div className="watchtime-badge-val">{totalHours}h</div>
+                <div className="watchtime-badge-lbl">watched</div>
+              </div>
+              <h2>Your Watch Analytics</h2>
+              <p>Detailed breakdown of your viewing habits and platform interactions</p>
+            </div>
+
+            <div className="stats-modal-grid">
+              <div className="stats-modal-card">
+                <span className="sm-icon">🔖</span>
+                <span className="sm-val">{watchlist.length}</span>
+                <span className="sm-lbl">Watchlist Saved</span>
+              </div>
+              <div className="stats-modal-card">
+                <span className="sm-icon">✅</span>
+                <span className="sm-val">{watched.length}</span>
+                <span className="sm-lbl">Titles Watched</span>
+              </div>
+              <div className="stats-modal-card">
+                <span className="sm-icon">❤️</span>
+                <span className="sm-val">{liked.length}</span>
+                <span className="sm-lbl">Titles Liked</span>
+              </div>
+              <div className="stats-modal-card">
+                <span className="sm-icon">🎬</span>
+                <span className="sm-val">{topGenre}</span>
+                <span className="sm-lbl">Top Favorite Genre</span>
+              </div>
+              <div className="stats-modal-card">
+                <span className="sm-icon">🤖</span>
+                <span className="sm-val">{stats.aiSearchesCount}</span>
+                <span className="sm-lbl">CineAI Searches</span>
+              </div>
+              <div className="stats-modal-card">
+                <span className="sm-icon">🍿</span>
+                <span className="sm-val">{stats.trailersWatchedCount}</span>
+                <span className="sm-lbl">Trailers Watched</span>
+              </div>
+              <div className="stats-modal-card">
+                <span className="sm-icon">🏆</span>
+                <span className="sm-val">{unlockedCount}</span>
+                <span className="sm-lbl">Badges Earned</span>
+              </div>
+              <div className="stats-modal-card">
+                <span className="sm-icon">⏳</span>
+                <span className="sm-val">{totalDays > 0 ? `${totalDays}d ${remHours}h` : `${totalHours}h`}</span>
+                <span className="sm-lbl">Total Watch Time</span>
+              </div>
+            </div>
+
+            <button className="btn-primary w-full stats-modal-close-btn" onClick={() => setIsStatsModalOpen(false)}>
+              Close Analytics
+            </button>
           </div>
         </div>
       )}

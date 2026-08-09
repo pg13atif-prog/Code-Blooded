@@ -1099,3 +1099,202 @@
     flex: 1;
   }
 }
+
+/* ── Interactive Stats Card & Detailed Analytics Modal ───────────────────── */
+.clickable-stats-card {
+  cursor: pointer;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.clickable-stats-card:hover {
+  border-color: rgba(229, 9, 20, 0.4);
+  box-shadow: 0 10px 30px rgba(229, 9, 20, 0.15);
+  transform: translateY(-2px);
+}
+
+.stats-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.stats-arrow-badge {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #ff3b50;
+  background: rgba(229, 9, 20, 0.12);
+  border: 1px solid rgba(229, 9, 20, 0.25);
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  white-space: nowrap;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.clickable-stats-card:hover .stats-arrow-badge {
+  background: rgba(229, 9, 20, 0.25);
+  transform: translateX(3px);
+}
+
+/* Hide/Show logic for desktop breakdown vs mobile preview */
+.mobile-stats-preview {
+  display: none;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+
+.stat-chip {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.35rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.stat-chip.highlight-chip {
+  background: #e50914;
+  color: #fff;
+  border-color: #ff3b50;
+}
+
+@media (max-width: 640px) {
+  .desktop-only-stats {
+    display: none !important;
+  }
+  .mobile-stats-preview {
+    display: flex;
+  }
+  .watchtime-card.compact-stats {
+    padding: 1.25rem 1rem;
+    align-items: flex-start;
+  }
+  .watchtime-card.compact-stats .watchtime-badge {
+    margin: 0;
+  }
+}
+
+/* Detailed Analytics Modal */
+.stats-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(12px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.stats-modal-content {
+  background: #111420;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  padding: 2rem;
+  max-width: 560px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(229, 9, 20, 0.15);
+  position: relative;
+  box-sizing: border-box;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+@media (max-width: 640px) {
+  .stats-modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+  .stats-modal-content {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-top-left-radius: 28px;
+    border-top-right-radius: 28px;
+    padding: 1.75rem 1.25rem 2rem;
+  }
+}
+
+.stats-modal-header {
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.stats-modal-badge {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(229, 9, 20, 0.25) 0%, rgba(17, 20, 32, 0.8) 100%);
+  border: 2px solid #e50914;
+  margin: 0 auto 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px rgba(229, 9, 20, 0.3);
+}
+
+.stats-modal-header h2 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  margin: 0 0 0.4rem;
+  color: #fff;
+}
+
+.stats-modal-header p {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.stats-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.85rem;
+}
+
+.stats-modal-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  padding: 1rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.stats-modal-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
+}
+
+.sm-icon {
+  font-size: 1.4rem;
+  margin-bottom: 0.3rem;
+}
+
+.sm-val {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.1;
+  margin-bottom: 0.2rem;
+}
+
+.sm-lbl {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 600;
+}
+
+.stats-modal-close-btn {
+  padding: 0.85rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border-radius: 14px;
+}
