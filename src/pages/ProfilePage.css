@@ -1309,8 +1309,10 @@
 }
 
 .stats-modal-close-btn {
-  padding: 0.85rem;
+  margin-top: 1.5rem !important;
+  padding: 0.85rem 1.5rem !important;
   font-size: 0.95rem;
   font-weight: 700;
   border-radius: 14px;
+  box-sizing: border-box;
 }

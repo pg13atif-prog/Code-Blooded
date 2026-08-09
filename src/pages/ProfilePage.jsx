@@ -603,14 +603,14 @@ const ProfilePage = () => {
                 <span className="sm-lbl">Badges Earned</span>
               </div>
               <div className="stats-modal-card">
-                <span className="sm-icon">⏳</span>
-                <span className="sm-val">{totalDays > 0 ? `${totalDays}d ${remHours}h` : `${totalHours}h`}</span>
-                <span className="sm-lbl">Total Watch Time</span>
+                <span className="sm-icon">👀</span>
+                <span className="sm-val">{stats.detailViewsCount || stats.uniqueViewedIds?.length || 0}</span>
+                <span className="sm-lbl">Media Explored</span>
               </div>
             </div>
 
             <button className="btn-primary w-full stats-modal-close-btn" onClick={() => setIsStatsModalOpen(false)}>
-              Close Analytics
+              Close
             </button>
           </div>
         </div>
