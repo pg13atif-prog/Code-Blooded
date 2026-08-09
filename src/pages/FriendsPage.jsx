@@ -204,24 +204,30 @@ const FriendsPage = () => {
                 {filteredFriends.length === 0 ? (
                   <div className="friends-empty">No friends found.</div>
                 ) : (
-                  <div className="friends-grid">
-                    {filteredFriends.map(f => (
-                      <div key={f.uid} className="friend-card">
-                        <div className="friend-card-header">
-                          <div className="friend-avatar">{f.avatar ? <img src={f.avatar} style={{width:'100%', height:'100%', borderRadius:'50%', objectFit:'cover'}} alt=""/> : f.username.charAt(0).toUpperCase()}</div>
-                          <div className="friend-info">
-                            <h4>{f.username}</h4>
-                            <p>Fav Genre: {f.favoriteGenre}</p>
+                    <div className="friends-grid">
+                      {filteredFriends.map(f => (
+                        <div key={f.uid} className="friend-card">
+                          <div className="friend-card-left">
+                            <div className="friend-avatar">{f.avatar ? <img src={f.avatar} style={{width:'100%', height:'100%', borderRadius:'50%', objectFit:'cover'}} alt=""/> : f.username.charAt(0).toUpperCase()}</div>
+                            <div className="friend-info">
+                              <h4>{f.username}</h4>
+                              <p>Fav Genre: {f.favoriteGenre || 'Unknown'}</p>
+                            </div>
+                          </div>
+                          <div className="friend-card-actions">
+                            <button className="btn-primary btn-sm btn-match" onClick={() => window.location.hash = `#social?match=${f.friendCode}`}>
+                              <span className="btn-icon">🎬</span> Movie Match
+                            </button>
+                            <button className="btn-secondary btn-sm btn-recommend" onClick={() => { setSelectedFriend(f); setShowRecommendModal(true); }}>
+                              <span className="btn-icon">💡</span> Recommend
+                            </button>
+                            <button className="btn-danger btn-sm btn-remove" onClick={() => handleRemove(f.uid)} title="Remove Friend">
+                              <span className="btn-icon">🗑️</span> <span className="btn-text-remove">Remove</span>
+                            </button>
                           </div>
                         </div>
-                        <div className="friend-card-actions">
-                          <button className="btn-primary btn-sm" onClick={() => window.location.hash = `#social?match=${f.friendCode}`}>Movie Match</button>
-                          <button className="btn-secondary btn-sm" onClick={() => { setSelectedFriend(f); setShowRecommendModal(true); }}>Recommend</button>
-                          <button className="btn-danger btn-sm" onClick={() => handleRemove(f.uid)}>Remove</button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
                 )}
               </div>
             )}
