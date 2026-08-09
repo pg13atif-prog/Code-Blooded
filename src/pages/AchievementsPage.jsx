@@ -143,7 +143,6 @@ const AchievementsPage = () => {
                 <div className="ach-item-info">
                   <div className="ach-item-title-row">
                     <h3 className="ach-item-name">{ach.name}</h3>
-                    <span className="ach-item-category">{ach.category}</span>
                   </div>
                   <p className="ach-item-desc">{ach.description}</p>
                   
