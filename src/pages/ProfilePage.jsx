@@ -451,11 +451,11 @@ const ProfilePage = () => {
         {/* ── Achievements Banner (Links to #achievements) ───────── */}
         <div className="cinescope-stats-banner glass-panel" onClick={() => window.location.hash = 'achievements'}>
           <div className="cs-stats-left">
-            <h2 className="cs-stats-title">Achievements &amp; Badges</h2>
+            <h2 className="cs-stats-title">Achievements</h2>
           </div>
           <div className="cs-stats-right">
             <button className="cs-stats-btn" onClick={(e) => { e.stopPropagation(); window.location.hash = 'achievements'; }}>
-              View Achievements →
+              View
             </button>
           </div>
         </div>
