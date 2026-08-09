@@ -219,10 +219,10 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
         <div className="discover-header-row new-discover-header">
           <div className="discover-pill-toggle">
             <a href="#discover/tv" className={`pill-btn ${activeTab === 'tv' ? 'active' : ''}`}>
-              📺 TV Shows
+              TV Shows
             </a>
             <a href="#discover/movies" className={`pill-btn ${activeTab === 'movies' ? 'active' : ''}`}>
-              🎬 Movies
+              Movies
             </a>
           </div>
 

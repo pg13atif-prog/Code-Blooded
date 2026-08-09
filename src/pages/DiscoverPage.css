@@ -33,9 +33,9 @@
 
 .discover-header-row {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 1rem;
 }
 
@@ -67,8 +67,8 @@
 
 .pill-btn.active {
   color: #fff;
-  background: #fc4a6a; /* Pinkish-red from mockup */
-  box-shadow: 0 4px 15px rgba(252, 74, 106, 0.35);
+  background: var(--color-accent, #e50914);
+  box-shadow: 0 4px 15px rgba(229, 9, 20, 0.35);
 }
 
 /* ─── Icon Filter Button ─── */
@@ -81,9 +81,10 @@
   background: rgba(255, 255, 255, 0.04);
   color: #94a3b8;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 12px;
+  border-radius: 50%;
   cursor: pointer;
   transition: all 0.25s ease;
+  flex-shrink: 0;
 }
 
 .discover-icon-filter-btn:hover {
@@ -93,10 +94,10 @@
 }
 
 .discover-icon-filter-btn.active {
-  background: #fc4a6a;
+  background: var(--color-accent, #e50914);
   color: #fff;
   border-color: transparent;
-  box-shadow: 0 4px 15px rgba(252, 74, 106, 0.35);
+  box-shadow: 0 4px 15px rgba(229, 9, 20, 0.35);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -364,9 +365,8 @@
     font-size: 2rem;
   }
 
-  .discover-header-row {
-    flex-direction: column;
-    align-items: flex-start;
+  .discover-header {
+    padding: 0 var(--space-md, 1.5rem);
   }
 
   .filter-top-row {
@@ -400,16 +400,22 @@
 }
 
 @media (max-width: 480px) {
+  .discover-header {
+    padding: 0 var(--space-md, 1rem);
+  }
+
   .discover-pill-toggle {
-    flex-wrap: wrap;
-    border-radius: 20px;
+    flex-wrap: nowrap;
+    border-radius: 40px;
+    flex: 1;
   }
 
   .pill-btn {
     font-size: 0.84rem;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 0.5rem;
     flex: 1;
     justify-content: center;
+    white-space: nowrap;
   }
 
   .discover-icon-filter-btn {
