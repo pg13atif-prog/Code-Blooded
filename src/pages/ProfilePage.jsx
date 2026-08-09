@@ -598,7 +598,7 @@ const ProfilePage = () => {
               <div className="stats-modal-item">
                 <div className="sm-item-left">
                   <span className="sm-icon">🎬</span>
-                  <span className="sm-lbl">Top Favorite Genre</span>
+                  <span className="sm-lbl">Top Genre</span>
                 </div>
                 <span className="sm-val">{topGenre}</span>
               </div>
