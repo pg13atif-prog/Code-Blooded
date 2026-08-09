@@ -17,6 +17,7 @@ const SocialPage = () => {
   const [matchLoading, setMatchLoading] = useState(false);
   const [matchError, setMatchError] = useState(null);
   const [matchResult, setMatchResult] = useState(null);
+  const [showAllShared, setShowAllShared] = useState(false);
   
   const [loadingCaption, setLoadingCaption] = useState("Comparing Watchlists...");
 
@@ -69,7 +70,6 @@ const SocialPage = () => {
       const code = hash.split('?match=')[1];
       if (code) {
         setSearchCode(code);
-        // We use a timeout to allow state to settle, or just pass it directly
         setTimeout(() => executeMatch(code), 100);
       }
     }
@@ -88,7 +88,6 @@ const SocialPage = () => {
         throw new Error("You can't match with yourself!");
       }
 
-      // 1. Find Friend's UID using the central search function to get fallback & healing support
       const friendData = await searchByFriendCode(codeToSearch);
       
       if (!friendData) {
@@ -96,7 +95,11 @@ const SocialPage = () => {
       }
       const friendUid = friendData.uid;
 
-      // 2. Fetch Both Users' Data
+      const friendCheck = await get(ref(db, `users/${currentUser.uid}/friends/${friendUid}`));
+      if (!friendCheck.exists()) {
+        throw new Error("You can only match with friends. Please add them as a friend first.");
+      }
+
       const [myWl, myLiked, myWatched, fWl, fLiked, fWatched] = await Promise.all([
         getWatchlist(currentUser.uid), getLiked(currentUser.uid), getWatched(currentUser.uid),
         getWatchlist(friendUid), getLiked(friendUid), getWatched(friendUid)
@@ -104,7 +107,6 @@ const SocialPage = () => {
 
       const sharedFavorites = myLiked.filter(m => fLiked.find(fm => fm.id === m.id));
 
-      // Build rich profiles for AI analysis
       const buildProfile = (liked, watched, watchlist) => {
         const all = [...liked, ...watched, ...watchlist];
         return all.slice(0, 20).map(m => `${m.title} (${m.year}, ${m.category}, ★${m.rating})`);
@@ -113,10 +115,8 @@ const SocialPage = () => {
       const myProfile = buildProfile(myLiked, myWatched, myWl);
       const friendProfile = buildProfile(fLiked, fWatched, fWl);
 
-      // 3. Ask OpenRouter for deep compatibility analysis
       const compatibilityData = await getFriendCompatibilityRecs(myProfile, friendProfile);
 
-      // Fetch TMDB details for each recommendation
       const tmdbPromises = compatibilityData.recommendations.map(async (rec) => {
         try {
           const searchData = await searchMedia(rec.title);
@@ -136,14 +136,11 @@ const SocialPage = () => {
 
       const hydratedRecs = (await Promise.all(tmdbPromises)).filter(Boolean);
 
-      const friendWatchedNotMe = fWatched.filter(fm => !myWatched.find(m => m.id === fm.id));
-      const myWatchedNotFriend = myWatched.filter(m => !fWatched.find(fm => fm.id === m.id));
-
       setMatchResult({
         compatibility: compatibilityData.compatibility,
+        summary: compatibilityData.summary,
+        breakdown: compatibilityData.breakdown,
         sharedFavorites,
-        friendWatchedNotMe,
-        myWatchedNotFriend,
         recommendations: hydratedRecs
       });
 
@@ -169,24 +166,26 @@ const SocialPage = () => {
         <p>Compare tastes with friends and find the perfect movie to watch together.</p>
       </div>
 
-      <div className="social-content" style={{ display: 'flex', justifyContent: 'center' }}>
-        <div className="match-card" style={{ maxWidth: '600px', width: '100%' }}>
-          <h2>Match with a Friend</h2>
-          <form onSubmit={handleMatch} className="match-form">
-            <input 
-              type="text" 
-              placeholder="Enter Friend Code (e.g. CS-123456)" 
-              value={searchCode}
-              onChange={(e) => setSearchCode(e.target.value)}
-              required
-            />
-            <button type="submit" className="match-btn" disabled={matchLoading}>
-              {matchLoading ? 'Comparing...' : 'Compare Watchlists'}
-            </button>
-          </form>
-          {matchError && <p className="error-text" style={{ marginTop: '1rem' }}>{matchError}</p>}
+      {!matchResult && (
+        <div className="social-content" style={{ display: 'flex', justifyContent: 'center' }}>
+          <div className="match-card" style={{ maxWidth: '600px', width: '100%' }}>
+            <h2>Match with a Friend</h2>
+            <form onSubmit={handleMatch} className="match-form">
+              <input 
+                type="text" 
+                placeholder="Enter Friend Code (e.g. CS-123456)" 
+                value={searchCode}
+                onChange={(e) => setSearchCode(e.target.value)}
+                required
+              />
+              <button type="submit" className="match-btn" disabled={matchLoading}>
+                {matchLoading ? 'Comparing...' : 'Compare Watchlists'}
+              </button>
+            </form>
+            {matchError && <p className="error-text" style={{ marginTop: '1rem' }}>{matchError}</p>}
+          </div>
         </div>
-      </div>
+      )}
 
       {matchLoading && (
         <div className="ai-loading-state" style={{ marginTop: '3rem' }}>
@@ -236,32 +235,21 @@ const SocialPage = () => {
             <div className="shared-favorites">
               <h3>You Both Loved</h3>
               <div className="social-grid">
-                {matchResult.sharedFavorites.map(movie => (
+                {(showAllShared ? matchResult.sharedFavorites : matchResult.sharedFavorites.slice(0, 5)).map(movie => (
                   <MovieCard key={movie.id} {...movie} />
                 ))}
               </div>
-            </div>
-          )}
-
-          {matchResult.friendWatchedNotMe.length > 0 && (
-            <div className="unique-watched">
-              <h3>They've Seen, But You Haven't</h3>
-              <div className="social-grid">
-                {matchResult.friendWatchedNotMe.map(movie => (
-                  <MovieCard key={movie.id} {...movie} />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {matchResult.myWatchedNotFriend.length > 0 && (
-            <div className="unique-watched">
-              <h3>You've Seen, But They Haven't</h3>
-              <div className="social-grid">
-                {matchResult.myWatchedNotFriend.map(movie => (
-                  <MovieCard key={movie.id} {...movie} />
-                ))}
-              </div>
+              {matchResult.sharedFavorites.length > 5 && (
+                <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
+                  <button 
+                    className="match-btn" 
+                    style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', padding: '0.5rem 1.5rem' }}
+                    onClick={() => setShowAllShared(!showAllShared)}
+                  >
+                    {showAllShared ? 'Show Less' : `See All (${matchResult.sharedFavorites.length})`}
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
