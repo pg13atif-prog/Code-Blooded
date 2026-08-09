@@ -463,69 +463,71 @@ const ProfilePage = () => {
           </button>
         </div>
 
-        {/* ── Tabs & Sort Controls ─────────────────────────────────── */}
-        <div className="profile-controls-bar">
-          <div className="profile-tabs-bar">
-            {tabs.map(t => (
-              <button
-                key={t.key}
-                className={`profile-tab-btn ${activeTab === t.key ? 'active' : ''}`}
-                onClick={() => setActiveTab(t.key)}
+        {/* ── My Media Lists (3 Clean Minimal List Cards) ────────────── */}
+        <div className="profile-lists-section">
+          <h2 className="profile-section-title">My Media Lists</h2>
+          <div className="profile-lists-cards">
+            {/* 1. Liked Titles */}
+            <div 
+              className="profile-list-card glass-panel"
+              onClick={() => window.location.hash = 'user-list?type=liked'}
+            >
+              <div className="plc-left">
+                <span className="plc-icon">❤️</span>
+                <div className="plc-text">
+                  <h3>Liked Titles</h3>
+                  <p>{liked.length} {liked.length === 1 ? 'title' : 'titles'} saved in favorites</p>
+                </div>
+              </div>
+              <button 
+                className="plc-btn"
+                onClick={(e) => { e.stopPropagation(); window.location.hash = 'user-list?type=liked'; }}
               >
-                {t.label}
-                <span className="profile-tab-count">{t.count}</span>
+                View List →
               </button>
-            ))}
-          </div>
+            </div>
 
-          <div className="profile-sort-container">
-            <label htmlFor="profile-sort">Sort by:</label>
-            <CustomSelect
-              id="profile-sort"
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="profile-sort-select"
-              options={[
-                { value: 'recent', label: 'Recently Added' },
-                { value: 'title', label: 'Title (A-Z)' },
-                { value: 'rating', label: 'Rating (High to Low)' }
-              ]}
-            />
+            {/* 2. Watchlist */}
+            <div 
+              className="profile-list-card glass-panel"
+              onClick={() => window.location.hash = 'user-list?type=watchlist'}
+            >
+              <div className="plc-left">
+                <span className="plc-icon">🔖</span>
+                <div className="plc-text">
+                  <h3>My Watchlist</h3>
+                  <p>{watchlist.length} {watchlist.length === 1 ? 'title' : 'titles'} planned to watch</p>
+                </div>
+              </div>
+              <button 
+                className="plc-btn"
+                onClick={(e) => { e.stopPropagation(); window.location.hash = 'user-list?type=watchlist'; }}
+              >
+                View List →
+              </button>
+            </div>
+
+            {/* 3. Already Watched */}
+            <div 
+              className="profile-list-card glass-panel"
+              onClick={() => window.location.hash = 'user-list?type=watched'}
+            >
+              <div className="plc-left">
+                <span className="plc-icon">✅</span>
+                <div className="plc-text">
+                  <h3>Already Watched</h3>
+                  <p>{watched.length} {watched.length === 1 ? 'title' : 'titles'} completed</p>
+                </div>
+              </div>
+              <button 
+                className="plc-btn"
+                onClick={(e) => { e.stopPropagation(); window.location.hash = 'user-list?type=watched'; }}
+              >
+                View List →
+              </button>
+            </div>
           </div>
         </div>
-
-        {/* ── Tab Content ──────────────────────────────────────────── */}
-        {loading ? (
-          <div className="profile-list-grid">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="skeleton" style={{ height: '90px', borderRadius: '12px' }} />
-            ))}
-          </div>
-        ) : currentList.length === 0 ? (
-          <div className="profile-empty-state">
-            <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>
-              { activeTab === 'liked' ? '❤️' : activeTab === 'watchlist' ? '🔖' : '✅' }
-            </div>
-            <h3>Nothing here yet</h3>
-            <p>
-              { activeTab === 'liked' ? 'Like titles to see them here.' 
-              : activeTab === 'watchlist' ? 'Add titles to your watchlist.'
-              : 'Mark titles as Already Watched.' }
-            </p>
-            <button className="btn-primary" onClick={() => window.location.hash = ''}>Browse Titles</button>
-          </div>
-        ) : (
-          <div className="profile-list-grid">
-            {currentList.map(movie => (
-              <MediaListItem
-                key={movie.id}
-                movie={movie}
-                onNavigate={handleNavigate}
-                onRemove={removeMap[activeTab]}
-              />
-            ))}
-          </div>
-        )}
       </div>
 
       {isLogoutModalOpen && (

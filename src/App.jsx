@@ -22,6 +22,7 @@ import SocialPage from "./pages/SocialPage";
 import AchievementsPage from "./pages/AchievementsPage";
 import WatchlistPage from "./pages/WatchlistPage";
 import FriendsPage from "./pages/FriendsPage";
+import UserListPage from "./pages/UserListPage";
 
 // CineAI Tools
 import MoviePlanner from "./pages/cineai/MoviePlanner";
@@ -83,6 +84,19 @@ function App() {
         return;
       }
 
+      // Handle #user-list with ?type= parameter
+      const userListMatch = hash.match(/^#user-list\?type=(liked|watchlist|watched)/);
+      if (userListMatch) {
+        setCurrentRoute('user-list');
+        setCurrentParams({ type: userListMatch[1] });
+        return;
+      }
+      if (hash.startsWith('#user-list')) {
+        setCurrentRoute('user-list');
+        setCurrentParams({ type: 'liked' });
+        return;
+      }
+
       // Handle #social with optional ?match= parameter
       if (hash.startsWith('#social')) {
         setCurrentRoute('social');
@@ -108,8 +122,8 @@ function App() {
           setCurrentParams(null);
           break;
         case '#watchlist':
-          setCurrentRoute('watchlist');
-          setCurrentParams(null);
+          setCurrentRoute('user-list');
+          setCurrentParams({ type: 'watchlist' });
           break;
         case '#profile':
           setCurrentRoute('profile');
@@ -250,7 +264,8 @@ function App() {
         return <FriendsPage />;
 
       case 'watchlist':
-        return <WatchlistPage />;
+      case 'user-list':
+        return <UserListPage initialType={currentParams?.type || 'liked'} />;
 
       case 'recommended':
         return <RecommendedPage />;
