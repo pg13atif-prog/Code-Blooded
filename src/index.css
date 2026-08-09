@@ -10,6 +10,21 @@
 }
 
 /* ==========================================
+   CineScope Aesthetic Text Selection System
+   ========================================== */
+::selection {
+  background-color: rgba(229, 9, 20, 0.88);
+  color: #ffffff;
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.4);
+}
+
+::-moz-selection {
+  background-color: rgba(229, 9, 20, 0.88);
+  color: #ffffff;
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.4);
+}
+
+/* ==========================================
    CineScope Custom Aesthetic Scrollbar System
    ========================================== */
 
