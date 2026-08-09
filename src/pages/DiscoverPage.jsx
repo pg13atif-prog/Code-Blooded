@@ -221,28 +221,30 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
       </div>
 
       {filterMediaType === 'trending' && (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '1rem 0 1.5rem', flexWrap: 'wrap', gap: '1rem', width: '100%', background: 'rgba(255, 255, 255, 0.03)', padding: '0.85rem 1.25rem', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
-          <div>
-            <h2 style={{ margin: 0, fontSize: '1.15rem', color: '#fff', fontWeight: 700 }}>
-              Top Trending Titles
-            </h2>
-            <p style={{ margin: '0.2rem 0 0', fontSize: '0.82rem', color: 'rgba(255,255,255,0.6)' }}>Most popular movies and TV shows across the globe right now</p>
-          </div>
-          <div style={{ display: 'flex', gap: '0.4rem', background: 'rgba(0,0,0,0.4)', padding: '4px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.08)' }}>
-            <button 
-              className={`pill-btn ${trendingTimeWindow === 'day' ? 'active' : ''}`}
-              onClick={() => setTrendingTimeWindow('day')}
-              style={{ padding: '0.4rem 0.9rem', fontSize: '0.82rem', borderRadius: '9px', cursor: 'pointer' }}
-            >
-              Today
-            </button>
-            <button 
-              className={`pill-btn ${trendingTimeWindow === 'week' ? 'active' : ''}`}
-              onClick={() => setTrendingTimeWindow('week')}
-              style={{ padding: '0.4rem 0.9rem', fontSize: '0.82rem', borderRadius: '9px', cursor: 'pointer' }}
-            >
-              This Week
-            </button>
+        <div style={{ maxWidth: 'var(--content-max-width, 1400px)', margin: '0 auto 1.5rem', padding: '0 2rem', boxSizing: 'border-box', width: '100%' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', width: '100%', background: 'rgba(255, 255, 255, 0.03)', padding: '0.85rem 1.25rem', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.08)', boxSizing: 'border-box' }}>
+            <div>
+              <h2 style={{ margin: 0, fontSize: '1.15rem', color: '#fff', fontWeight: 700 }}>
+                Top Trending Titles
+              </h2>
+              <p style={{ margin: '0.2rem 0 0', fontSize: '0.82rem', color: 'rgba(255,255,255,0.6)' }}>Most popular movies and TV shows across the globe right now</p>
+            </div>
+            <div style={{ display: 'flex', gap: '0.4rem', background: 'rgba(0,0,0,0.4)', padding: '4px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <button 
+                className={`pill-btn ${trendingTimeWindow === 'day' ? 'active' : ''}`}
+                onClick={() => setTrendingTimeWindow('day')}
+                style={{ padding: '0.4rem 0.9rem', fontSize: '0.82rem', borderRadius: '9px', cursor: 'pointer' }}
+              >
+                Today
+              </button>
+              <button 
+                className={`pill-btn ${trendingTimeWindow === 'week' ? 'active' : ''}`}
+                onClick={() => setTrendingTimeWindow('week')}
+                style={{ padding: '0.4rem 0.9rem', fontSize: '0.82rem', borderRadius: '9px', cursor: 'pointer' }}
+              >
+                This Week
+              </button>
+            </div>
           </div>
         </div>
       )}
