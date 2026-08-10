@@ -205,7 +205,7 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
       {/* ─── Page Header ─── */}
       <div className="discover-header">
         <div className="discover-header-top">
-          <h1><span className="title-accent-2">Di</span>scover</h1>
+          <h1><span className="title-accent-2">Br</span>owse</h1>
         </div>
 
         <div className="discover-header-row new-discover-header">
