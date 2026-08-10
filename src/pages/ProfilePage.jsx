@@ -533,7 +533,13 @@ const ProfilePage = () => {
               className="profile-logout-card-btn"
               onClick={() => setIsLogoutModalOpen(true)}
             >
-              <span className="profile-logout-icon">🚪</span>
+              <span className="profile-logout-icon">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                  <polyline points="16 17 21 12 16 7"></polyline>
+                  <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+              </span>
               <span>Log Out</span>
             </button>
           </div>
@@ -545,7 +551,13 @@ const ProfilePage = () => {
           <div className="modal-content logout-confirm-modal" onClick={e => e.stopPropagation()}>
             <button className="modal-close" onClick={() => setIsLogoutModalOpen(false)} aria-label="Close modal">✕</button>
             <div className="logout-modal-header">
-              <span className="logout-modal-icon">🚪</span>
+              <span className="logout-modal-icon">
+                <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                  <polyline points="16 17 21 12 16 7"></polyline>
+                  <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+              </span>
               <h2>Log Out of CineScope?</h2>
             </div>
             <p className="logout-modal-desc">
