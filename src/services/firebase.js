@@ -7,7 +7,7 @@ import { getDatabase } from "firebase/database";
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyCQtvZluQkqv1yZGHqZwIRgp_NYzqN3JEw",
-  authDomain: "cinescopeai.vercel.app",
+  authDomain: "hackathon-backend-2b6c6.firebaseapp.com",
   databaseURL: "https://hackathon-backend-2b6c6-default-rtdb.firebaseio.com",
   projectId: "hackathon-backend-2b6c6",
   storageBucket: "hackathon-backend-2b6c6.firebasestorage.app",
