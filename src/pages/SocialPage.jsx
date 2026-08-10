@@ -79,30 +79,58 @@ const SocialPage = () => {
   useEffect(() => {
     if (!currentUser) return;
 
-    const hash = window.location.hash;
-    if (hash.includes('?match=')) {
-      const code = hash.split('?match=')[1];
-      if (code) {
-        setSearchCode(code);
-        executeMatch(code);
-      }
-    } else {
-      const savedResult = window.__cinescope_last_match_result || localStorage.getItem('cinescope_last_match_result');
-      const savedCode = window.__cinescope_last_match_code || localStorage.getItem('cinescope_last_match_code');
-      if (savedResult) {
+    const checkAndRestoreMatch = async () => {
+      const hash = window.location.hash;
+      if (hash.includes('?match=')) {
+        const code = hash.split('?match=')[1];
+        if (code) {
+          setSearchCode(code);
+          executeMatch(code);
+        }
+      } else {
+        // 1. Try local memory / localStorage first
+        const savedResult = window.__cinescope_last_match_result || localStorage.getItem(`cinescope_last_match_result_${currentUser.uid}`);
+        const savedCode = window.__cinescope_last_match_code || localStorage.getItem(`cinescope_last_match_code_${currentUser.uid}`);
+
+        if (savedResult && savedCode) {
+          try {
+            const parsed = typeof savedResult === 'string' ? JSON.parse(savedResult) : savedResult;
+            setMatchResult(parsed);
+            setSearchCode(savedCode);
+            window.__cinescope_last_match_result = parsed;
+            window.__cinescope_last_match_code = savedCode;
+            return;
+          } catch (e) {
+            console.error('Error parsing local match result', e);
+          }
+        }
+
+        // 2. Fallback to Firebase Realtime Database for cross-device persistent memory
         try {
-          const parsed = typeof savedResult === 'string' ? JSON.parse(savedResult) : savedResult;
-          setMatchResult(parsed);
-          window.__cinescope_last_match_result = parsed;
-        } catch (e) {
-          console.error(e);
+          const matchSnap = await get(ref(db, `users/${currentUser.uid}/lastMatch`));
+          if (matchSnap.exists()) {
+            const data = matchSnap.val();
+            if (data && data.result) {
+              setMatchResult(data.result);
+              setSearchCode(data.friendCode || '');
+              window.__cinescope_last_match_result = data.result;
+              window.__cinescope_last_match_code = data.friendCode || '';
+              localStorage.setItem(`cinescope_last_match_result_${currentUser.uid}`, JSON.stringify(data.result));
+              if (data.friendCode) {
+                localStorage.setItem(`cinescope_last_match_code_${currentUser.uid}`, data.friendCode);
+              }
+            }
+          }
+        } catch (err) {
+          console.error('Error fetching persistent match from Firebase', err);
         }
       }
-      if (savedCode) {
-        setSearchCode(savedCode);
-        window.__cinescope_last_match_code = savedCode;
-      }
-    }
+    };
+
+    checkAndRestoreMatch();
+
+    window.addEventListener('hashchange', checkAndRestoreMatch);
+    return () => window.removeEventListener('hashchange', checkAndRestoreMatch);
   }, [currentUser]);
 
   const executeMatch = async (codeToUse) => {
@@ -192,12 +220,24 @@ const SocialPage = () => {
 
       window.__cinescope_last_match_result = res;
       window.__cinescope_last_match_code = codeToSearch;
+
       try {
-        localStorage.setItem('cinescope_last_match_result', JSON.stringify(res));
-        localStorage.setItem('cinescope_last_match_code', codeToSearch);
+        localStorage.setItem(`cinescope_last_match_result_${currentUser.uid}`, JSON.stringify(res));
+        localStorage.setItem(`cinescope_last_match_code_${currentUser.uid}`, codeToSearch);
       } catch (e) {
-        console.error('Failed to persist match result:', e);
+        console.error('Failed to persist match result to localStorage:', e);
       }
+
+      try {
+        await set(ref(db, `users/${currentUser.uid}/lastMatch`), {
+          result: res,
+          friendCode: codeToSearch,
+          timestamp: Date.now()
+        });
+      } catch (e) {
+        console.error('Failed to persist match result to Firebase:', e);
+      }
+
       setMatchResult(res);
 
     } catch (err) {
@@ -265,12 +305,13 @@ const SocialPage = () => {
             <button 
               type="button" 
               className="match-back-btn" 
-              onClick={() => {
+              onClick={async () => {
                 window.__cinescope_last_match_result = null;
                 window.__cinescope_last_match_code = null;
                 try {
-                  localStorage.removeItem('cinescope_last_match_result');
-                  localStorage.removeItem('cinescope_last_match_code');
+                  localStorage.removeItem(`cinescope_last_match_result_${currentUser.uid}`);
+                  localStorage.removeItem(`cinescope_last_match_code_${currentUser.uid}`);
+                  await remove(ref(db, `users/${currentUser.uid}/lastMatch`));
                 } catch (e) {}
                 setMatchResult(null);
                 window.location.hash = '#friends';
