@@ -6,14 +6,14 @@ import { getDatabase } from "firebase/database";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyCQtvZluQkqv1yZGHqZwIRgp_NYzqN3JEw",
-  authDomain: "hackathon-backend-2b6c6.firebaseapp.com",
-  databaseURL: "https://hackathon-backend-2b6c6-default-rtdb.firebaseio.com",
-  projectId: "hackathon-backend-2b6c6",
-  storageBucket: "hackathon-backend-2b6c6.firebasestorage.app",
-  messagingSenderId: "338599348529",
-  appId: "1:338599348529:web:355e67bf45a06904c74810",
-  measurementId: "G-7XQPFYC248"
+  apiKey: "AIzaSyBbZdfq2rYGjh2_98KlM9vBXHvDOzaBL8c",
+  authDomain: "cinescope-app.firebaseapp.com",
+  databaseURL: "https://cinescope-app-default-rtdb.firebaseio.com",
+  projectId: "cinescope-app",
+  storageBucket: "cinescope-app.firebasestorage.app",
+  messagingSenderId: "335969845291",
+  appId: "1:335969845291:web:e7302e848ef978cf026a6e",
+  measurementId: "G-JFGS8505YT"
 };
 
 // Initialize Firebase
