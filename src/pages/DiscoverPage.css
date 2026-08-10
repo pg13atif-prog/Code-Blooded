@@ -41,6 +41,7 @@
 
 /* ─── Tab Pills (Like mockup) ─── */
 .discover-pill-toggle {
+  position: relative;
   display: flex;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -49,16 +50,19 @@
 }
 
 .pill-btn {
+  position: relative;
   color: #94a3b8;
   text-decoration: none;
   font-size: 0.95rem;
   font-weight: 600;
   padding: 0.65rem 1.5rem;
   border-radius: 36px;
-  transition: all 0.25s ease;
-  display: flex;
+  transition: color 0.25s ease;
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
+  z-index: 1;
+  background: transparent !important;
 }
 
 .pill-btn:hover {
@@ -66,10 +70,23 @@
 }
 
 .pill-btn.active {
-  color: #fff;
-  background: linear-gradient(135deg, #6b0509 0%, #440205 100%);
-  border: 1px solid rgba(185, 9, 11, 0.4);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  color: #ffffff !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.discover-tab-pill-active {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #e50914 0%, #b9090b 100%);
+  border-radius: 36px;
+  z-index: 0;
+  box-shadow: 0 4px 18px rgba(229, 9, 20, 0.45);
+}
+
+.pill-btn-label {
+  position: relative;
+  z-index: 2;
 }
 
 /* ─── Icon Filter Button ─── */

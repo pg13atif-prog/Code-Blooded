@@ -15,6 +15,26 @@
 }
 
 /* ==========================================
+   Subtle Cinematic Scroll Transition System
+   ========================================== */
+.movie-row,
+.hero-section,
+.cinematic-scroll-item {
+  will-change: opacity, transform;
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .movie-row,
+  .hero-section,
+  .cinematic-scroll-item {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* ==========================================
    CineScope Aesthetic Text Selection System
    ========================================== */
 ::selection {
@@ -460,4 +480,43 @@ button {
 
 .logout-confirm-btn:active {
   transform: translateY(0);
+}
+
+/* ==========================================
+   Moving Gradient Hover Effect on Selectable Buttons
+   ========================================== */
+.btn-primary,
+.navbar__login-btn,
+.profile-edit-save-btn,
+.filter-apply-btn,
+.discover-load-more-btn,
+.logout-confirm-btn,
+.profile-logout-card-btn {
+  background-size: 220% 100% !important;
+  transition: background-position 1.2s ease, transform 0.22s ease, box-shadow 0.22s ease !important;
+}
+
+.btn-primary:hover,
+.navbar__login-btn:hover,
+.profile-edit-save-btn:hover,
+.filter-apply-btn:hover,
+.discover-load-more-btn:hover,
+.logout-confirm-btn:hover,
+.profile-logout-card-btn:hover {
+  background-image: linear-gradient(90deg, #e50914 0%, #151a28 50%, #e50914 100%) !important;
+  background-position: 100% 0 !important;
+  box-shadow: 0 4px 22px rgba(229, 9, 20, 0.45) !important;
+}
+
+.hero__btn--info:hover,
+.profile-hero-edit-btn:hover,
+.profile-cancel-btn:hover,
+.profile-edit-cancel-btn:hover,
+.logout-cancel-btn:hover,
+.view-toggle-btn:hover,
+.custom-select-trigger:hover {
+  background-size: 220% 100% !important;
+  background-image: linear-gradient(90deg, rgba(255, 255, 255, 0.08) 0%, rgba(229, 9, 20, 0.3) 50%, rgba(255, 255, 255, 0.08) 100%) !important;
+  background-position: 100% 0 !important;
+  transition: background-position 1.2s ease, transform 0.22s ease, box-shadow 0.22s ease !important;
 }

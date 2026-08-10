@@ -196,13 +196,34 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
         <div className="discover-header-row new-discover-header">
           <div className="discover-pill-toggle">
             <a href="#discover/tv" className={`pill-btn ${filterMediaType === 'tv' ? 'active' : ''}`}>
-              TV Shows
+              {filterMediaType === 'tv' && (
+                <motion.div
+                  layoutId="discoverTabPill"
+                  className="discover-tab-pill-active"
+                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                />
+              )}
+              <span className="pill-btn-label">TV Shows</span>
             </a>
             <a href="#discover/movies" className={`pill-btn ${filterMediaType === 'movie' ? 'active' : ''}`}>
-              Movies
+              {filterMediaType === 'movie' && (
+                <motion.div
+                  layoutId="discoverTabPill"
+                  className="discover-tab-pill-active"
+                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                />
+              )}
+              <span className="pill-btn-label">Movies</span>
             </a>
             <a href="#discover/trending" className={`pill-btn ${filterMediaType === 'trending' ? 'active' : ''}`}>
-              Trending
+              {filterMediaType === 'trending' && (
+                <motion.div
+                  layoutId="discoverTabPill"
+                  className="discover-tab-pill-active"
+                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                />
+              )}
+              <span className="pill-btn-label">Trending</span>
             </a>
           </div>
 

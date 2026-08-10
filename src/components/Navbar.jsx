@@ -28,9 +28,9 @@ const friendsItems = [
 
 /* ── Framer Motion variants ────────────────────────────────── */
 const dropdownVariants = {
-  hidden: { opacity: 0, y: -8, scale: 0.98, x: 0 },
-  visible: { opacity: 1, y: 0, scale: 1, x: 0, transition: { duration: 0.18, ease: [0.16, 1, 0.3, 1] } },
-  exit: { opacity: 0, y: -6, scale: 0.98, x: 0, transition: { duration: 0.12 } },
+  hidden: { opacity: 0, y: -16, scale: 0.97 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.24, ease: [0.16, 1, 0.3, 1] } },
+  exit: { opacity: 0, y: -12, scale: 0.97, transition: { duration: 0.16, ease: [0.16, 1, 0.3, 1] } },
 };
 
 const Navbar = () => {
@@ -704,7 +704,7 @@ const Navbar = () => {
         <a 
           href="#discover/movies" 
           onClick={(e) => handleNavClick(e, '#discover/movies')} 
-          className={`mobile-nav-item ${currentPath.startsWith('#discover') || currentPath === '#' || currentPath === '' ? 'active' : ''}`}
+          className={`mobile-nav-item ${currentPath.startsWith('#discover') ? 'active' : ''}`}
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>

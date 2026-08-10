@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { getWatchlist, getLiked, getWatched, removeFromWatchlist, removeFromLiked, removeFromWatched } from '../services/firestore';
 import MovieCard from '../components/MovieCard';
@@ -100,12 +101,12 @@ const UserListPage = ({ initialType = 'liked' }) => {
     return list;
   }, [activeRawList, searchQuery, filter, sortBy]);
 
-  const isFromProfile = window.location.hash.includes('from=profile');
-
   if (loading) {
     return (
-      <div className="page-container user-list-page" style={{ paddingTop: '120px', textAlign: 'center' }}>
-        <h2>Loading Your Lists...</h2>
+      <div className="user-list-page page-container">
+        <div style={{ textAlign: 'center', padding: '5rem 0', color: 'rgba(255,255,255,0.5)' }}>
+          Loading your collection...
+        </div>
       </div>
     );
   }
@@ -114,14 +115,11 @@ const UserListPage = ({ initialType = 'liked' }) => {
 
   return (
     <div className="user-list-page page-container">
-      {/* Top Header & Back Button (Only when coming from Profile page) */}
-      {isFromProfile && (
-        <div className="user-list-nav">
-          <button className="btn-back" onClick={() => window.location.hash = '#profile'}>
-            ← Back to Profile
-          </button>
-        </div>
-      )}
+      {/* Header */}
+      <div className="user-list-header">
+        <h1>My Collection</h1>
+        <p>Manage your saved, liked, and completed movies & TV shows</p>
+      </div>
 
       {/* Tabs */}
       <div className="user-list-tabs-container">
@@ -130,19 +128,40 @@ const UserListPage = ({ initialType = 'liked' }) => {
             className={`list-tab-btn ${listType === 'liked' ? 'active' : ''}`}
             onClick={() => { setListType('liked'); window.location.hash = '#user-list?type=liked'; }}
           >
-            ❤️ Liked <span>({liked.length})</span>
+            {listType === 'liked' && (
+              <motion.div
+                layoutId="userListTabPill"
+                className="list-tab-pill-active"
+                transition={{ type: "spring", stiffness: 380, damping: 30 }}
+              />
+            )}
+            <span className="list-tab-btn-label">❤️ Liked <span>({liked.length})</span></span>
           </button>
           <button 
             className={`list-tab-btn ${listType === 'watchlist' ? 'active' : ''}`}
             onClick={() => { setListType('watchlist'); window.location.hash = '#user-list?type=watchlist'; }}
           >
-            🔖 Watchlist <span>({watchlist.length})</span>
+            {listType === 'watchlist' && (
+              <motion.div
+                layoutId="userListTabPill"
+                className="list-tab-pill-active"
+                transition={{ type: "spring", stiffness: 380, damping: 30 }}
+              />
+            )}
+            <span className="list-tab-btn-label">🔖 Watchlist <span>({watchlist.length})</span></span>
           </button>
           <button 
             className={`list-tab-btn ${listType === 'watched' ? 'active' : ''}`}
             onClick={() => { setListType('watched'); window.location.hash = '#user-list?type=watched'; }}
           >
-            ✅ Watched <span>({watched.length})</span>
+            {listType === 'watched' && (
+              <motion.div
+                layoutId="userListTabPill"
+                className="list-tab-pill-active"
+                transition={{ type: "spring", stiffness: 380, damping: 30 }}
+              />
+            )}
+            <span className="list-tab-btn-label">✅ Watched <span>({watched.length})</span></span>
           </button>
         </div>
       </div>
@@ -200,45 +219,55 @@ const UserListPage = ({ initialType = 'liked' }) => {
       </div>
 
       {/* Content */}
-      {filteredAndSortedList.length === 0 ? (
-        <div className="user-list-empty glass-panel">
-          <span className="empty-icon">🎬</span>
-          <h2>No titles found</h2>
-          <p>
-            {searchQuery.trim() 
-              ? 'No titles match your search criteria.' 
-              : listType === 'liked' 
-                ? 'You haven\'t liked any movies or TV shows yet.' 
-                : listType === 'watchlist' 
-                  ? 'Your watchlist is currently empty.' 
-                  : 'You haven\'t marked any titles as watched yet.'}
-          </p>
-        </div>
-      ) : (
-        <div className={`user-list-grid ${viewMode}`}>
-          {filteredAndSortedList.map(movie => (
-            <div key={movie.id} className="user-list-item-wrapper">
-              {viewMode === 'grid' ? (
-                <div className="user-list-card-wrapper">
-                  <MovieCard {...movie} disableHover={true} onRemove={(e) => handleRemove(e, movie)} />
-                </div>
-              ) : (
-                <div className="user-list-row-item" onClick={() => window.location.hash = `${movie.mediaType || 'movie'}/${movie.id}`}>
-                  <div className="ul-poster">
-                    {movie.poster ? <img src={movie.poster} alt={movie.title || movie.name} /> : <div className="ul-no-poster">{(movie.title || movie.name)?.charAt(0)}</div>}
-                  </div>
-                  <div className="ul-info">
-                    <h3>{movie.title || movie.name}</h3>
-                    <p>{movie.year} • {movie.category} • {movie.mediaType === 'tv' ? 'TV Show' : 'Movie'}</p>
-                    <div className="ul-rating">★ {movie.rating}</div>
-                  </div>
-                  <button className="ul-row-remove" onClick={(e) => handleRemove(e, movie)}>Remove</button>
-                </div>
-              )}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={`${listType}-${filter}-${sortBy}-${searchQuery}-${viewMode}`}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+        >
+          {filteredAndSortedList.length === 0 ? (
+            <div className="user-list-empty glass-panel">
+              <span className="empty-icon">🎬</span>
+              <h2>No titles found</h2>
+              <p>
+                {searchQuery.trim() 
+                  ? 'No titles match your search criteria.' 
+                  : listType === 'liked' 
+                    ? 'You haven\'t liked any movies or TV shows yet.' 
+                    : listType === 'watchlist' 
+                      ? 'Your watchlist is currently empty.' 
+                      : 'You haven\'t marked any titles as watched yet.'}
+              </p>
             </div>
-          ))}
-        </div>
-      )}
+          ) : (
+            <div className={`user-list-grid ${viewMode}`}>
+              {filteredAndSortedList.map(movie => (
+                <div key={movie.id} className="user-list-item-wrapper">
+                  {viewMode === 'grid' ? (
+                    <div className="user-list-card-wrapper">
+                      <MovieCard {...movie} disableHover={true} onRemove={(e) => handleRemove(e, movie)} />
+                    </div>
+                  ) : (
+                    <div className="user-list-row-item" onClick={() => window.location.hash = `${movie.mediaType || 'movie'}/${movie.id}`}>
+                      <div className="ul-poster">
+                        {movie.poster ? <img src={movie.poster} alt={movie.title || movie.name} /> : <div className="ul-no-poster">{(movie.title || movie.name)?.charAt(0)}</div>}
+                      </div>
+                      <div className="ul-info">
+                        <h3>{movie.title || movie.name}</h3>
+                        <p>{movie.year} • {movie.category} • {movie.mediaType === 'tv' ? 'TV Show' : 'Movie'}</p>
+                        <div className="ul-rating">★ {movie.rating}</div>
+                      </div>
+                      <button className="ul-row-remove" onClick={(e) => handleRemove(e, movie)}>Remove</button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 };

@@ -51,6 +51,7 @@
 }
 
 .user-list-tabs {
+  position: relative;
   display: flex;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -62,8 +63,9 @@
 }
 
 .list-tab-btn {
+  position: relative;
   flex: 1;
-  background: transparent;
+  background: transparent !important;
   border: none;
   color: rgba(255, 255, 255, 0.65);
   padding: 0.65rem 0.85rem;
@@ -71,13 +73,14 @@
   font-weight: 700;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: color 0.2s ease;
   white-space: nowrap;
   text-align: center;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.35rem;
+  z-index: 1;
 }
 
 .list-tab-btn span {
@@ -87,13 +90,29 @@
 
 .list-tab-btn:hover {
   color: #fff;
-  background: rgba(255, 255, 255, 0.06);
 }
 
 .list-tab-btn.active {
+  color: #ffffff !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.list-tab-pill-active {
+  position: absolute;
+  inset: 0;
   background: var(--color-accent, #e50914);
-  color: #fff;
-  box-shadow: 0 4px 15px rgba(229, 9, 20, 0.35);
+  border-radius: 24px;
+  z-index: 0;
+  box-shadow: 0 4px 18px rgba(229, 9, 20, 0.45);
+}
+
+.list-tab-btn-label {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
 .list-tab-btn.active span {

@@ -28,8 +28,11 @@ import UserListPage from "./pages/UserListPage";
 import MoviePlanner from "./pages/cineai/MoviePlanner";
 import PickForMe from "./pages/cineai/PickForMe";
 import MovieDebate from "./pages/cineai/MovieDebate";
+import { useCinematicScroll } from "./hooks/useCinematicScroll";
 
 function App() {
+  useCinematicScroll();
+
   const [showSplash, setShowSplash] = useState(() => {
     return !sessionStorage.getItem('cinescope_splash_seen');
   });

@@ -364,8 +364,8 @@ const ProfilePage = () => {
                   autoFocus
                 />
                 <div className="edit-profile-actions">
-                  <button className="btn-primary btn-sm" onClick={handleSaveProfile} disabled={uploading}>{uploading ? 'Saving...' : 'Save'}</button>
-                  <button className="btn-secondary btn-sm" onClick={() => setIsEditing(false)}>Cancel</button>
+                  <button className="profile-edit-save-btn" onClick={handleSaveProfile} disabled={uploading}>{uploading ? 'Saving...' : 'Save'}</button>
+                  <button className="profile-edit-cancel-btn" onClick={() => setIsEditing(false)}>Cancel</button>
                 </div>
               </div>
             ) : (

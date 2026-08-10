@@ -1460,6 +1460,50 @@
   }
 }
 
+/* ── Save and Cancel Buttons Layout ── */
+.profile-edit-save-btn,
+.profile-edit-cancel-btn {
+  padding: 0.5rem 1.4rem;
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 90px;
+  height: 38px;
+  box-sizing: border-box;
+}
+
+.profile-edit-save-btn {
+  background: var(--color-accent, #e50914);
+  border: 1px solid var(--color-accent, #e50914);
+  color: #ffffff;
+}
+
+.profile-edit-save-btn:hover {
+  background: #cf0c0e;
+  border-color: #cf0c0e;
+  box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
+  transform: translateY(-1px);
+}
+
+.profile-edit-cancel-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+}
+
+.profile-edit-cancel-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
 /* ── Profile Hero Edit Button ── */
 .profile-hero-edit-btn {
   margin-top: 0;
@@ -1484,6 +1528,32 @@
   border-color: var(--color-accent, #e50914);
   box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
   transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .profile-edit-btn-row {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .profile-hero-edit-btn {
+    margin: 0 auto;
+  }
+
+  .edit-profile-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  .profile-friend-code-display {
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 
 /* ── Profile Logout Button Section ── */
