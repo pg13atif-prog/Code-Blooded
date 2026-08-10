@@ -59,12 +59,12 @@
   min-width: 100%;
   width: max-content;
   max-width: 280px;
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.92) 0%, rgba(11, 13, 20, 0.95) 100%);
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.94) 0%, rgba(11, 13, 20, 0.96) 100%);
   backdrop-filter: blur(24px) saturate(190%);
   -webkit-backdrop-filter: blur(24px) saturate(190%);
   border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 18px;
-  padding: 8px;
+  border-radius: 20px;
+  padding: 6px;
   box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.22), 0 20px 45px rgba(0, 0, 0, 0.65), 0 0 25px rgba(229, 9, 20, 0.12);
   z-index: 10000;
   overflow: hidden;
@@ -83,8 +83,8 @@
 }
 
 .custom-select-option {
-  padding: 0.6rem 1rem;
-  border-radius: 10px;
+  padding: 0.6rem 1.15rem;
+  border-radius: 20px;
   color: rgba(255, 255, 255, 0.8);
   cursor: pointer;
   font-size: 0.86rem;
@@ -98,8 +98,8 @@
 }
 
 .custom-select-option.selected {
-  background: linear-gradient(135deg, rgba(140, 15, 25, 0.6) 0%, rgba(90, 8, 15, 0.7) 100%);
-  border: 1px solid rgba(229, 9, 20, 0.35);
+  background: linear-gradient(135deg, rgba(150, 18, 28, 0.75) 0%, rgba(95, 10, 16, 0.85) 100%);
+  border: 1px solid rgba(229, 9, 20, 0.4);
   color: #ffffff;
 }
 
