@@ -37,15 +37,36 @@ const PickForMe = () => {
   return (
     <div className="cineai-tool-page page-container">
       <div className="cineai-tool-header">
+        <div className="cineai-tool-badge">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"></path>
+          </svg>
+          <span>One-Click AI Sommelier</span>
+        </div>
         <h1>Pick For Me</h1>
         <p>The fastest way to pick a movie. Press the button, get a certified banger instantly.</p>
       </div>
 
       <div className="pick-for-me-container">
         {!movie && !loading && (
-          <button className="massive-pick-btn" onClick={handlePick}>
-            Find A Movie
-          </button>
+          <div className="pick-hero-wrapper animated-entrance">
+            <div className="pick-hero-icon-ring">
+              <span className="pick-hero-emoji">🎲</span>
+            </div>
+            <button className="massive-pick-btn" onClick={handlePick}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"></path>
+              </svg>
+              <span>Find A Movie</span>
+            </button>
+            <div className="pick-feature-tags">
+              <span>✨ Instant AI Recommendation</span>
+              <span className="dot">•</span>
+              <span>🎯 Zero Decision Fatigue</span>
+              <span className="dot">•</span>
+              <span>🍿 Certified Banger</span>
+            </div>
+          </div>
         )}
 
         {loading && (
