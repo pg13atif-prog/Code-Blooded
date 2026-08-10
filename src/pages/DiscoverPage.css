@@ -39,23 +39,26 @@
   gap: 1rem;
 }
 
-/* ─── Tab Pills (Like mockup) ─── */
+/* ─── Tab Pills (macOS Liquid Glass Slab) ─── */
 .discover-pill-toggle {
   position: relative;
   display: flex;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 40px;
   padding: 4px;
+  backdrop-filter: blur(25px) saturate(200%);
+  -webkit-backdrop-filter: blur(25px) saturate(200%);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.7), 0 8px 32px rgba(0, 0, 0, 0.5);
 }
 
 .pill-btn {
   position: relative;
-  color: #94a3b8;
+  color: rgba(255, 255, 255, 0.65);
   text-decoration: none;
   font-size: 0.95rem;
   font-weight: 600;
-  padding: 0.65rem 1.5rem;
+  padding: 0.65rem 1.6rem;
   border-radius: 36px;
   transition: color 0.25s ease;
   display: inline-flex;
@@ -63,14 +66,17 @@
   justify-content: center;
   z-index: 1;
   background: transparent !important;
+  cursor: pointer;
+  border: none;
 }
 
 .pill-btn:hover {
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.95);
 }
 
 .pill-btn.active {
   color: #ffffff !important;
+  font-weight: 700;
   background: transparent !important;
   box-shadow: none !important;
 }
@@ -78,21 +84,49 @@
 .discover-tab-pill-active {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(229, 9, 20, 0.45) 0%, rgba(229, 9, 20, 0.22) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.38) 0%,
+    rgba(229, 9, 20, 0.4) 30%,
+    rgba(185, 9, 11, 0.58) 100%
+  );
+  border-top: 1px solid rgba(255, 255, 255, 0.85);
+  border-left: 1px solid rgba(255, 255, 255, 0.45);
+  border-right: 1px solid rgba(255, 255, 255, 0.35);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.6);
   border-radius: 36px;
   z-index: 0;
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  backdrop-filter: blur(30px) saturate(220%) brightness(1.2);
+  -webkit-backdrop-filter: blur(30px) saturate(220%) brightness(1.2);
   box-shadow: 
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.3),
-    0 6px 20px rgba(229, 9, 20, 0.45);
+    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1.5px 2px 0 rgba(0, 0, 0, 0.5),
+    0 8px 25px rgba(0, 0, 0, 0.6),
+    0 4px 20px rgba(229, 9, 20, 0.6);
+  overflow: hidden;
+}
+
+.discover-tab-pill-active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.45) 0%,
+    rgba(255, 255, 255, 0.05) 80%,
+    transparent 100%
+  );
+  border-radius: 36px 36px 0 0;
+  pointer-events: none;
 }
 
 .pill-btn-label {
   position: relative;
   z-index: 2;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
 
 /* ─── Icon Filter Button ─── */
