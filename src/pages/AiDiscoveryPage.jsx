@@ -42,6 +42,7 @@ const AiDiscoveryPage = () => {
   const { currentUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [captionIndex, setCaptionIndex] = useState(0);
   const [selectedRationaleModal, setSelectedRationaleModal] = useState(null);
 
   useEffect(() => {
