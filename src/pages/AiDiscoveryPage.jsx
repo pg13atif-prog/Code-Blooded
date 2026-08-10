@@ -343,31 +343,9 @@ const AiDiscoveryPage = () => {
                       {movie.category && <span className="ai-rec-tag">{movie.category}</span>}
                       <span className="ai-rec-tag type">{movie.mediaType === 'tv' ? 'TV Show' : 'Movie'}</span>
                     </div>
-                    <div className="ai-rec-actions">
-                      <button 
-                        type="button" 
-                        className="btn-primary ai-view-details-btn"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          window.location.hash = `${movie.mediaType || 'movie'}/${movie.id}`;
-                        }}
-                      >
-                        View Details
-                      </button>
-                      <button 
-                        type="button" 
-                        className="btn-secondary ai-see-why-btn"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedRationaleModal({ 
-                            title: movie.title, 
-                            rationale: movie.rationale || movie.overview || 'No rationale available.' 
-                          });
-                        }}
-                      >
-                        Why This Pick?
-                      </button>
-                    </div>
+                    <p className="ai-result-rationale">
+                      {movie.rationale || movie.overview}
+                    </p>
                   </div>
                 </motion.div>
               ))}
