@@ -18,6 +18,7 @@ const SocialPage = () => {
   const [matchError, setMatchError] = useState(null);
   const [matchResult, setMatchResult] = useState(null);
   const [showAllShared, setShowAllShared] = useState(false);
+  const [selectedRationaleModal, setSelectedRationaleModal] = useState(null);
   
   const [loadingCaption, setLoadingCaption] = useState("Comparing Watchlists...");
 
@@ -272,25 +273,40 @@ const SocialPage = () => {
             )}
           </div>
 
-          {matchResult.breakdown && matchResult.breakdown.length > 0 && (
-            <div className="compatibility-breakdown">
-              <h3>Match Breakdown</h3>
-              <div className="breakdown-bars">
-                {matchResult.breakdown.map((dim, idx) => (
-                  <div key={idx} className="breakdown-row">
-                    <span className="breakdown-label">{dim.dimension}</span>
-                    <div className="breakdown-track">
-                      <div 
-                        className="breakdown-fill" 
-                        style={{ width: `${dim.value}%` }}
-                      />
+          {(() => {
+            const formattedBreakdown = matchResult.breakdown
+              ? Array.isArray(matchResult.breakdown)
+                ? matchResult.breakdown
+                : [
+                    { dimension: 'Genre Overlap', value: matchResult.breakdown.genreOverlap ?? 50 },
+                    { dimension: 'Era Alignment', value: matchResult.breakdown.eraAlignment ?? 50 },
+                    { dimension: 'Rating Standards', value: matchResult.breakdown.ratingStandards ?? 50 },
+                    { dimension: 'Thematic Taste', value: matchResult.breakdown.thematicTaste ?? 50 }
+                  ]
+              : [];
+
+            if (formattedBreakdown.length === 0) return null;
+
+            return (
+              <div className="compatibility-breakdown">
+                <h3>Match Breakdown</h3>
+                <div className="breakdown-bars">
+                  {formattedBreakdown.map((dim, idx) => (
+                    <div key={idx} className="breakdown-row">
+                      <span className="breakdown-label">{dim.dimension}</span>
+                      <div className="breakdown-track">
+                        <div 
+                          className="breakdown-fill" 
+                          style={{ width: `${dim.value}%` }}
+                        />
+                      </div>
+                      <span className="breakdown-value">{dim.value}%</span>
                     </div>
-                    <span className="breakdown-value">{dim.value}%</span>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {matchResult.sharedFavorites.length > 0 && (
             <div className="shared-favorites">
