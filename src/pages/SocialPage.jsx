@@ -81,49 +81,61 @@ const SocialPage = () => {
 
     const checkAndRestoreMatch = async () => {
       const hash = window.location.hash;
+      let targetCode = null;
+
       if (hash.includes('?match=')) {
-        const code = hash.split('?match=')[1];
-        if (code) {
-          setSearchCode(code);
-          executeMatch(code);
-        }
-      } else {
-        // 1. Try local memory / localStorage first
-        const savedResult = window.__cinescope_last_match_result || localStorage.getItem(`cinescope_last_match_result_${currentUser.uid}`);
-        const savedCode = window.__cinescope_last_match_code || localStorage.getItem(`cinescope_last_match_code_${currentUser.uid}`);
+        targetCode = hash.split('?match=')[1]?.trim()?.toUpperCase();
+      }
 
-        if (savedResult && savedCode) {
-          try {
-            const parsed = typeof savedResult === 'string' ? JSON.parse(savedResult) : savedResult;
-            setMatchResult(parsed);
-            setSearchCode(savedCode);
-            window.__cinescope_last_match_result = parsed;
-            window.__cinescope_last_match_code = savedCode;
-            return;
-          } catch (e) {
-            console.error('Error parsing local match result', e);
-          }
-        }
+      // 1. Try local memory / localStorage first
+      const savedCode = (window.__cinescope_last_match_code || localStorage.getItem(`cinescope_last_match_code_${currentUser.uid}`))?.trim()?.toUpperCase();
+      const rawSavedResult = window.__cinescope_last_match_result || localStorage.getItem(`cinescope_last_match_result_${currentUser.uid}`);
+      let savedResult = null;
 
-        // 2. Fallback to Firebase Realtime Database for cross-device persistent memory
+      if (rawSavedResult) {
         try {
-          const matchSnap = await get(ref(db, `users/${currentUser.uid}/lastMatch`));
-          if (matchSnap.exists()) {
-            const data = matchSnap.val();
-            if (data && data.result) {
+          savedResult = typeof rawSavedResult === 'string' ? JSON.parse(rawSavedResult) : rawSavedResult;
+        } catch (e) {
+          console.error('Error parsing local match result', e);
+        }
+      }
+
+      // If targetCode matches savedCode OR no targetCode but savedResult exists, restore cached comparison data!
+      if (savedResult && savedCode && (!targetCode || targetCode === savedCode)) {
+        setMatchResult(savedResult);
+        setSearchCode(savedCode);
+        window.__cinescope_last_match_result = savedResult;
+        window.__cinescope_last_match_code = savedCode;
+        return;
+      }
+
+      // If a new targetCode is specified, execute match for that code
+      if (targetCode) {
+        setSearchCode(targetCode);
+        executeMatch(targetCode);
+        return;
+      }
+
+      // 2. Fallback to Firebase Realtime Database for cross-device persistent memory
+      try {
+        const matchSnap = await get(ref(db, `users/${currentUser.uid}/lastMatch`));
+        if (matchSnap.exists()) {
+          const data = matchSnap.val();
+          if (data && data.result && data.friendCode) {
+            const dbCode = data.friendCode.trim().toUpperCase();
+            if (!targetCode || targetCode === dbCode) {
               setMatchResult(data.result);
-              setSearchCode(data.friendCode || '');
+              setSearchCode(dbCode);
               window.__cinescope_last_match_result = data.result;
-              window.__cinescope_last_match_code = data.friendCode || '';
+              window.__cinescope_last_match_code = dbCode;
               localStorage.setItem(`cinescope_last_match_result_${currentUser.uid}`, JSON.stringify(data.result));
-              if (data.friendCode) {
-                localStorage.setItem(`cinescope_last_match_code_${currentUser.uid}`, data.friendCode);
-              }
+              localStorage.setItem(`cinescope_last_match_code_${currentUser.uid}`, dbCode);
+              return;
             }
           }
-        } catch (err) {
-          console.error('Error fetching persistent match from Firebase', err);
         }
+      } catch (err) {
+        console.error('Error fetching persistent match from Firebase', err);
       }
     };
 

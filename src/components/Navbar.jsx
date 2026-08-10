@@ -487,7 +487,7 @@ const Navbar = () => {
             id="friends"
             label="Friends"
             hash="#friends"
-            isActive={currentPath === '#friends' || currentPath === '#social'}
+            isActive={currentPath.startsWith('#friends') || currentPath.startsWith('#social')}
           />
 
           {/* ── Mobile Menu Utility Items ─────────────────── */}
@@ -736,7 +736,7 @@ const Navbar = () => {
         <a 
           href="#friends" 
           onClick={(e) => handleNavClick(e, '#friends')} 
-          className={`mobile-nav-item ${currentPath === '#friends' || currentPath === '#social' ? 'active' : ''}`}
+          className={`mobile-nav-item ${currentPath.startsWith('#friends') || currentPath.startsWith('#social') ? 'active' : ''}`}
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
