@@ -85,16 +85,48 @@ const Hero = ({ movies = [], movie = null, loading = false }) => {
     window.location.hash = `${currentSlide.mediaType || 'movie'}/${featuredId}`;
   }, [currentSlide.mediaType, featuredId]);
 
-  const handleNextSlide = () => {
+  const handleNextSlide = useCallback(() => {
     setCurrentIndex((prev) => (prev + 1) % slides.length);
+  }, [slides.length]);
+
+  const handlePrevSlide = useCallback(() => {
+    setCurrentIndex((prev) => (prev - 1 + slides.length) % slides.length);
+  }, [slides.length]);
+
+  // Touch swipe handling for mobile/tablet
+  const [touchStartX, setTouchStartX] = useState(null);
+  const [touchEndX, setTouchEndX] = useState(null);
+
+  const minSwipeDistance = 40;
+
+  const handleTouchStart = (e) => {
+    setTouchEndX(null);
+    setTouchStartX(e.targetTouches[0].clientX);
   };
 
-  const handlePrevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + slides.length) % slides.length);
+  const handleTouchMove = (e) => {
+    setTouchEndX(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStartX || !touchEndX) return;
+    const distance = touchStartX - touchEndX;
+    if (distance > minSwipeDistance) {
+      handleNextSlide();
+    } else if (distance < -minSwipeDistance) {
+      handlePrevSlide();
+    }
   };
 
   return (
-    <section className="hero" id="hero-section" aria-label="Featured Movie">
+    <section
+      className="hero"
+      id="hero-section"
+      aria-label="Featured Movie"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
       {/* ── Background Image Slider ── */}
       <AnimatePresence mode="wait">
         <motion.div

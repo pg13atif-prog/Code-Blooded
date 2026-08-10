@@ -400,6 +400,10 @@
     height: 54px;
   }
 
+  .hero__carousel-arrows {
+    display: none !important;
+  }
+
   .hero__carousel-controls {
     bottom: 1.5rem;
     right: 50%;
