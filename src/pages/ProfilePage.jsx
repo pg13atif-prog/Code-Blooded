@@ -261,6 +261,7 @@ const ProfilePage = () => {
       await updateUserProfile(currentUser.uid, { displayName: editName });
       setProfileData(prev => ({ ...prev, username: editName }));
       setIsEditing(false);
+      window.dispatchEvent(new Event('user-profile-updated'));
     } catch (err) {
       console.error(err);
     } finally {
@@ -306,6 +307,7 @@ const ProfilePage = () => {
         try {
           await updateUserProfile(currentUser.uid, { avatarUrl: dataUrl });
           setProfileData(prev => ({ ...prev, avatar: dataUrl }));
+          window.dispatchEvent(new Event('user-profile-updated'));
         } catch (err) {
           console.error(err);
           alert("Failed to upload avatar.");

@@ -196,11 +196,17 @@ export const updateUserProfile = async (userId, data) => {
   if (data.avatarUrl !== undefined) updates[`users/${userId}/avatarUrl`] = data.avatarUrl;
   await update(ref(db), updates);
 
-  if (auth.currentUser && auth.currentUser.uid === userId && data.displayName !== undefined) {
-    try {
-      await updateProfile(auth.currentUser, { displayName: data.displayName });
-    } catch (e) {
-      console.error('Error updating Firebase auth profile:', e);
+  if (auth.currentUser && auth.currentUser.uid === userId) {
+    const profileUpdates = {};
+    if (data.displayName !== undefined) profileUpdates.displayName = data.displayName;
+    if (data.avatarUrl !== undefined) profileUpdates.photoURL = data.avatarUrl;
+
+    if (Object.keys(profileUpdates).length > 0) {
+      try {
+        await updateProfile(auth.currentUser, profileUpdates);
+      } catch (e) {
+        console.error('Error updating Firebase auth profile:', e);
+      }
     }
   }
 };

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import AuthModal from './AuthModal';
 import { searchMedia } from '../services/tmdb';
-import { getNotifications, removeNotification } from '../services/friends';
+import { getNotifications, removeNotification, getFriendData } from '../services/friends';
 import { addToWatchlist, addToLiked, addToWatched } from '../services/firestore';
 import './Navbar.css';
 
@@ -62,6 +62,7 @@ const Navbar = () => {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [addedNotifs, setAddedNotifs] = useState({});
   const hasUnreadNotifications = notifications.length > 0;
+  const [userProfile, setUserProfile] = useState(null);
 
   // Autocomplete state
   const [suggestions, setSuggestions] = useState([]);
@@ -99,6 +100,33 @@ const Navbar = () => {
     } else {
       setNotifications([]);
     }
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (!currentUser) {
+      setUserProfile(null);
+      return;
+    }
+
+    const fetchProfile = async () => {
+      try {
+        const pData = await getFriendData(currentUser.uid);
+        setUserProfile(pData);
+      } catch (err) {
+        console.error("Navbar profile fetch error:", err);
+      }
+    };
+
+    fetchProfile();
+
+    const handleProfileUpdate = () => {
+      fetchProfile();
+    };
+
+    window.addEventListener('user-profile-updated', handleProfileUpdate);
+    return () => {
+      window.removeEventListener('user-profile-updated', handleProfileUpdate);
+    };
   }, [currentUser]);
 
   useEffect(() => {
@@ -302,8 +330,9 @@ const Navbar = () => {
     }
   };
 
-  const email = currentUser?.email || '';
-  const avatarLetter = email ? email.charAt(0).toUpperCase() : '?';
+  const userAvatar = userProfile?.avatar || currentUser?.photoURL || null;
+  const username = userProfile?.username || (currentUser?.email ? currentUser.email.split('@')[0] : 'User');
+  const avatarLetter = username ? username.charAt(0).toUpperCase() : '?';
 
   /* ── Helper: render premium dropdown ──────────────────────── */
   const renderPremiumDropdown = (items) => (
@@ -639,8 +668,13 @@ const Navbar = () => {
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 aria-label="Profile Menu"
                 aria-expanded={isDropdownOpen}
+                style={{ padding: 0, overflow: 'hidden' }}
               >
-                {avatarLetter}
+                {userAvatar ? (
+                  <img src={userAvatar} alt={username} className="navbar__profile-avatar-img" />
+                ) : (
+                  avatarLetter
+                )}
               </button>
 
               <AnimatePresence>
@@ -652,8 +686,18 @@ const Navbar = () => {
                     animate="visible"
                     exit="exit"
                   >
-                    <div className="dropdown-header">
-                      <p className="dropdown-email">{currentUser.isAnonymous ? 'Guest User' : currentUser.email}</p>
+                    <div className="dropdown-header" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.9rem 1rem' }}>
+                      <div className="dropdown-avatar" style={{ width: '36px', height: '36px', borderRadius: '50%', overflow: 'hidden', flexShrink: 0, background: 'var(--color-accent, #e50914)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: '#fff' }}>
+                        {userAvatar ? (
+                          <img src={userAvatar} alt={username} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        ) : (
+                          avatarLetter
+                        )}
+                      </div>
+                      <div style={{ minWidth: 0, flex: 1 }}>
+                        <p style={{ margin: 0, fontWeight: 700, fontSize: '0.95rem', color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{username}</p>
+                        <p className="dropdown-email" style={{ margin: 0, fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{currentUser.isAnonymous ? 'Guest User' : currentUser.email}</p>
+                      </div>
                     </div>
                     <div className="dropdown-divider"></div>
                     <button type="button" className="dropdown-item" onClick={(e) => handleNavClick(e, '#profile')}>
