@@ -385,13 +385,15 @@ const ProfilePage = () => {
                     </button>
                   </div>
                 )}
-                <button 
-                  type="button" 
-                  className="profile-hero-edit-btn"
-                  onClick={() => { setEditName(username); setIsEditing(true); }}
-                >
-                  Edit Profile
-                </button>
+                <div className="profile-edit-btn-row">
+                  <button 
+                    type="button" 
+                    className="profile-hero-edit-btn"
+                    onClick={() => { setEditName(username); setIsEditing(true); }}
+                  >
+                    Edit Profile
+                  </button>
+                </div>
               </>
             )}
           </div>
