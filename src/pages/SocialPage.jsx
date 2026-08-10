@@ -356,7 +356,7 @@ const SocialPage = () => {
               <span>{matchResult.compatibility}%</span>
             </div>
             {matchResult.summary && (
-              <p className="compatibility-summary">"{matchResult.summary}"</p>
+              <p className="compatibility-summary">{matchResult.summary}</p>
             )}
           </div>
 
