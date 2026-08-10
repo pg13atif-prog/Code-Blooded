@@ -343,9 +343,6 @@ const AiDiscoveryPage = () => {
                       {movie.category && <span className="ai-rec-tag">{movie.category}</span>}
                       <span className="ai-rec-tag type">{movie.mediaType === 'tv' ? 'TV Show' : 'Movie'}</span>
                     </div>
-                    <p className="ai-result-rationale">
-                      {movie.rationale || movie.overview}
-                    </p>
                     <div className="ai-rec-actions">
                       <button 
                         type="button" 
