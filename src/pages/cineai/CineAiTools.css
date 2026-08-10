@@ -433,21 +433,29 @@
 }
 
 .planner-option-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   padding: 1.25rem 2rem;
   border-radius: 16px;
   color: #fff;
   font-size: 1.1rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .planner-option-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.3);
-  transform: translateY(-2px);
+  background: linear-gradient(135deg, rgba(229, 9, 20, 0.25), rgba(255, 107, 107, 0.15));
+  border-color: var(--color-accent, #e50914);
+  color: #ffffff;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(229, 9, 20, 0.45);
+}
+
+.planner-option-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 4px 12px rgba(229, 9, 20, 0.3);
 }
 
 .planner-progress {
