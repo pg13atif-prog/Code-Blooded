@@ -549,7 +549,7 @@ const Navbar = () => {
               <input
                 type="text"
                 className="navbar__search-input"
-                placeholder="Titles, people, genres..."
+                placeholder="Type here to search..."
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
@@ -709,84 +709,89 @@ const Navbar = () => {
       </AnimatePresence>
 
       {/* Mobile Bottom Navigation Bar */}
-      <nav className={`mobile-bottom-nav ${isMobileMenuOpen ? 'mobile-bottom-nav--hidden' : ''}`} aria-label="Mobile Navigation">
-        <a 
-          href="#discover/movies" 
-          onClick={(e) => handleNavClick(e, '#discover/movies')} 
-          className={`mobile-nav-item ${currentPath.startsWith('#discover') ? 'active' : ''}`}
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="2" y1="12" x2="22" y2="12"></line>
-            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-          </svg>
-          <span>Browse</span>
-        </a>
+      {(() => {
+        const isSearchingActive = isMobileSearchModalOpen || isSearchActive || currentPath.startsWith('#search');
+        return (
+          <nav className={`mobile-bottom-nav ${isMobileMenuOpen ? 'mobile-bottom-nav--hidden' : ''}`} aria-label="Mobile Navigation">
+            <a 
+              href="#discover/movies" 
+              onClick={(e) => handleNavClick(e, '#discover/movies')} 
+              className={`mobile-nav-item ${!isSearchingActive && currentPath.startsWith('#discover') ? 'active' : ''}`}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              </svg>
+              <span>Browse</span>
+            </a>
 
-        <a 
-          href="#cineai" 
-          onClick={(e) => handleNavClick(e, '#cineai')} 
-          className={`mobile-nav-item ${currentPath.startsWith('#cineai') ? 'active' : ''}`}
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"></path>
-            <path d="m5 3 1 2 2 1-2 1-1 2-1-2-2-1 2-1Z"></path>
-            <path d="m19 17 1 2 2 1-2 1-1 2-1-2-2-1 2-1Z"></path>
-          </svg>
-          <span>CineAI</span>
-        </a>
+            <a 
+              href="#cineai" 
+              onClick={(e) => handleNavClick(e, '#cineai')} 
+              className={`mobile-nav-item ${!isSearchingActive && currentPath.startsWith('#cineai') ? 'active' : ''}`}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"></path>
+                <path d="m5 3 1 2 2 1-2 1-1 2-1-2-2-1 2-1Z"></path>
+                <path d="m19 17 1 2 2 1-2 1-1 2-1-2-2-1 2-1Z"></path>
+              </svg>
+              <span>CineAI</span>
+            </a>
 
-        <a 
-          href="#friends" 
-          onClick={(e) => handleNavClick(e, '#friends')} 
-          className={`mobile-nav-item ${currentPath.startsWith('#friends') || currentPath.startsWith('#social') ? 'active' : ''}`}
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-            <circle cx="9" cy="7" r="4"></circle>
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-          </svg>
-          <span>Friends</span>
-        </a>
+            <a 
+              href="#friends" 
+              onClick={(e) => handleNavClick(e, '#friends')} 
+              className={`mobile-nav-item ${!isSearchingActive && (currentPath.startsWith('#friends') || currentPath.startsWith('#social')) ? 'active' : ''}`}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+              <span>Friends</span>
+            </a>
 
-        <button 
-          type="button" 
-          onClick={() => {
-            setIsMobileSearchModalOpen(true);
-            setSearchQuery('');
-          }} 
-          className={`mobile-nav-item ${isMobileSearchModalOpen ? 'active' : ''}`}
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
-          <span>Search</span>
-        </button>
+            <button 
+              type="button" 
+              onClick={() => {
+                setIsMobileSearchModalOpen(true);
+                setSearchQuery('');
+              }} 
+              className={`mobile-nav-item ${isSearchingActive ? 'active' : ''}`}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+              <span>Search</span>
+            </button>
 
-        <a 
-          href="#profile" 
-          onClick={handleMobileProfileClick} 
-          className={`mobile-nav-item ${currentPath === '#profile' ? 'active' : ''}`}
-        >
-          {currentUser ? (
-            <div className="mobile-nav-avatar">
-              {userAvatar ? (
-                <img src={userAvatar} alt={username} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+            <a 
+              href="#profile" 
+              onClick={handleMobileProfileClick} 
+              className={`mobile-nav-item ${!isSearchingActive && currentPath === '#profile' ? 'active' : ''}`}
+            >
+              {currentUser ? (
+                <div className="mobile-nav-avatar">
+                  {userAvatar ? (
+                    <img src={userAvatar} alt={username} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                  ) : (
+                    avatarLetter
+                  )}
+                </div>
               ) : (
-                avatarLetter
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
               )}
-            </div>
-          ) : (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-          )}
-          <span>Profile</span>
-        </a>
-      </nav>
+              <span>Profile</span>
+            </a>
+          </nav>
+        );
+      })()}
 
       {/* ── Centered Mobile Search Overlay (Full Blur Background, No Modal Box) ── */}
       {isMobileSearchModalOpen && (
@@ -801,7 +806,7 @@ const Navbar = () => {
               <input
                 type="text"
                 className="modal-search-input"
-                placeholder="Search titles, people, genres..."
+                placeholder="Type here to search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 autoFocus
