@@ -67,6 +67,22 @@
   opacity: 1;
 }
 
+/* ---------- Official Title Logo ---------- */
+.hero__title-logo-wrapper {
+  margin-bottom: var(--space-md);
+  max-width: 440px;
+  display: flex;
+  align-items: center;
+}
+
+.hero__title-logo {
+  max-width: 100%;
+  max-height: 145px;
+  object-fit: contain;
+  object-position: left center;
+  filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 30px rgba(229, 9, 20, 0.3));
+}
+
 /* ---------- Rating ---------- */
 .hero__rating {
   display: flex;
@@ -399,6 +415,36 @@
   .hero__actions {
     flex-wrap: wrap;
   }
+}
+
+@media (max-width: 768px) {
+  .hero__title-logo-wrapper {
+    max-width: 320px;
+    width: 92%;
+    margin: 0 auto 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .hero__title-logo {
+    max-height: 95px;
+    width: 100%;
+    max-width: 320px;
+    object-fit: contain;
+    object-position: center;
+    margin: 0 auto;
+  }
+
+  .hero__content {
+    text-align: center;
+    align-items: center;
+  }
+
+  .hero__genres,
+  .hero__rating {
+    justify-content: center;
+  }
 
   .hero__btn {
     padding: 0.75rem 1.3rem;
@@ -423,6 +469,18 @@
     padding-bottom: calc(var(--space-xl) + 4rem);
     text-align: center;
     align-items: center;
+  }
+
+  .hero__title-logo-wrapper {
+    max-width: 300px;
+    width: 92%;
+    margin: 0 auto 0.85rem;
+  }
+
+  .hero__title-logo {
+    max-height: 85px;
+    width: 100%;
+    max-width: 300px;
   }
 
   .hero__description {

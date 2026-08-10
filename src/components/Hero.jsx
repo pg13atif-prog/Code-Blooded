@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { getMovieVideos } from '../services/tmdb';
+import { getMovieVideos, fetchMovieLogo } from '../services/tmdb';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HeroSkeleton } from './SkeletonLoader';
 import './Hero.css';
@@ -13,6 +13,8 @@ const DEFAULT_FALLBACK_HERO = {
   overview: "A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival. When Earth becomes uninhabitable, a group of astronauts ventures beyond our solar system in search of a new home.",
   mediaType: 'movie'
 };
+
+const LOGO_CACHE = new Map();
 
 const Hero = ({ movies = [], movie = null, loading = false }) => {
   if (loading) {
@@ -33,9 +35,51 @@ const Hero = ({ movies = [], movie = null, loading = false }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showTrailerModal, setShowTrailerModal] = useState(false);
   const [trailerKey, setTrailerKey] = useState(null);
+  const [logoMap, setLogoMap] = useState(() => {
+    const initialMap = {};
+    slides.forEach((s) => {
+      if (s.id && LOGO_CACHE.has(s.id)) {
+        initialMap[s.id] = LOGO_CACHE.get(s.id);
+      }
+    });
+    return initialMap;
+  });
 
   const currentSlide = slides[currentIndex] || slides[0] || DEFAULT_FALLBACK_HERO;
   const featuredId = currentSlide.id;
+
+  // Pre-fetch official Title Logos for all slides in parallel to prevent text flash
+  useEffect(() => {
+    let isMounted = true;
+    const prefetchLogos = async () => {
+      const promises = slides.map(async (s) => {
+        if (!s.id) return null;
+        if (LOGO_CACHE.has(s.id)) {
+          return { id: s.id, url: LOGO_CACHE.get(s.id) };
+        }
+        try {
+          const logo = await fetchMovieLogo(s.id, s.mediaType || 'movie');
+          const val = logo || 'NO_LOGO';
+          LOGO_CACHE.set(s.id, val);
+          if (isMounted) {
+            setLogoMap((prev) => ({ ...prev, [s.id]: val }));
+          }
+          return { id: s.id, url: val };
+        } catch (e) {
+          LOGO_CACHE.set(s.id, 'NO_LOGO');
+          if (isMounted) {
+            setLogoMap((prev) => ({ ...prev, [s.id]: 'NO_LOGO' }));
+          }
+          return { id: s.id, url: 'NO_LOGO' };
+        }
+      });
+
+      await Promise.all(promises);
+    };
+
+    prefetchLogos();
+    return () => { isMounted = false; };
+  }, [slides]);
 
   // Auto-scroll every 5 seconds (5000ms) - paused when trailer modal is open
   useEffect(() => {
@@ -160,10 +204,32 @@ const Hero = ({ movies = [], movie = null, loading = false }) => {
             exit={{ opacity: 0, y: -15 }}
             transition={{ duration: 0.4 }}
           >
-            {/* Title */}
-            <h1 className="hero__title" id="hero-title">
-              {currentSlide.title || 'Interstellar'}
-            </h1>
+            {/* Title / Official Stylized Title Logo */}
+            {(() => {
+              const logo = logoMap[featuredId] || LOGO_CACHE.get(featuredId);
+              if (logo && logo !== 'NO_LOGO') {
+                return (
+                  <div className="hero__title-logo-wrapper" id="hero-title">
+                    <img
+                      src={logo}
+                      alt={currentSlide.title || 'Movie Title'}
+                      className="hero__title-logo"
+                    />
+                  </div>
+                );
+              }
+              if (logo === 'NO_LOGO') {
+                return (
+                  <h1 className="hero__title" id="hero-title">
+                    {currentSlide.title || 'Interstellar'}
+                  </h1>
+                );
+              }
+              // Still pre-fetching: render zero-flash placeholder
+              return (
+                <div className="hero__title-placeholder" style={{ opacity: 0, height: '60px', marginBottom: '1.25rem' }}></div>
+              );
+            })()}
 
             {/* Star Rating */}
             <div className="hero__rating" id="hero-rating" aria-label={`Rating: ${currentSlide.rating} out of 10`}>

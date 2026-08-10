@@ -92,6 +92,45 @@ const fetchWithTimeout = async (url, options = {}) => {
   }
 };
 
+const LOGO_CACHE_MAP = new Map();
+
+export const fetchMovieLogo = async (id, mediaType = 'movie') => {
+  if (!id) return null;
+  if (LOGO_CACHE_MAP.has(id)) {
+    const cached = LOGO_CACHE_MAP.get(id);
+    return cached === 'NO_LOGO' ? null : cached;
+  }
+
+  try {
+    const type = mediaType === 'tv' ? 'tv' : 'movie';
+    const response = await fetchWithTimeout(
+      `${API_BASE_URL}/${type}/${id}/images?include_image_language=en,null`,
+      { timeout: 3500 }
+    );
+    if (!response.ok) {
+      LOGO_CACHE_MAP.set(id, 'NO_LOGO');
+      return null;
+    }
+    const data = await response.json();
+    if (data.logos && data.logos.length > 0) {
+      const logo = data.logos.find((l) => l.iso_639_1 === 'en') || data.logos[0];
+      const logoUrl = `https://image.tmdb.org/t/p/w500${logo.file_path}`;
+      LOGO_CACHE_MAP.set(id, logoUrl);
+      
+      // Preload image into browser memory cache for instant render
+      const img = new Image();
+      img.src = logoUrl;
+      
+      return logoUrl;
+    }
+    LOGO_CACHE_MAP.set(id, 'NO_LOGO');
+    return null;
+  } catch (err) {
+    LOGO_CACHE_MAP.set(id, 'NO_LOGO');
+    return null;
+  }
+};
+
 export const fetchList = async (endpoint, signal) => {
   const response = await fetchWithTimeout(`${API_BASE_URL}/${endpoint}`, { signal });
   if (!response.ok) throw new Error(`Failed to load ${endpoint}`);
@@ -110,7 +149,12 @@ export const getPopularMovies = async (signal) => {
   }
 
   const { results } = await response.json();
-  return results.filter((movie) => movie.poster_path).map(mapMovie);
+  const movies = results.filter((movie) => movie.poster_path).map(mapMovie);
+  // Eagerly pre-fetch hero logos in background
+  movies.slice(0, 5).forEach((m) => {
+    fetchMovieLogo(m.id, m.mediaType || 'movie');
+  });
+  return movies;
 };
 
 export const getPopularTvShows = async (signal) => {
