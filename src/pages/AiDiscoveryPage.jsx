@@ -42,8 +42,18 @@ const AiDiscoveryPage = () => {
   const { currentUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [captionIndex, setCaptionIndex] = useState(0);
   const [selectedRationaleModal, setSelectedRationaleModal] = useState(null);
+
+  useEffect(() => {
+    if (selectedRationaleModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [selectedRationaleModal]);
 
   useEffect(() => {
     if (!loading) {
@@ -207,11 +217,24 @@ const AiDiscoveryPage = () => {
                     </div>
                   </div>
                   <div className="ai-result-content">
-                    <h2>{movie.title}</h2>
-                    <div className="ai-result-meta">
-                      <span className="ai-result-badge">{movie.mediaType === 'tv' ? 'TV Series' : 'Movie'}</span>
-                      <span className="ai-result-year">{movie.year}</span>
-                      <span className="ai-result-rating">★ {movie.rating}</span>
+                    <div className="ai-rec-header-row">
+                      <h2 
+                        className="ai-rec-title"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.location.hash = `#${movie.mediaType || 'movie'}/${movie.id}`;
+                        }}
+                      >
+                        {movie.title}
+                      </h2>
+                      {movie.rating && movie.rating !== '—' && movie.rating !== '-' && movie.rating !== 'N/A' && (
+                        <span className="ai-rec-rating">★ {movie.rating}</span>
+                      )}
+                    </div>
+                    <div className="ai-rec-tags">
+                      {movie.year && <span className="ai-rec-tag">{movie.year}</span>}
+                      {movie.category && <span className="ai-rec-tag">{movie.category}</span>}
+                      <span className="ai-rec-tag type">{movie.mediaType === 'tv' ? 'TV Show' : 'Movie'}</span>
                     </div>
                     <p className="ai-result-rationale">
                       {movie.rationale || movie.overview}

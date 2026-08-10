@@ -236,6 +236,64 @@
   font-size: 0.95rem;
 }
 
+.ai-rec-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.ai-rec-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  line-height: 1.25;
+}
+
+.ai-rec-title:hover {
+  color: var(--color-accent, #e50914);
+}
+
+.ai-rec-rating {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.12);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  padding: 0.25rem 0.65rem;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.ai-rec-tags {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.ai-rec-tag {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.2rem 0.65rem;
+  border-radius: 12px;
+}
+
+.ai-rec-tag.type {
+  color: var(--color-accent, #e50914);
+  background: rgba(229, 9, 20, 0.1);
+  border-color: rgba(229, 9, 20, 0.25);
+}
+
 .see-why-btn {
   display: none;
 }
@@ -288,23 +346,47 @@
 
   .ai-result-content {
     width: 100%;
+    padding: 0.2rem 0 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+    flex: 1;
   }
   
-  .ai-result-content h2 {
+  .ai-rec-header-row {
+    display: block;
+    width: 100%;
+    margin-bottom: 0;
+    text-align: center;
+  }
+
+  .ai-rec-title {
     font-size: 0.9rem;
     font-weight: 700;
     text-align: center;
     line-height: 1.25;
-    margin: 0;
+    color: #ffffff;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
+    word-break: break-word;
   }
-  
-  .ai-result-meta,
+
+  .ai-rec-rating,
+  .ai-rec-tags {
+    display: flex !important;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+  }
+
   .ai-result-rationale,
   .ai-result-overview {
     display: none !important;
@@ -314,7 +396,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    margin: 0.5rem auto 0;
+    margin: 0.75rem auto 0;
     padding: 0.38rem 0.85rem;
     background: rgba(229, 9, 20, 0.16);
     border: 1px solid rgba(229, 9, 20, 0.45);
@@ -325,6 +407,7 @@
     cursor: pointer;
     transition: all 0.2s ease;
     box-shadow: 0 4px 12px rgba(229, 9, 20, 0.3);
+    margin-top: auto;
   }
 
   .see-why-btn:hover {
