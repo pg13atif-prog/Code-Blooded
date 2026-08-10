@@ -398,6 +398,11 @@ const SocialPage = () => {
                       {movie.category && <span className="ai-rec-tag">{movie.category}</span>}
                       <span className="ai-rec-tag type">{movie.mediaType === 'tv' ? 'TV Show' : 'Movie'}</span>
                     </div>
+                    {movie.rationale && (
+                      <p className="ai-rec-rationale-text">
+                        {movie.rationale}
+                      </p>
+                    )}
                     <button 
                       type="button" 
                       className="see-why-btn"

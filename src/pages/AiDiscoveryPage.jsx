@@ -43,6 +43,7 @@ const AiDiscoveryPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [captionIndex, setCaptionIndex] = useState(0);
+  const [selectedRationaleModal, setSelectedRationaleModal] = useState(null);
 
   useEffect(() => {
     if (!loading) {
@@ -215,6 +216,19 @@ const AiDiscoveryPage = () => {
                     <p className="ai-result-rationale">
                       {movie.rationale || movie.overview}
                     </p>
+                    <button 
+                      type="button" 
+                      className="see-why-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedRationaleModal({ 
+                          title: movie.title, 
+                          rationale: movie.rationale || movie.overview || 'No rationale available.' 
+                        });
+                      }}
+                    >
+                      See Why
+                    </button>
                   </div>
                 </motion.div>
               ))}
@@ -222,6 +236,32 @@ const AiDiscoveryPage = () => {
           </div>
         )}
       </div>
+
+      {/* Rationale Modal */}
+      {selectedRationaleModal && (
+        <div className="modal-overlay" onClick={() => setSelectedRationaleModal(null)}>
+          <div 
+            className="modal-content glass-panel" 
+            style={{ maxWidth: '500px', width: '90%', padding: '2rem', position: 'relative' }} 
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button 
+              type="button" 
+              className="modal-close" 
+              onClick={() => setSelectedRationaleModal(null)}
+              style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', fontSize: '1rem' }}
+            >
+              ✕
+            </button>
+            <h2 style={{ fontSize: '1.3rem', marginBottom: '1rem', color: '#fff' }}>
+              Why {selectedRationaleModal.title}?
+            </h2>
+            <p style={{ fontSize: '1rem', lineHeight: '1.6', color: 'rgba(255,255,255,0.85)', margin: 0 }}>
+              {selectedRationaleModal.rationale}
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
