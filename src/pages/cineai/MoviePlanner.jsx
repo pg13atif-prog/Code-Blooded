@@ -103,7 +103,11 @@ const MoviePlanner = () => {
         {movie && !loading && (
           <div className="ai-result-card animated-entrance">
             <div className="ai-result-poster">
-              <MovieCard {...movie} />
+              {movie.poster ? (
+                <img src={movie.poster} alt={movie.title} className="pick-poster-img" />
+              ) : (
+                <div className="pick-poster-placeholder">{movie.title}</div>
+              )}
             </div>
             <div className="ai-result-info">
               <div className="perfect-match-badge">Perfect Match</div>
