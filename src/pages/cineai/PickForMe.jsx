@@ -39,7 +39,8 @@ const PickForMe = () => {
       if (!match) throw new Error("Could not find title on TMDB");
       
       setSeenTitles(prev => [...prev, match.title]);
-      setMovie({ ...match, rationale: aiPick.rationale });
+      const cleanRationale = (aiPick.rationale || '').replace(/^["'“]/, '').replace(/["'”]$/, '').trim();
+      setMovie({ ...match, rationale: cleanRationale });
     } catch (err) {
       console.error(err);
       setError("Oops. Our AI got stage fright. Details: " + err.message);
@@ -82,7 +83,7 @@ const PickForMe = () => {
             </div>
             <div className="ai-result-info">
               <h2>{movie.title} {movie.year && <span>({movie.year})</span>}</h2>
-              <p className="ai-rationale">&ldquo;{movie.rationale}&rdquo;</p>
+              <p className="ai-rationale">{movie.rationale}</p>
               <div className="ai-actions">
                 <button className="btn-primary" onClick={() => window.location.hash = `${movie.mediaType || 'movie'}/${movie.id}`}>View Details</button>
                 <button className="btn-secondary" onClick={handlePick}>Pick Another</button>

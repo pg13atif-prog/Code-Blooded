@@ -99,7 +99,7 @@ const MoviePlanner = () => {
             <div className="ai-result-info">
               <div className="perfect-match-badge">Perfect Match</div>
               <h2>{movie.title} <span>({movie.year})</span></h2>
-              <p className="ai-rationale">"{movie.rationale}"</p>
+              <p className="ai-rationale">{movie.rationale}</p>
               <div className="ai-actions">
                 <button className="btn-primary" onClick={() => window.location.hash = `${movie.mediaType || 'movie'}/${movie.id}`}>View Details</button>
                 <button className="btn-secondary" onClick={resetPlanner}>Plan Another Night</button>
