@@ -430,11 +430,11 @@ const SocialPage = () => {
                         >
                           {movie.title}
                         </h4>
+                      </div>
+                      <div className="ai-rec-tags">
                         {movie.rating && movie.rating !== '—' && movie.rating !== '-' && movie.rating !== 'N/A' && (
                           <span className="ai-rec-rating">★ {movie.rating}</span>
                         )}
-                      </div>
-                      <div className="ai-rec-tags">
                         {movie.year && <span className="ai-rec-tag">{movie.year}</span>}
                         {movie.category && <span className="ai-rec-tag">{movie.category}</span>}
                         <span className="ai-rec-tag type">{movie.mediaType === 'tv' ? 'TV Show' : 'Movie'}</span>
@@ -477,11 +477,11 @@ const SocialPage = () => {
                         >
                           {movie.title}
                         </h4>
+                      </div>
+                      <div className="ai-rec-tags">
                         {movie.rating && movie.rating !== '—' && movie.rating !== '-' && movie.rating !== 'N/A' && (
                           <span className="ai-rec-rating">★ {movie.rating}</span>
                         )}
-                      </div>
-                      <div className="ai-rec-tags">
                         {movie.year && <span className="ai-rec-tag">{movie.year}</span>}
                         {movie.category && <span className="ai-rec-tag">{movie.category}</span>}
                         <span className="ai-rec-tag type">{movie.mediaType === 'tv' ? 'TV Show' : 'Movie'}</span>

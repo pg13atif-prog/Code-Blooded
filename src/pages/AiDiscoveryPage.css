@@ -296,14 +296,26 @@
     margin: 0 0 0.2rem 0;
   }
 
-  .ai-rec-rating,
   .ai-rec-tags {
-    display: flex !important;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 0.3rem;
-    margin-top: 0.25rem;
-    font-size: 0.75rem;
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.35rem !important;
+    width: 100% !important;
+    margin: 0.4rem 0 !important;
+  }
+
+  .ai-rec-tags .ai-rec-rating,
+  .ai-rec-tags .ai-rec-tag {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    text-align: center !important;
+    margin: 0 !important;
+    font-size: 0.72rem !important;
+    padding: 0.22rem 0.35rem !important;
+    border-radius: 8px !important;
   }
 
   .ai-result-rationale,
