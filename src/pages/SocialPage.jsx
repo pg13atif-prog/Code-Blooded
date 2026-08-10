@@ -393,7 +393,7 @@ const SocialPage = () => {
             );
           })()}
 
-          {matchResult.sharedFavorites.length > 0 && (
+          {Array.isArray(matchResult.sharedFavorites) && matchResult.sharedFavorites.length > 0 && (
             <div className="shared-favorites">
               <div className="section-header">
                 <h3>You Both Loved</h3>
@@ -449,60 +449,62 @@ const SocialPage = () => {
             </div>
           )}
 
-          <div className="ai-recommendations">
-            <div className="section-header">
-              <h3>AI Top Picks For Both Of You</h3>
-            </div>
-            <div className="ai-rec-list">
-              {matchResult.recommendations.map((movie) => (
-                <div key={movie.id} className="ai-rec-card glass-panel">
-                  <div 
-                    className="ai-rec-poster"
-                    onClick={() => window.location.hash = `#${movie.mediaType || 'movie'}/${movie.id}`}
-                  >
-                    {movie.poster ? (
-                      <img src={movie.poster} alt={movie.title} />
-                    ) : (
-                      <div className="ai-rec-no-poster">🎬</div>
-                    )}
-                  </div>
-                  <div className="ai-rec-content">
-                    <div className="ai-rec-header-row">
-                      <h4 
-                        className="ai-rec-title"
-                        onClick={() => window.location.hash = `#${movie.mediaType || 'movie'}/${movie.id}`}
-                      >
-                        {movie.title}
-                      </h4>
-                      {movie.rating && movie.rating !== '—' && movie.rating !== '-' && movie.rating !== 'N/A' && (
-                        <span className="ai-rec-rating">★ {movie.rating}</span>
+          {Array.isArray(matchResult.recommendations) && matchResult.recommendations.length > 0 && (
+            <div className="ai-recommendations">
+              <div className="section-header">
+                <h3>AI Top Picks For Both Of You</h3>
+              </div>
+              <div className="ai-rec-list">
+                {matchResult.recommendations.map((movie) => (
+                  <div key={movie.id} className="ai-rec-card glass-panel">
+                    <div 
+                      className="ai-rec-poster"
+                      onClick={() => window.location.hash = `#${movie.mediaType || 'movie'}/${movie.id}`}
+                    >
+                      {movie.poster ? (
+                        <img src={movie.poster} alt={movie.title} />
+                      ) : (
+                        <div className="ai-rec-no-poster">🎬</div>
                       )}
                     </div>
-                    <div className="ai-rec-tags">
-                      {movie.year && <span className="ai-rec-tag">{movie.year}</span>}
-                      {movie.category && <span className="ai-rec-tag">{movie.category}</span>}
-                      <span className="ai-rec-tag type">{movie.mediaType === 'tv' ? 'TV Show' : 'Movie'}</span>
+                    <div className="ai-rec-content">
+                      <div className="ai-rec-header-row">
+                        <h4 
+                          className="ai-rec-title"
+                          onClick={() => window.location.hash = `#${movie.mediaType || 'movie'}/${movie.id}`}
+                        >
+                          {movie.title}
+                        </h4>
+                        {movie.rating && movie.rating !== '—' && movie.rating !== '-' && movie.rating !== 'N/A' && (
+                          <span className="ai-rec-rating">★ {movie.rating}</span>
+                        )}
+                      </div>
+                      <div className="ai-rec-tags">
+                        {movie.year && <span className="ai-rec-tag">{movie.year}</span>}
+                        {movie.category && <span className="ai-rec-tag">{movie.category}</span>}
+                        <span className="ai-rec-tag type">{movie.mediaType === 'tv' ? 'TV Show' : 'Movie'}</span>
+                      </div>
+                      {movie.rationale && (
+                        <p className="ai-rec-rationale-text">
+                          {movie.rationale}
+                        </p>
+                      )}
+                      <button 
+                        type="button" 
+                        className="see-why-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedRationaleModal({ title: movie.title, rationale: movie.rationale });
+                        }}
+                      >
+                        See Why
+                      </button>
                     </div>
-                    {movie.rationale && (
-                      <p className="ai-rec-rationale-text">
-                        {movie.rationale}
-                      </p>
-                    )}
-                    <button 
-                      type="button" 
-                      className="see-why-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedRationaleModal({ title: movie.title, rationale: movie.rationale });
-                      }}
-                    >
-                      See Why
-                    </button>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
 
