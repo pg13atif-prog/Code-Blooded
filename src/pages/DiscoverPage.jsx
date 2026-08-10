@@ -73,7 +73,11 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
 
   // Sync filter media type with active tab
   useEffect(() => {
-    setFilterMediaType(activeTab === 'tv' ? 'tv' : (activeTab === 'trending' ? 'trending' : 'movie'));
+    const nextMediaType = activeTab === 'tv' ? 'tv' : (activeTab === 'trending' ? 'trending' : 'movie');
+    setFilterMediaType(nextMediaType);
+    if (nextMediaType === 'trending') {
+      setShowFilters(false);
+    }
   }, [activeTab]);
 
   // Sync pending filter state when filter panel opens
@@ -249,6 +253,7 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
               className={`pill-btn ${filterMediaType === 'trending' ? 'active' : ''}`}
               onClick={() => {
                 setFilterMediaType('trending');
+                setShowFilters(false);
                 window.history.replaceState(null, '', '#discover/trending');
               }}
             >
@@ -325,7 +330,7 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
 
       {/* ─── Filter Panel ─── */}
       <AnimatePresence>
-        {showFilters && (
+        {showFilters && filterMediaType !== 'trending' && (
           <motion.div
             className="discover-filter-wrapper"
             initial={{ height: 0, opacity: 0 }}
