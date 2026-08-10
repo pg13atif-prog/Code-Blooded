@@ -250,7 +250,7 @@ const SocialPage = () => {
             <div className="shared-favorites">
               <div className="section-header">
                 <h3>You Both Loved</h3>
-                {matchResult.sharedFavorites.length > 5 && (
+                {matchResult.sharedFavorites.length > 4 && (
                   <button 
                     className="match-btn" 
                     style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', padding: '0.4rem 1rem', fontSize: '0.9rem', marginTop: 0 }}
@@ -260,9 +260,43 @@ const SocialPage = () => {
                   </button>
                 )}
               </div>
-              <div className="social-grid">
-                {(showAllShared ? matchResult.sharedFavorites : matchResult.sharedFavorites.slice(0, 5)).map(movie => (
-                  <MovieCard key={movie.id} {...movie} />
+              <div className="shared-favorites-grid">
+                {(showAllShared ? matchResult.sharedFavorites : matchResult.sharedFavorites.slice(0, 4)).map(movie => (
+                  <div key={movie.id} className="ai-rec-card shared-rec-card glass-panel">
+                    <div 
+                      className="ai-rec-poster"
+                      onClick={() => window.location.hash = `#${movie.mediaType || 'movie'}/${movie.id}`}
+                    >
+                      {movie.poster ? (
+                        <img src={movie.poster} alt={movie.title} />
+                      ) : (
+                        <div className="ai-rec-no-poster">🎬</div>
+                      )}
+                    </div>
+                    <div className="ai-rec-content">
+                      <div className="ai-rec-header-row">
+                        <h4 
+                          className="ai-rec-title"
+                          onClick={() => window.location.hash = `#${movie.mediaType || 'movie'}/${movie.id}`}
+                        >
+                          {movie.title}
+                        </h4>
+                        {movie.rating && (
+                          <span className="ai-rec-rating">★ {movie.rating}</span>
+                        )}
+                      </div>
+                      <div className="ai-rec-tags">
+                        {movie.year && <span className="ai-rec-tag">{movie.year}</span>}
+                        {movie.category && <span className="ai-rec-tag">{movie.category}</span>}
+                        <span className="ai-rec-tag type">{movie.mediaType === 'tv' ? 'TV Show' : 'Movie'}</span>
+                      </div>
+                      {movie.overview && (
+                        <p className="ai-rec-rationale-text">
+                          {movie.overview.length > 110 ? `${movie.overview.substring(0, 110)}...` : movie.overview}
+                        </p>
+                      )}
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>

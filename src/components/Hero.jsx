@@ -202,12 +202,14 @@ const Hero = ({ movies = [], movie = null, loading = false }) => {
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M8 5v14l11-7z" />
                   </svg>
+                  <span>Play Trailer</span>
                 </button>
               ) : (
                 <button className="hero__btn hero__btn--play disabled" id="btn-play-disabled" type="button" disabled aria-label="Trailer unavailable" title="Trailer unavailable">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M8 5v14l11-7z" />
                   </svg>
+                  <span>Play Trailer</span>
                 </button>
               )}
 
@@ -226,6 +228,7 @@ const Hero = ({ movies = [], movie = null, loading = false }) => {
                   <line x1="12" y1="16" x2="12" y2="12" />
                   <line x1="12" y1="8" x2="12.01" y2="8" />
                 </svg>
+                <span>View Detail</span>
               </button>
             </div>
           </motion.div>

@@ -179,13 +179,22 @@
   padding-bottom: 0.5rem;
 }
 
-.social-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 2.5rem;
+.shared-favorites {
   margin-bottom: 3rem;
-  padding: 0 1rem;
+}
+
+.shared-favorites-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+  width: 100%;
+}
+
+@media (max-width: 860px) {
+  .shared-favorites-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
 }
 
 .recommendations-list {

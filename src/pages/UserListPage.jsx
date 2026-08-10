@@ -100,6 +100,8 @@ const UserListPage = ({ initialType = 'liked' }) => {
     return list;
   }, [activeRawList, searchQuery, filter, sortBy]);
 
+  const isFromProfile = window.location.hash.includes('from=profile');
+
   if (loading) {
     return (
       <div className="page-container user-list-page" style={{ paddingTop: '120px', textAlign: 'center' }}>
@@ -112,12 +114,14 @@ const UserListPage = ({ initialType = 'liked' }) => {
 
   return (
     <div className="user-list-page page-container">
-      {/* Top Header & Back Button */}
-      <div className="user-list-nav">
-        <button className="btn-back" onClick={() => window.location.hash = '#profile'}>
-          ← Back to Profile
-        </button>
-      </div>
+      {/* Top Header & Back Button (Only when coming from Profile page) */}
+      {isFromProfile && (
+        <div className="user-list-nav">
+          <button className="btn-back" onClick={() => window.location.hash = '#profile'}>
+            ← Back to Profile
+          </button>
+        </div>
+      )}
 
       {/* Tabs */}
       <div className="user-list-tabs-container">

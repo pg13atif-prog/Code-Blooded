@@ -467,7 +467,7 @@ const ProfilePage = () => {
             {/* 1. Liked Titles */}
             <div 
               className="profile-list-card glass-panel"
-              onClick={() => window.location.hash = 'user-list?type=liked'}
+              onClick={() => window.location.hash = 'user-list?type=liked&from=profile'}
             >
               <div className="plc-left">
                 <span className="plc-icon">❤️</span>
@@ -478,7 +478,7 @@ const ProfilePage = () => {
               </div>
               <button 
                 className="plc-btn"
-                onClick={(e) => { e.stopPropagation(); window.location.hash = 'user-list?type=liked'; }}
+                onClick={(e) => { e.stopPropagation(); window.location.hash = 'user-list?type=liked&from=profile'; }}
               >
                 View List →
               </button>
@@ -487,7 +487,7 @@ const ProfilePage = () => {
             {/* 2. Watchlist */}
             <div 
               className="profile-list-card glass-panel"
-              onClick={() => window.location.hash = 'user-list?type=watchlist'}
+              onClick={() => window.location.hash = 'user-list?type=watchlist&from=profile'}
             >
               <div className="plc-left">
                 <span className="plc-icon">🔖</span>
@@ -498,7 +498,7 @@ const ProfilePage = () => {
               </div>
               <button 
                 className="plc-btn"
-                onClick={(e) => { e.stopPropagation(); window.location.hash = 'user-list?type=watchlist'; }}
+                onClick={(e) => { e.stopPropagation(); window.location.hash = 'user-list?type=watchlist&from=profile'; }}
               >
                 View List →
               </button>
@@ -507,7 +507,7 @@ const ProfilePage = () => {
             {/* 3. Already Watched */}
             <div 
               className="profile-list-card glass-panel"
-              onClick={() => window.location.hash = 'user-list?type=watched'}
+              onClick={() => window.location.hash = 'user-list?type=watched&from=profile'}
             >
               <div className="plc-left">
                 <span className="plc-icon">✅</span>
@@ -518,7 +518,7 @@ const ProfilePage = () => {
               </div>
               <button 
                 className="plc-btn"
-                onClick={(e) => { e.stopPropagation(); window.location.hash = 'user-list?type=watched'; }}
+                onClick={(e) => { e.stopPropagation(); window.location.hash = 'user-list?type=watched&from=profile'; }}
               >
                 View List →
               </button>
