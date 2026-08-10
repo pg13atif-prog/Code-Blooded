@@ -155,6 +155,29 @@ const AiDiscoveryPage = () => {
             {loading ? 'Thinking...' : '✨ Let CineAI Decide'}
           </button>
         </form>
+
+        <div className="ai-suggested-pills">
+          <span className="pills-label">Try asking:</span>
+          {[
+            "🌌 Mind-bending sci-fi thriller set in space",
+            "🔪 90s gritty neo-noir crime masterpiece",
+            "🍿 Hilarious feel-good comedy for a relaxed night",
+            "🎨 Visually stunning animated Ghibli/anime film",
+            "🎭 Deeply emotional A24 indie drama"
+          ].map((p) => (
+            <button
+              key={p}
+              type="button"
+              className="ai-pill-btn"
+              onClick={() => {
+                const textOnly = p.replace(/^[\s\S]*?\s/, '');
+                setPrompt(textOnly);
+              }}
+            >
+              {p}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="ai-results-container">
