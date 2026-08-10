@@ -350,7 +350,16 @@ function App() {
           transition={{ duration: 0.3 }}
         >
           <Navbar />
-          {renderContent()}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentRoute + (currentParams ? JSON.stringify(currentParams) : '')}
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0, transition: { duration: 0.28, ease: [0.16, 1, 0.3, 1] } }}
+              exit={{ opacity: 0, y: -14, transition: { duration: 0.24, ease: [0.16, 1, 0.3, 1] } }}
+            >
+              {renderContent()}
+            </motion.div>
+          </AnimatePresence>
           <AchievementToasts />
         </motion.div>
       )}

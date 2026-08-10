@@ -126,39 +126,39 @@ const UserListPage = ({ initialType = 'liked' }) => {
         <div className="user-list-tabs">
           <button 
             className={`list-tab-btn ${listType === 'liked' ? 'active' : ''}`}
-            onClick={() => { setListType('liked'); window.location.hash = '#user-list?type=liked'; }}
+            onClick={() => { setListType('liked'); window.history.replaceState(null, '', '#user-list?type=liked'); }}
           >
             {listType === 'liked' && (
               <motion.div
                 layoutId="userListTabPill"
                 className="list-tab-pill-active"
-                transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                transition={{ type: "spring", stiffness: 450, damping: 32 }}
               />
             )}
             <span className="list-tab-btn-label">❤️ Liked <span>({liked.length})</span></span>
           </button>
           <button 
             className={`list-tab-btn ${listType === 'watchlist' ? 'active' : ''}`}
-            onClick={() => { setListType('watchlist'); window.location.hash = '#user-list?type=watchlist'; }}
+            onClick={() => { setListType('watchlist'); window.history.replaceState(null, '', '#user-list?type=watchlist'); }}
           >
             {listType === 'watchlist' && (
               <motion.div
                 layoutId="userListTabPill"
                 className="list-tab-pill-active"
-                transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                transition={{ type: "spring", stiffness: 450, damping: 32 }}
               />
             )}
             <span className="list-tab-btn-label">🔖 Watchlist <span>({watchlist.length})</span></span>
           </button>
           <button 
             className={`list-tab-btn ${listType === 'watched' ? 'active' : ''}`}
-            onClick={() => { setListType('watched'); window.location.hash = '#user-list?type=watched'; }}
+            onClick={() => { setListType('watched'); window.history.replaceState(null, '', '#user-list?type=watched'); }}
           >
             {listType === 'watched' && (
               <motion.div
                 layoutId="userListTabPill"
                 className="list-tab-pill-active"
-                transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                transition={{ type: "spring", stiffness: 450, damping: 32 }}
               />
             )}
             <span className="list-tab-btn-label">✅ Watched <span>({watched.length})</span></span>
@@ -223,9 +223,8 @@ const UserListPage = ({ initialType = 'liked' }) => {
         <motion.div
           key={`${listType}-${filter}-${sortBy}-${searchQuery}-${viewMode}`}
           initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+          animate={{ opacity: 1, y: 0, transition: { duration: 0.28, ease: [0.16, 1, 0.3, 1] } }}
+          exit={{ opacity: 0, y: -10, transition: { duration: 0.24, ease: [0.16, 1, 0.3, 1] } }}
         >
           {filteredAndSortedList.length === 0 ? (
             <div className="user-list-empty glass-panel">

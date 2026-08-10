@@ -26,7 +26,16 @@ const MovieRow = memo(({ title, movies, link }) => {
   return (
     <section className="movie-row-container" aria-labelledby={`${title}-heading`}>
       <div className="row-header">
-        <h2 className="row-title" id={`${title}-heading`}>{title}</h2>
+        <h2 className="row-title" id={`${title}-heading`}>
+          {title && title.length >= 2 ? (
+            <>
+              <span className="title-accent-2">{title.slice(0, 2)}</span>
+              {title.slice(2)}
+            </>
+          ) : (
+            title
+          )}
+        </h2>
         {link && (
           <button className="row-see-all" type="button" onClick={handleSeeAll}>
             See All <span className="arrow" aria-hidden="true">&rsaquo;</span>

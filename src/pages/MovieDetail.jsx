@@ -1217,8 +1217,8 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
             {/* TV Seasons Section */}
             {movie.mediaType === 'tv' && movie.seasons && movie.seasons.length > 0 && (
               <div className="detail-section">
-                <div className="season-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <div className="season-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap' }}>
                     <h3 className="section-title" style={{ marginBottom: 0 }}>Episodes</h3>
                     <CustomSelect 
                       value={selectedSeason} 
@@ -1229,11 +1229,26 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
                         label: `Season ${s.season_number}`
                       }))}
                     />
+                    <button 
+                      onClick={handleMarkSeasonWatched} 
+                      className="btn-secondary season-watched-btn" 
+                      style={{ 
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        padding: '0.55rem 1.15rem',
+                        fontSize: '0.88rem',
+                        fontWeight: '600',
+                        whiteSpace: 'nowrap',
+                        borderRadius: '999px',
+                        height: '42px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5" /></svg>
+                      Season Watched
+                    </button>
                   </div>
-                  <button onClick={handleMarkSeasonWatched} className="btn-secondary" style={{ padding: '8px 16px', fontSize: '0.9rem', gap: '8px' }}>
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 6L9 17l-5-5" /></svg>
-                    Mark Season as Watched
-                  </button>
                 </div>
                 
                 {seasonDetails && seasonDetails.episodes && (

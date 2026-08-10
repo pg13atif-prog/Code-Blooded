@@ -28,9 +28,9 @@ const friendsItems = [
 
 /* ── Framer Motion variants ────────────────────────────────── */
 const dropdownVariants = {
-  hidden: { opacity: 0, y: -16, scale: 0.97 },
-  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.24, ease: [0.16, 1, 0.3, 1] } },
-  exit: { opacity: 0, y: -12, scale: 0.97, transition: { duration: 0.16, ease: [0.16, 1, 0.3, 1] } },
+  hidden: { opacity: 0, x: "-50%", y: -16, scale: 0.97 },
+  visible: { opacity: 1, x: "-50%", y: 0, scale: 1, transition: { duration: 0.24, ease: [0.16, 1, 0.3, 1] } },
+  exit: { opacity: 0, x: "-50%", y: -12, scale: 0.97, transition: { duration: 0.22, ease: [0.16, 1, 0.3, 1] } },
 };
 
 const Navbar = () => {

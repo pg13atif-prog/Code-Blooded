@@ -190,41 +190,62 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
       {/* ─── Page Header ─── */}
       <div className="discover-header">
         <div className="discover-header-top">
-          <h1>Discover</h1>
+          <h1><span className="title-accent-2">Di</span>scover</h1>
         </div>
 
         <div className="discover-header-row new-discover-header">
           <div className="discover-pill-toggle">
-            <a href="#discover/tv" className={`pill-btn ${filterMediaType === 'tv' ? 'active' : ''}`}>
+            <button 
+              type="button" 
+              className={`pill-btn ${filterMediaType === 'tv' ? 'active' : ''}`}
+              onClick={() => {
+                setFilterMediaType('tv');
+                window.history.replaceState(null, '', '#discover/tv');
+              }}
+            >
               {filterMediaType === 'tv' && (
                 <motion.div
                   layoutId="discoverTabPill"
                   className="discover-tab-pill-active"
-                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  transition={{ type: "spring", stiffness: 450, damping: 32 }}
                 />
               )}
               <span className="pill-btn-label">TV Shows</span>
-            </a>
-            <a href="#discover/movies" className={`pill-btn ${filterMediaType === 'movie' ? 'active' : ''}`}>
+            </button>
+            <button 
+              type="button" 
+              className={`pill-btn ${filterMediaType === 'movie' ? 'active' : ''}`}
+              onClick={() => {
+                setFilterMediaType('movie');
+                window.history.replaceState(null, '', '#discover/movies');
+              }}
+            >
               {filterMediaType === 'movie' && (
                 <motion.div
                   layoutId="discoverTabPill"
                   className="discover-tab-pill-active"
-                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  transition={{ type: "spring", stiffness: 450, damping: 32 }}
                 />
               )}
               <span className="pill-btn-label">Movies</span>
-            </a>
-            <a href="#discover/trending" className={`pill-btn ${filterMediaType === 'trending' ? 'active' : ''}`}>
+            </button>
+            <button 
+              type="button" 
+              className={`pill-btn ${filterMediaType === 'trending' ? 'active' : ''}`}
+              onClick={() => {
+                setFilterMediaType('trending');
+                window.history.replaceState(null, '', '#discover/trending');
+              }}
+            >
               {filterMediaType === 'trending' && (
                 <motion.div
                   layoutId="discoverTabPill"
                   className="discover-tab-pill-active"
-                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  transition={{ type: "spring", stiffness: 450, damping: 32 }}
                 />
               )}
               <span className="pill-btn-label">Trending</span>
-            </a>
+            </button>
           </div>
 
           {filterMediaType !== 'trending' && (
@@ -400,8 +421,8 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
                 <motion.div
                   key={`${item.id}-${index}`}
                   initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.2 }}
+                  animate={{ opacity: 1, scale: 1, transition: { duration: 0.24, ease: [0.16, 1, 0.3, 1] } }}
+                  exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.20, ease: [0.16, 1, 0.3, 1] } }}
                   style={{ position: 'relative' }}
                 >
                   {filterMediaType === 'trending' && (
