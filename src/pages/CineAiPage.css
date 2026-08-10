@@ -4,7 +4,19 @@
   min-height: 100vh;
   padding-bottom: 6rem;
   overflow: hidden;
-  background: #0a0a0a;
+  background: transparent;
+}
+
+.cineai-hub::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(circle at 50% 0%, rgba(229, 9, 20, 0.15) 0%, rgba(15, 23, 42, 0.5) 45%, rgba(11, 13, 20, 1) 100%);
+  pointer-events: none;
+  z-index: -1;
 }
 
 /* Ambient glow background blobs */
@@ -69,7 +81,7 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1.75rem;
-  max-width: 1080px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 0 1.5rem;
 }
