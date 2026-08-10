@@ -390,16 +390,26 @@ export const getAiPickForMe = async (excludeTitles = [], moodPrompt = '') => {
     "binge-worthy dark TV series or mystery miniseries"
   ];
 
-  const selectedTheme = (moodPrompt && moodPrompt !== '🎲 Any Vibe')
-    ? `${moodPrompt} vibe`
-    : themes[Math.floor(Math.random() * themes.length)];
+  const VIBE_MAP = {
+    '💖 Date Night': 'charming romantic comedy, witty date-night romance, bittersweet love story, or heartwarming relationship drama',
+    '🔥 Mind-Blowing': 'mind-bending sci-fi, shocking plot-twist thriller, or reality-warping mystery',
+    '🍿 Easy Watch': 'breezy feel-good comedy, entertaining adventure, or lighthearted comfort movie',
+    '🌙 Dark & Gritty': 'atmospheric neo-noir, gritty crime thriller, or dark psychological suspense',
+    '⚡ High Octane': 'relentless action, martial arts spectacle, high-stakes heist, or adrenaline-fueled adventure'
+  };
 
-  const randomSeed = `${Date.now()}_${Math.floor(Math.random() * 100000)}`;
+  const selectedTheme = VIBE_MAP[moodPrompt] || (moodPrompt && moodPrompt !== '🎲 Any Vibe' ? moodPrompt.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '').trim() + ' vibe' : themes[Math.floor(Math.random() * themes.length)]);
+
+  const randomSeed = `${Date.now()}_${Math.floor(Math.random() * 1000000)}`;
 
   const systemInstruction = `
     You are CineAI, an expert film sommelier. Your goal is to pick exactly ONE universally acclaimed, highly entertaining movie or TV show matching the requested theme.
-    CRITICAL DIVERSITY RULE: Avoid constantly defaulting to the top 10 mainstream blockbusters (like Interstellar, Dark Knight, or Inception). Recommend underrated gems, cult classics, 90s/2000s classics, world cinema, or indie bangers.
-    ${excludeTitles.length > 0 ? `CRITICAL: Do NOT recommend any of the following previously picked titles: ${excludeTitles.join(', ')}.` : ''}
+    
+    CRITICAL DIVERSITY & NO-REPETITION RULES:
+    1. Do NOT constantly default to predictable clichés such as "Amélie", "La La Land", "Interstellar", "Inception", "The Dark Knight", or "The Notebook".
+    2. Explore rich cinema diversity: 90s/2000s classics, indie hits (A24, Neon), world cinema (Korean, French, Japanese), cult favorites, and underrated gems.
+    ${excludeTitles.length > 0 ? `3. CRITICAL: Do NOT recommend any of the following previously picked titles: ${excludeTitles.join(', ')}.` : ''}
+    
     Return EXACTLY ONE recommendation in JSON format:
     {
       "title": "Exact Title",
@@ -409,13 +419,13 @@ export const getAiPickForMe = async (excludeTitles = [], moodPrompt = '') => {
     Return ONLY JSON.
   `;
 
-  const userPrompt = `Surprise me with a guaranteed certified banger in the theme of: "${selectedTheme}". Unique seed ID: ${randomSeed}.`;
+  const userPrompt = `Pick a fresh, unique, certified banger in the theme of: "${selectedTheme}". Unique seed ID: ${randomSeed}.`;
 
   try {
     return await callOpenRouter(systemInstruction, userPrompt, 0.95);
   } catch (err) {
     console.warn('OpenRouter rate limited or unavailable, using Pick For Me fallback:', err.message);
-    const pool = [
+    let pool = [
       "Nightcrawler", "Coherence", "Arrival", "Children of Men", "Blade Runner 2049",
       "Ex Machina", "Drive", "Primal Fear", "The Hunt", "Prisoners",
       "Zodiac", "Memories of Murder", "No Country for Old Men", "Sicario", "The Departed",
@@ -423,7 +433,7 @@ export const getAiPickForMe = async (excludeTitles = [], moodPrompt = '') => {
       "Dark City", "Source Code", "Edge of Tomorrow", "Everything Everywhere All at Once",
       "Parasite", "Whiplash", "Spirited Away", "Princess Mononoke", "Your Name",
       "Spider-Man: Across the Spider-Verse", "Goodfellas", "The Silence of the Lambs",
-      "Mad Max: Fury Road", "La La Land", "Inglourious Basterds", "Get Out",
+      "Mad Max: Fury Road", "Inglourious Basterds", "Get Out",
       "Oldboy", "The Grand Budapest Hotel", "The Prestige", "Heat", "Alien",
       "The Thing", "Coco", "Wall-E", "Superbad", "Before Sunrise",
       "Eternal Sunshine of the Spotless Mind", "Past Lives", "Shutter Island", "1917",
@@ -432,8 +442,15 @@ export const getAiPickForMe = async (excludeTitles = [], moodPrompt = '') => {
       "The Raid: Redemption", "Dredd", "Baby Driver", "Kill Bill: Vol. 1", "Sisu",
       "Monkey Man", "Fantastic Mr. Fox", "Rango", "Puss in Boots: The Last Wish",
       "Marcel the Shell with Shoes On", "Severance", "The Bear", "Succession",
-      "Arcane", "Chernobyl", "True Detective", "Black Mirror", "Beef", "Mindhunter"
+      "Arcane", "Chernobyl", "True Detective", "Black Mirror", "Beef", "Mindhunter",
+      "Palm Springs", "About Time", "Pride & Prejudice", "500 Days of Summer", "Sing Street",
+      "Silver Linings Playbook", "Crazy Rich Asians", "Roman Holiday", "Portrait of a Lady on Fire"
     ];
+
+    if (moodPrompt === '💖 Date Night') {
+      pool = ["Before Sunrise", "Palm Springs", "About Time", "Pride & Prejudice", "500 Days of Summer", "Past Lives", "Portrait of a Lady on Fire", "Silver Linings Playbook", "Crazy Rich Asians", "Sing Street", "The Handmaiden", "La La Land"];
+    }
+
     const normalizedExcluded = excludeTitles.map(t => t.toLowerCase());
     const available = pool.filter(t => !normalizedExcluded.includes(t.toLowerCase()));
     const pickedTitle = available.length > 0 ? available[Math.floor(Math.random() * available.length)] : pool[Math.floor(Math.random() * pool.length)];
