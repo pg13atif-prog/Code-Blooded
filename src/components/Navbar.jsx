@@ -729,7 +729,9 @@ const Navbar = () => {
           className={`mobile-nav-item ${currentPath.startsWith('#cineai') ? 'active' : ''}`}
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+            <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"></path>
+            <path d="m5 3 1 2 2 1-2 1-1 2-1-2-2-1 2-1Z"></path>
+            <path d="m19 17 1 2 2 1-2 1-1 2-1-2-2-1 2-1Z"></path>
           </svg>
           <span>CineAI</span>
         </a>
