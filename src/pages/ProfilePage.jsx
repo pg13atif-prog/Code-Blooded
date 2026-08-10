@@ -354,7 +354,7 @@ const ProfilePage = () => {
               </label>
             )}
           </div>
-          <div>
+          <div className="profile-user-info">
             {isEditing ? (
               <div className="edit-profile-form">
                 <input 
