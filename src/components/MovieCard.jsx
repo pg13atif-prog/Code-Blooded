@@ -11,7 +11,7 @@ import { checkAndUnlockAchievements } from '../services/achievements';
 import './MovieCard.css';
 
 const MovieCard = memo((props) => {
-  const { id, title, year, rating, poster, category, mediaType, backdrop, overview, disableHover, onClick } = props;
+  const { id, title, year, rating, poster, category, mediaType, backdrop, overview, disableHover, onClick, onRemove } = props;
   const [isHovered, setIsHovered] = useState(false);
   const [hoverPosition, setHoverPosition] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
@@ -207,6 +207,17 @@ const MovieCard = memo((props) => {
         style={{ cursor: 'pointer' }}
       >
         <div className="poster-container">
+          {onRemove && (
+            <button
+              className="card-remove-btn"
+              type="button"
+              onClick={(e) => { e.stopPropagation(); e.preventDefault(); onRemove(e); }}
+              title="Remove title"
+              aria-label="Remove title"
+            >
+              ✕
+            </button>
+          )}
           <img src={poster} alt={`${title} poster`} className="movie-poster" loading="lazy" />
           <div className="poster-overlay">
             <button className="play-button" onClick={handlePlayTrailer} aria-label={`Play ${title} trailer`}>

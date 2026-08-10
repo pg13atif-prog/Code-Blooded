@@ -220,8 +220,7 @@ const UserListPage = ({ initialType = 'liked' }) => {
             <div key={movie.id} className="user-list-item-wrapper">
               {viewMode === 'grid' ? (
                 <div className="user-list-card-wrapper">
-                  <MovieCard {...movie} disableHover={true} />
-                  <button className="user-list-remove-btn" onClick={(e) => handleRemove(e, movie)} title="Remove item" aria-label="Remove">✕</button>
+                  <MovieCard {...movie} disableHover={true} onRemove={(e) => handleRemove(e, movie)} />
                 </div>
               ) : (
                 <div className="user-list-row-item" onClick={() => window.location.hash = `${movie.mediaType || 'movie'}/${movie.id}`}>
