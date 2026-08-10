@@ -237,6 +237,10 @@
 }
 
 @media (max-width: 768px) {
+  .ai-skeletons-container {
+    display: none !important;
+  }
+
   .ai-discovery-page {
     padding: 80px 1rem 2rem;
   }

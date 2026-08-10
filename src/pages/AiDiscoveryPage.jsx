@@ -163,7 +163,7 @@ const AiDiscoveryPage = () => {
                 </motion.p>
               </AnimatePresence>
             </div>
-            <div className="ai-results-list" style={{ marginTop: '2rem', width: '100%' }}>
+            <div className="ai-results-list ai-skeletons-container" style={{ marginTop: '2rem', width: '100%' }}>
               {Array.from({ length: 3 }).map((_, i) => (
                 <AiResultSkeleton key={i} />
               ))}

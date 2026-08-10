@@ -65,13 +65,14 @@ const SocialPage = () => {
   }, [currentUser]);
 
   useEffect(() => {
+    if (!currentUser) return;
+
     const hash = window.location.hash;
     if (hash.includes('?match=')) {
       const code = hash.split('?match=')[1];
       if (code) {
         setSearchCode(code);
-        setMatchLoading(true);
-        setTimeout(() => executeMatch(code), 50);
+        executeMatch(code);
       }
     } else if (window.__cinescope_last_match_result) {
       setMatchResult(window.__cinescope_last_match_result);
@@ -79,10 +80,10 @@ const SocialPage = () => {
         setSearchCode(window.__cinescope_last_match_code);
       }
     }
-  }, []);
+  }, [currentUser]);
 
   const executeMatch = async (codeToUse) => {
-    if (!codeToUse) return;
+    if (!codeToUse || !currentUser) return;
     
     setMatchLoading(true);
     setMatchError(null);
@@ -90,7 +91,8 @@ const SocialPage = () => {
 
     try {
       const codeToSearch = codeToUse.trim().toUpperCase();
-      if (codeToSearch === friendCode) {
+      const codeUser = friendCode || await ensureFriendCode(currentUser.uid, currentUser.email);
+      if (codeToSearch === codeUser) {
         throw new Error("You can't match with yourself!");
       }
 
@@ -111,10 +113,10 @@ const SocialPage = () => {
         getWatchlist(friendUid), getLiked(friendUid), getWatched(friendUid)
       ]);
 
-      const sharedFavorites = myLiked.filter(m => fLiked.find(fm => fm.id === m.id));
+      const sharedFavorites = (myLiked || []).filter(m => (fLiked || []).find(fm => fm.id === m.id));
 
-      const buildProfile = (liked, watched, watchlist) => {
-        const all = [...liked, ...watched, ...watchlist];
+      const buildProfile = (liked = [], watched = [], watchlist = []) => {
+        const all = [...(liked || []), ...(watched || []), ...(watchlist || [])];
         return all.slice(0, 20).map(m => `${m.title} (${m.year}, ${m.category}, ★${m.rating})`);
       };
 
@@ -133,7 +135,7 @@ const SocialPage = () => {
         .replaceAll('User A', myName)
         .replaceAll('User B', friendName);
 
-      const tmdbPromises = compatibilityData.recommendations.map(async (rec) => {
+      const tmdbPromises = (compatibilityData.recommendations || []).map(async (rec) => {
         try {
           const searchData = await searchMedia(rec.title);
           const match = searchData.find(item => item.mediaType === rec.mediaType) || searchData[0];
@@ -182,7 +184,14 @@ const SocialPage = () => {
     executeMatch(searchCode);
   };
 
-  if (loading) return null;
+  if (loading) {
+    return (
+      <div className="social-page page-container" style={{ textAlign: 'center', paddingTop: '120px' }}>
+        <div className="ai-pulse" style={{ margin: '0 auto' }}></div>
+        <p style={{ color: 'rgba(255,255,255,0.7)', marginTop: '1rem' }}>Loading Movie Match...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="social-page page-container">
