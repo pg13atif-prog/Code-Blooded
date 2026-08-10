@@ -86,26 +86,54 @@
   padding: 0 1.5rem;
 }
 
-/* Tile cards */
+/* Liquid Glass Tile Cards */
 .cineai-card {
   --accent: #e50914;
-  background: #161616;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 40px;
-  padding: 2.75rem 2.75rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 36px;
+  padding: 3rem 3rem;
   text-decoration: none;
   color: #fff;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
-  min-height: 290px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  min-height: 300px;
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.2), 0 20px 45px rgba(0, 0, 0, 0.55);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle liquid glass light reflection */
+.cineai-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.06) 50%,
+    transparent 100%
+  );
+  transform: skewX(-25deg);
+  transition: transform 0.75s ease;
+  pointer-events: none;
+}
+
+.cineai-card:hover::after {
+  transform: translateX(100%) skewX(-25deg);
 }
 
 .cineai-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+  transform: translateY(-8px) scale(1.015);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.04) 100%);
+  border-color: rgba(255, 255, 255, 0.35);
+  box-shadow: inset 0 1px 2px 0 rgba(255, 255, 255, 0.4), 0 30px 60px rgba(0, 0, 0, 0.65), 0 0 30px var(--accent);
 }
 
 .cineai-card-top {
@@ -113,21 +141,28 @@
 }
 
 .cineai-card-icon-wrapper {
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  background: transparent;
+  background: rgba(255, 255, 255, 0.06);
   border: 1.5px solid var(--accent);
   color: var(--accent);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cineai-card:hover .cineai-card-icon-wrapper {
+  transform: scale(1.1);
+  box-shadow: 0 0 25px var(--accent), inset 0 1px 2px rgba(255, 255, 255, 0.4);
 }
 
 .cineai-card-icon-wrapper svg {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
 }
 
 .cineai-card-body {
@@ -135,8 +170,8 @@
 }
 
 .cineai-card-body h2 {
-  font-size: 1.35rem;
-  font-weight: 700;
+  font-size: 1.5rem;
+  font-weight: 800;
   margin: 0 0 0.85rem;
   color: #ffffff;
   letter-spacing: -0.01em;
@@ -144,8 +179,8 @@
 }
 
 .cineai-card-body p {
-  color: rgba(255, 255, 255, 0.48);
-  font-size: 0.92rem;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.98rem;
   line-height: 1.65;
   margin: 0;
 }
@@ -156,27 +191,37 @@
   justify-content: space-between;
   margin-top: 2rem;
   padding-top: 1.35rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .cineai-launch-text {
-  font-size: 0.92rem;
-  font-weight: 600;
+  font-size: 0.95rem;
+  font-weight: 700;
   color: #ffffff;
+  letter-spacing: 0.02em;
 }
 
 .cineai-arrow-circle {
-  width: 38px;
-  height: 38px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--accent);
   flex-shrink: 0;
-  transition: background 0.2s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.cineai-card:hover .cineai-arrow-circle {
+  background: var(--accent);
+  color: #ffffff;
+  border-color: var(--accent);
+  box-shadow: 0 0 20px var(--accent);
+  transform: translateX(4px);
 }
 
 .cineai-arrow-circle svg {
