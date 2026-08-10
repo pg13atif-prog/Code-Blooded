@@ -245,7 +245,7 @@ export const getAiRecommendations = async (prompt) => {
     - IMPORTANT: If these TMDB candidates perfectly match the user's intent (e.g. correct actor, genre, and language), you MUST prioritize selecting from them.
     - HOWEVER, if these candidates are clearly a mismatch (e.g. they belong to an actor with the same name but in the wrong language/industry, or completely irrelevant movies), you MUST IGNORE them and instead generate your own 100% factually accurate recommendations.` : '- Ensure every movie title, release year, and actor attribution in your rationale is 100% factually accurate to real life.'}
 
-    You must return a JSON object containing a "recommendations" key, which holds an array of exactly 5 recommendation objects.
+    You must return a JSON object containing a "recommendations" key, which holds an array of exactly 6 recommendation objects.
     Each recommendation object must have the following keys:
     - title: the exact official title of the movie or TV show.
     - year: the 4-digit release year (e.g. 1999, 2017, 2021).
@@ -303,15 +303,15 @@ export const getAiRecommendations = async (prompt) => {
     const matched = scoredMovies.filter(item => item.score > 0).map(item => item.movie);
 
     let selected = [];
-    if (matched.length >= 5) {
-      selected = matched.slice(0, 5);
+    if (matched.length >= 6) {
+      selected = matched.slice(0, 6);
     } else if (matched.length > 0) {
       // Fill remaining with hash-offset picks from the rest of library so prompt is unique
       const seed = hashString(p);
       const pool = scoredMovies.map(item => item.movie);
       
       selected = [...matched];
-      for (let i = 0; i < pool.length && selected.length < 5; i++) {
+      for (let i = 0; i < pool.length && selected.length < 6; i++) {
         const candidate = pool[(seed + i * 7) % pool.length];
         if (!selected.some(m => m.title === candidate.title)) {
           selected.push(candidate);
@@ -322,7 +322,7 @@ export const getAiRecommendations = async (prompt) => {
       const seed = hashString(p);
       const pool = [...MOVIE_LIBRARY];
       selected = [];
-      for (let i = 0; i < pool.length && selected.length < 5; i++) {
+      for (let i = 0; i < pool.length && selected.length < 6; i++) {
         const candidate = pool[(seed + i * 11) % pool.length];
         if (!selected.some(m => m.title === candidate.title)) {
           selected.push(candidate);

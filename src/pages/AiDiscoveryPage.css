@@ -1,10 +1,23 @@
 .ai-discovery-page {
-  padding: 120px 4% 4rem;
+  padding: 120px 4% 6rem;
   min-height: 100vh;
-  background-color: #0b0d14;
+  background: transparent;
   color: #e2e8f0;
   max-width: 1400px;
   margin: 0 auto;
+  position: relative;
+}
+
+.ai-discovery-page::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(circle at 50% 0%, rgba(229, 9, 20, 0.15) 0%, rgba(15, 23, 42, 0.5) 45%, rgba(11, 13, 20, 1) 100%);
+  pointer-events: none;
+  z-index: -1;
 }
 
 .ai-header {
