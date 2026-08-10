@@ -54,18 +54,11 @@ const PickForMe = () => {
               <span className="pick-hero-emoji">🎲</span>
             </div>
             <button className="massive-pick-btn" onClick={handlePick}>
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"></path>
               </svg>
               <span>Find A Movie</span>
             </button>
-            <div className="pick-feature-tags">
-              <span>✨ Instant AI Recommendation</span>
-              <span className="dot">•</span>
-              <span>🎯 Zero Decision Fatigue</span>
-              <span className="dot">•</span>
-              <span>🍿 Certified Banger</span>
-            </div>
           </div>
         )}
 
