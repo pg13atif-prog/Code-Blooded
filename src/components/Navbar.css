@@ -1323,3 +1323,283 @@
   cursor: default;
   transform: none !important;
 }
+
+/* ── Mobile SVG Notification Bell & Centered Liquid Glass Search Modal ── */
+.mobile-notif-icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  padding: 4px;
+}
+
+.mobile-notif-svg {
+  width: 22px;
+  height: 22px;
+  color: rgba(255, 255, 255, 0.88);
+  transition: all 0.25s ease;
+}
+
+/* Turn red when active or clicked */
+.mobile-notif-btn.active .mobile-notif-svg,
+.mobile-notif-btn:active .mobile-notif-svg,
+.mobile-notif-btn:hover .mobile-notif-svg {
+  color: #e50914;
+  filter: drop-shadow(0 0 8px rgba(229, 9, 20, 0.75));
+  transform: scale(1.08);
+}
+
+.mobile-notif-dot-badge {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #e50914;
+  border: 1.5px solid #0a0e17;
+  box-shadow: 0 0 8px rgba(229, 9, 20, 0.9);
+}
+
+/* Hide desktop inline search on mobile header */
+@media (max-width: 768px) {
+  .navbar__search-wrapper {
+    display: none !important;
+  }
+}
+
+/* Centered Mobile Search Overlay (Full Blur Background, No Inner Modal Container Box) */
+.mobile-search-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 8, 16, 0.84);
+  backdrop-filter: blur(36px) saturate(220%);
+  -webkit-backdrop-filter: blur(36px) saturate(220%);
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 4.5rem 1.25rem 2rem;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.mobile-search-center-container {
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: searchCenterFade 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes searchCenterFade {
+  from { opacity: 0; transform: translateY(-16px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Red Glowing Search Pill */
+.mobile-center-search-pill {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.2rem;
+  background: rgba(18, 24, 38, 0.95);
+  border: 1.5px solid #e50914;
+  border-radius: 999px;
+  box-shadow: 0 0 20px rgba(229, 9, 20, 0.5), 0 10px 30px rgba(0, 0, 0, 0.7);
+  box-sizing: border-box;
+}
+
+.modal-search-icon {
+  width: 20px;
+  height: 20px;
+  color: rgba(255, 255, 255, 0.75);
+  flex-shrink: 0;
+}
+
+.modal-search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 1.02rem;
+  font-weight: 500;
+  outline: none;
+}
+
+.modal-search-input::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.mobile-search-close-pill-btn {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.mobile-search-close-pill-btn:hover {
+  background: #e50914;
+  border-color: #e50914;
+}
+
+/* Floating Results Area Below Search Pill */
+.mobile-search-results-area {
+  width: 100%;
+  margin-top: 1.25rem;
+}
+
+.mobile-search-results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.mobile-search-glass-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  cursor: pointer;
+  transition: all 0.22s ease;
+}
+
+.mobile-search-glass-item:hover {
+  background: rgba(229, 9, 20, 0.15);
+  border-color: rgba(229, 9, 20, 0.45);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(229, 9, 20, 0.25);
+}
+
+.ms-poster {
+  width: 48px;
+  height: 70px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.ms-poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ms-no-poster {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+.ms-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.ms-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ms-subtext {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+}
+
+.mobile-search-empty-glass {
+  text-align: center;
+  padding: 3rem 1rem;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.95rem;
+}
+
+.mobile-search-empty-glass strong {
+  display: block;
+  margin-top: 0.25rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1.05rem;
+}
+
+.mobile-recent-searches-glass {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 1rem;
+}
+
+.recent-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.25rem;
+}
+
+.clear-recent-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.clear-recent-btn:hover {
+  color: #e50914;
+}
+
+.recent-term-glass-item {
+  padding: 0.7rem 0.9rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 0.92rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.recent-term-glass-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}

@@ -43,6 +43,7 @@ const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isProfileDropupOpen, setIsProfileDropupOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isMobileSearchModalOpen, setIsMobileSearchModalOpen] = useState(false);
 
   // Desktop hover dropdowns
   const [openDropdown, setOpenDropdown] = useState(null); // 'discover' | 'cineai' | 'social' | null
@@ -99,7 +100,7 @@ const Navbar = () => {
   }, [recentSearches]);
 
   useEffect(() => {
-    if (searchQuery.trim().length > 1 && isSearchActive) {
+    if (searchQuery.trim().length > 1 && (isSearchActive || isMobileSearchModalOpen)) {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => {
         searchMedia(searchQuery.trim(), controller.signal).then(data => {
@@ -484,17 +485,20 @@ const Navbar = () => {
         </ul>
 
         <div className="navbar__actions" id="navbar-actions">
-          {/* Mobile Notifications Bell */}
+          {/* Mobile Notifications Bell (SVG Vector Icon) */}
           <button
             type="button"
-            className="navbar__action-btn mobile-notif-btn"
+            className={`navbar__action-btn mobile-notif-btn ${isNotificationsOpen ? 'active' : ''}`}
             onClick={() => setIsNotificationsOpen(true)}
             aria-label="Notifications"
           >
-            <span style={{ fontSize: '1.2rem', position: 'relative' }}>
-              🔔
-              {hasUnreadNotifications && <span className="mobile-notif-dot" style={{ top: '-2px', right: '-2px' }}></span>}
-            </span>
+            <div className="mobile-notif-icon-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mobile-notif-svg">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+              </svg>
+              {hasUnreadNotifications && <span className="mobile-notif-dot-badge"></span>}
+            </div>
           </button>
           <div className="navbar__search-wrapper" ref={searchContainerRef}>
             <form className={`navbar__search-form ${isSearchActive ? 'active' : ''}`} onSubmit={handleSearchSubmit}>
@@ -730,10 +734,10 @@ const Navbar = () => {
         <button 
           type="button" 
           onClick={() => {
-            setIsSearchActive(true);
-            setShowSuggestions(true);
+            setIsMobileSearchModalOpen(true);
+            setSearchQuery('');
           }} 
-          className={`mobile-nav-item ${isSearchActive ? 'active' : ''}`}
+          className={`mobile-nav-item ${isMobileSearchModalOpen ? 'active' : ''}`}
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="11" cy="11" r="8" />
@@ -758,6 +762,103 @@ const Navbar = () => {
           <span>Profile</span>
         </a>
       </nav>
+
+      {/* ── Centered Mobile Search Overlay (Full Blur Background, No Modal Box) ── */}
+      {isMobileSearchModalOpen && (
+        <div className="mobile-search-overlay" onClick={() => setIsMobileSearchModalOpen(false)}>
+          <div className="mobile-search-center-container" onClick={(e) => e.stopPropagation()}>
+            {/* Center Red Glowing Search Pill */}
+            <div className="mobile-center-search-pill">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="modal-search-icon">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+              <input
+                type="text"
+                className="modal-search-input"
+                placeholder="Search titles, people, genres..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                autoFocus
+              />
+              <button
+                type="button"
+                className="mobile-search-close-pill-btn"
+                onClick={() => {
+                  setIsMobileSearchModalOpen(false);
+                  setSearchQuery('');
+                }}
+                aria-label="Close search"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Results Floating Below Pill */}
+            <div className="mobile-search-results-area">
+              {searchQuery.trim().length > 1 ? (
+                suggestions.length > 0 ? (
+                  <div className="mobile-search-results-list">
+                    {suggestions.map((item) => (
+                      <div
+                        key={`${item.mediaType || 'movie'}-${item.id}`}
+                        className="mobile-search-glass-item"
+                        onClick={() => {
+                          window.location.hash = `${item.mediaType || 'movie'}/${item.id}`;
+                          setIsMobileSearchModalOpen(false);
+                        }}
+                      >
+                        <div className="ms-poster">
+                          {item.poster ? (
+                            <img src={item.poster} alt={item.title || item.name} />
+                          ) : (
+                            <div className="ms-no-poster">🎬</div>
+                          )}
+                        </div>
+                        <div className="ms-info">
+                          <h5 className="ms-title">{item.title || item.name}</h5>
+                          <p className="ms-subtext">
+                            {item.year || ''} {item.year && (item.genre || item.mediaType) ? '•' : ''} {item.genre || (item.mediaType === 'tv' ? 'TV Show' : 'Movie')}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="mobile-search-empty-glass">
+                    <p>No results found for</p>
+                    <strong>"{searchQuery}"</strong>
+                  </div>
+                )
+              ) : (
+                recentSearches.length > 0 && (
+                  <div className="mobile-recent-searches-glass">
+                    <div className="recent-header">
+                      <span>Recent Searches</span>
+                      <button
+                        type="button"
+                        className="clear-recent-btn"
+                        onClick={() => setRecentSearches([])}
+                      >
+                        Clear All
+                      </button>
+                    </div>
+                    {recentSearches.map((term, idx) => (
+                      <div
+                        key={idx}
+                        className="recent-term-glass-item"
+                        onClick={() => setSearchQuery(term)}
+                      >
+                        <span>🕒 {term}</span>
+                      </div>
+                    ))}
+                  </div>
+                )
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       <AuthModal
         isOpen={isAuthModalOpen}
