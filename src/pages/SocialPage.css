@@ -223,15 +223,15 @@
   margin: 0;
 }
 
-/* Compatibility Summary */
 .compatibility-summary {
   margin-top: 1.5rem;
   font-size: 1.05rem;
-  line-height: 1.6;
-  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.85);
   font-style: italic;
-  max-width: 500px;
-  text-align: center;
+  max-width: 550px;
+  text-align: justify;
+  text-justify: inter-word;
 }
 
 /* Breakdown Section */

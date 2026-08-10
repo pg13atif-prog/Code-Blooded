@@ -196,7 +196,8 @@ const SocialPage = () => {
         .replaceAll("User A's", `${myName}'s`)
         .replaceAll("User B's", `${friendName}'s`)
         .replaceAll('User A', myName)
-        .replaceAll('User B', friendName);
+        .replaceAll('User B', friendName)
+        .replaceAll(" 's", "'s");
 
       const tmdbPromises = (compatibilityData.recommendations || []).map(async (rec) => {
         try {
@@ -207,7 +208,8 @@ const SocialPage = () => {
               .replaceAll("User A's", `${myName}'s`)
               .replaceAll("User B's", `${friendName}'s`)
               .replaceAll('User A', myName)
-              .replaceAll('User B', friendName);
+              .replaceAll('User B', friendName)
+              .replaceAll(" 's", "'s");
             return {
               ...match,
               rationale: cleanRationale
