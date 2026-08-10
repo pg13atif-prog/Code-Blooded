@@ -4,6 +4,8 @@ import {
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
   signInAnonymously,
+  signInWithPopup,
+  GoogleAuthProvider,
   signOut,
   EmailAuthProvider,
   linkWithCredential
@@ -28,6 +30,12 @@ export const AuthProvider = ({ children }) => {
   // Log in
   const login = (email, password) => {
     return signInWithEmailAndPassword(auth, email, password);
+  };
+
+  // Google Login
+  const loginWithGoogle = () => {
+    const provider = new GoogleAuthProvider();
+    return signInWithPopup(auth, provider);
   };
 
   // Guest Login
@@ -59,6 +67,7 @@ export const AuthProvider = ({ children }) => {
     currentUser,
     signup,
     login,
+    loginWithGoogle,
     loginAsGuest,
     logout,
     linkGuestAccount
