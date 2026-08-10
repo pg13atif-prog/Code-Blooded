@@ -174,20 +174,46 @@
 .ai-result-item {
   display: flex;
   gap: 2rem;
-  padding: 1.75rem;
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: var(--glass-med-filter);
-  -webkit-backdrop-filter: var(--glass-med-filter);
-  transition: transform 0.3s ease, background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  padding: 2rem;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.22), 0 20px 45px rgba(0, 0, 0, 0.55);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Liquid glass light sweep reflection */
+.ai-result-item::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.07) 50%,
+    transparent 100%
+  );
+  transform: skewX(-25deg);
+  transition: transform 0.75s ease;
+  pointer-events: none;
+}
+
+.ai-result-item:hover::after {
+  transform: translateX(100%) skewX(-25deg);
 }
 
 .ai-result-item:hover {
-  transform: translateY(-4px);
-  background: rgba(15, 23, 42, 0.85);
-  border-color: rgba(229, 9, 20, 0.4);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 20px rgba(229, 9, 20, 0.15);
+  transform: translateY(-6px) scale(1.01);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
+  border-color: rgba(255, 255, 255, 0.38);
+  box-shadow: inset 0 1px 2px 0 rgba(255, 255, 255, 0.4), 0 25px 55px rgba(0, 0, 0, 0.65), 0 0 35px rgba(229, 9, 20, 0.22);
 }
 
 .ai-result-poster {
