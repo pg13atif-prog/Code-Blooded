@@ -78,43 +78,16 @@
 .discover-tab-pill-active {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(229, 9, 20, 0.65) 0%, rgba(255, 60, 70, 0.35) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: linear-gradient(135deg, rgba(229, 9, 20, 0.45) 0%, rgba(229, 9, 20, 0.22) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 36px;
   z-index: 0;
-  backdrop-filter: blur(20px) saturate(210%);
-  -webkit-backdrop-filter: blur(20px) saturate(210%);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
   box-shadow: 
-    inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.65),
-    inset 0 -1.5px 2px 0 rgba(0, 0, 0, 0.4),
-    0 10px 28px rgba(229, 9, 20, 0.55),
-    0 0 25px rgba(229, 9, 20, 0.35);
-  overflow: hidden;
-}
-
-/* Glass glare refraction top beam */
-.discover-tab-pill-active::before {
-  content: '';
-  position: absolute;
-  top: 2px;
-  left: 12%;
-  right: 12%;
-  height: 48%;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0) 100%);
-  border-radius: 30px 30px 100px 100px;
-  pointer-events: none;
-}
-
-/* Bottom refraction glow tint */
-.discover-tab-pill-active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 35%;
-  background: linear-gradient(0deg, rgba(255, 100, 100, 0.25) 0%, rgba(0, 0, 0, 0) 100%);
-  pointer-events: none;
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.3),
+    0 6px 20px rgba(229, 9, 20, 0.45);
 }
 
 .pill-btn-label {
