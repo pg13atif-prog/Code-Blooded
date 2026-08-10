@@ -33,7 +33,7 @@ const AiResultSkeleton = () => (
   </div>
 );
 
-const DYNAMIC_SUGGESTIONS = [
+const ALL_SUGGESTIONS_POOL = [
   "A psychological thriller set in space with a mind-bending twist",
   "Gritty 90s neo-noir crime masterpiece with razor-sharp dialogue",
   "Hilarious feel-good comedy perfect for a relaxed weekend night",
@@ -41,8 +41,34 @@ const DYNAMIC_SUGGESTIONS = [
   "Deeply emotional A24 indie drama with incredible performances",
   "High-octane action thriller featuring real-world practical stunts",
   "Charming romantic comedy with great chemistry and witty banter",
-  "Spine-tingling horror movie with dark atmosphere and suspense"
+  "Spine-tingling horror movie with dark atmosphere and suspense",
+  "Intense cat-and-mouse detective investigation into a mysterious killer",
+  "Classic 80s sci-fi adventure filled with nostalgic charm and action",
+  "Atmospheric Gothic horror set in an isolated haunted mansion",
+  "Fast-paced heist film featuring an ensemble cast and high stakes",
+  "Thought-provoking dystopia exploring artificial intelligence and ethics",
+  "Witty whodunit mystery packed with clever twists and eccentric characters",
+  "Binge-worthy dark mystery TV miniseries with gripping cliffhangers",
+  "Bittersweet non-linear romance about memory, fate, and heartbreak",
+  "Visually breathtaking cyberpunk sci-fi with synth soundtrack",
+  "Epic historical battle film about honor, revenge, and destiny",
+  "Clever buddy-cop action comedy with hilarious laugh-out-loud moments",
+  "Oscar-winning international thriller with shocking plot developments",
+  "Understated coming-of-age drama set in a nostalgic summer town",
+  "Claustrophobic underwater thriller with constant tension",
+  "Slick martial arts action with relentless physical choreography",
+  "Mind-bending parallel universe adventure filled with absurd humor",
+  "Slow-burn psychological mystery set in a snow-covered mountain town",
+  "Irreverent R-rated comedy with dark humor and crazy situations",
+  "Heartwarming Pixar-style animation that will make me cry and smile",
+  "Tense courtroom drama dealing with moral dilemmas and secrets",
+  "Subtle Korean cinema masterpiece with social commentary and suspense",
+  "High-concept temporal time travel thriller where every detail matters"
 ];
+
+const getRandomSuggestions = () => {
+  return [...ALL_SUGGESTIONS_POOL].sort(() => 0.5 - Math.random()).slice(0, 10);
+};
 
 const AiDiscoveryPage = () => {
   const [prompt, setPrompt] = useState(() => sessionStorage.getItem('cinescope_ai_prompt') || '');
@@ -56,14 +82,15 @@ const AiDiscoveryPage = () => {
   const [captionIndex, setCaptionIndex] = useState(0);
   const [selectedRationaleModal, setSelectedRationaleModal] = useState(null);
 
-  // Dynamic Typewriter state
+  // Dynamic Typewriter state with shuffled suggestions per session
+  const [dynamicSuggestions] = useState(() => getRandomSuggestions());
   const [suggestionIndex, setSuggestionIndex] = useState(0);
   const [displayedSuggestion, setDisplayedSuggestion] = useState('');
   const [isTyping, setIsTyping] = useState(true);
   const [isCopied, setIsCopied] = useState(false);
 
   useEffect(() => {
-    const currentFullText = DYNAMIC_SUGGESTIONS[suggestionIndex];
+    const currentFullText = dynamicSuggestions[suggestionIndex];
 
     let timer;
     if (isTyping) {
@@ -82,13 +109,13 @@ const AiDiscoveryPage = () => {
           setDisplayedSuggestion(currentFullText.slice(0, displayedSuggestion.length - 1));
         }, 20);
       } else {
-        setSuggestionIndex((prev) => (prev + 1) % DYNAMIC_SUGGESTIONS.length);
+        setSuggestionIndex((prev) => (prev + 1) % dynamicSuggestions.length);
         setIsTyping(true);
       }
     }
 
     return () => clearTimeout(timer);
-  }, [displayedSuggestion, isTyping, suggestionIndex]);
+  }, [displayedSuggestion, isTyping, suggestionIndex, dynamicSuggestions]);
 
   useEffect(() => {
     if (selectedRationaleModal) {
@@ -210,7 +237,7 @@ const AiDiscoveryPage = () => {
             className={`ai-copy-prompt-btn ${isCopied ? 'copied' : ''}`}
             title="Use this prompt"
             onClick={() => {
-              const fullText = DYNAMIC_SUGGESTIONS[suggestionIndex];
+              const fullText = dynamicSuggestions[suggestionIndex];
               setPrompt(fullText);
               setIsCopied(true);
               setTimeout(() => setIsCopied(false), 1800);
@@ -319,19 +346,31 @@ const AiDiscoveryPage = () => {
                     <p className="ai-result-rationale">
                       {movie.rationale || movie.overview}
                     </p>
-                    <button 
-                      type="button" 
-                      className="see-why-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedRationaleModal({ 
-                          title: movie.title, 
-                          rationale: movie.rationale || movie.overview || 'No rationale available.' 
-                        });
-                      }}
-                    >
-                      See Why
-                    </button>
+                    <div className="ai-rec-actions">
+                      <button 
+                        type="button" 
+                        className="btn-primary ai-view-details-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.location.hash = `${movie.mediaType || 'movie'}/${movie.id}`;
+                        }}
+                      >
+                        View Details
+                      </button>
+                      <button 
+                        type="button" 
+                        className="btn-secondary ai-see-why-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedRationaleModal({ 
+                            title: movie.title, 
+                            rationale: movie.rationale || movie.overview || 'No rationale available.' 
+                          });
+                        }}
+                      >
+                        Why This Pick?
+                      </button>
+                    </div>
                   </div>
                 </motion.div>
               ))}
