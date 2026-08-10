@@ -525,6 +525,20 @@ const ProfilePage = () => {
             </div>
           </div>
         </div>
+
+        {/* ── Log Out Button Section ── */}
+        {currentUser && !currentUser.isAnonymous && (
+          <div className="profile-logout-section">
+            <button 
+              type="button" 
+              className="profile-logout-card-btn"
+              onClick={() => setIsLogoutModalOpen(true)}
+            >
+              <span className="profile-logout-icon">🚪</span>
+              <span>Log Out of Account</span>
+            </button>
+          </div>
+        )}
       </div>
 
       {isLogoutModalOpen && (

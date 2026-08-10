@@ -484,6 +484,18 @@ const Navbar = () => {
         </ul>
 
         <div className="navbar__actions" id="navbar-actions">
+          {/* Mobile Notifications Bell */}
+          <button
+            type="button"
+            className="navbar__action-btn mobile-notif-btn"
+            onClick={() => setIsNotificationsOpen(true)}
+            aria-label="Notifications"
+          >
+            <span style={{ fontSize: '1.2rem', position: 'relative' }}>
+              🔔
+              {hasUnreadNotifications && <span className="mobile-notif-dot" style={{ top: '-2px', right: '-2px' }}></span>}
+            </span>
+          </button>
           <div className="navbar__search-wrapper" ref={searchContainerRef}>
             <form className={`navbar__search-form ${isSearchActive ? 'active' : ''}`} onSubmit={handleSearchSubmit}>
               <button
@@ -715,16 +727,20 @@ const Navbar = () => {
           <span>Friends</span>
         </a>
 
-        <a 
-          href="#watchlist" 
-          onClick={(e) => handleNavClick(e, '#watchlist')} 
-          className={`mobile-nav-item ${currentPath === '#watchlist' ? 'active' : ''}`}
+        <button 
+          type="button" 
+          onClick={() => {
+            setIsSearchActive(true);
+            setShowSuggestions(true);
+          }} 
+          className={`mobile-nav-item ${isSearchActive ? 'active' : ''}`}
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
           </svg>
-          <span>Watchlist</span>
-        </a>
+          <span>Search</span>
+        </button>
 
         <a 
           href="#profile" 

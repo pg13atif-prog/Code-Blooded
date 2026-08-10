@@ -686,9 +686,18 @@
   }
 
   .navbar__hamburger {
-    display: flex;
+    display: none !important;
+  }
+
+  .mobile-notif-btn {
+    display: flex !important;
     align-items: center;
     justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.4rem;
+    color: #fff;
   }
 
   .mobile-drawer-header {
@@ -901,9 +910,10 @@
   }
 }
 
-/* Hide mobile-drawer-item on desktop viewports */
+/* Hide mobile-drawer-item and mobile-notif-btn on desktop viewports */
 @media (min-width: 769px) {
-  .mobile-drawer-item {
+  .mobile-drawer-item,
+  .mobile-notif-btn {
     display: none !important;
   }
 }

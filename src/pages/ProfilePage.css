@@ -1452,3 +1452,43 @@
     font-size: 0.82rem;
   }
 }
+
+/* ── Profile Logout Button Section ── */
+.profile-logout-section {
+  max-width: 1400px;
+  margin: 3rem auto 1rem;
+  padding: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.profile-logout-card-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 1.15rem 1.5rem;
+  background: linear-gradient(135deg, rgba(229, 9, 20, 0.28) 0%, rgba(160, 5, 12, 0.45) 100%);
+  border: 1px solid rgba(229, 9, 20, 0.6);
+  border-radius: 16px;
+  color: #ffffff;
+  font-size: 1.05rem;
+  font-weight: 700;
+  box-shadow: 0 4px 20px rgba(229, 9, 20, 0.35);
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.25s ease;
+}
+
+.profile-logout-card-btn:hover {
+  background: linear-gradient(135deg, rgba(229, 9, 20, 0.45) 0%, rgba(200, 8, 15, 0.6) 100%);
+  border-color: rgba(229, 9, 20, 0.8);
+  box-shadow: 0 8px 28px rgba(229, 9, 20, 0.5);
+  transform: translateY(-2px);
+}
+
+.profile-logout-icon {
+  font-size: 1.25rem;
+}
