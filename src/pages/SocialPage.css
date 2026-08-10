@@ -544,7 +544,7 @@
   }
 
   .ai-rec-title {
-    font-size: 0.9rem;
+    font-size: 0.88rem !important;
     font-weight: 700;
     text-align: center;
     line-height: 1.25;
@@ -556,6 +556,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     word-break: break-word;
+    margin: 0 0 0.2rem 0;
   }
 
   .ai-rec-rating,
