@@ -150,7 +150,7 @@ const WatchlistPage = () => {
                   <div className="wl-info">
                     <h3>{movie.title}</h3>
                     <p>{movie.year} • {movie.category} • {movie.mediaType === 'tv' ? 'TV' : 'Movie'}</p>
-                    <div className="wl-rating">★ {movie.rating}</div>
+                    <div className="wl-rating">★ {(movie.rating && movie.rating !== '—' && movie.rating !== '-') ? movie.rating : 'N/A'}</div>
                   </div>
                   <button className="wl-list-remove" onClick={(e) => handleRemove(e, movie.id)}>Remove</button>
                 </div>

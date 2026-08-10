@@ -5,7 +5,7 @@ import { db } from '../services/firebase';
 import { getWatchlist, getLiked, getWatched } from '../services/firestore';
 import { getFriendCompatibilityRecs } from '../services/gemini';
 import { searchMedia } from '../services/tmdb';
-import { ensureFriendCode, searchByFriendCode } from '../services/friends';
+import { ensureFriendCode, searchByFriendCode, getFriendData } from '../services/friends';
 import MovieCard from '../components/MovieCard';
 import './SocialPage.css';
 
@@ -116,7 +116,8 @@ const SocialPage = () => {
       const myProfile = buildProfile(myLiked, myWatched, myWl);
       const friendProfile = buildProfile(fLiked, fWatched, fWl);
 
-      const myName = currentUser.displayName || (currentUser.email ? currentUser.email.split('@')[0] : 'You');
+      const myData = await getFriendData(currentUser.uid).catch(() => null);
+      const myName = myData?.username || currentUser.displayName || (currentUser.email ? currentUser.email.split('@')[0] : 'You');
       const friendName = friendData.username || (friendData.email ? friendData.email.split('@')[0] : 'Friend');
 
       const compatibilityData = await getFriendCompatibilityRecs(myProfile, friendProfile, myName, friendName);
@@ -281,7 +282,7 @@ const SocialPage = () => {
                         >
                           {movie.title}
                         </h4>
-                        {movie.rating && (
+                        {movie.rating && movie.rating !== '—' && movie.rating !== '-' && movie.rating !== 'N/A' && (
                           <span className="ai-rec-rating">★ {movie.rating}</span>
                         )}
                       </div>
@@ -327,7 +328,7 @@ const SocialPage = () => {
                       >
                         {movie.title}
                       </h4>
-                      {movie.rating && (
+                      {movie.rating && movie.rating !== '—' && movie.rating !== '-' && movie.rating !== 'N/A' && (
                         <span className="ai-rec-rating">★ {movie.rating}</span>
                       )}
                     </div>

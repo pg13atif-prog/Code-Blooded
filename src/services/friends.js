@@ -1,5 +1,6 @@
 import { ref, get, set, remove, update, query, orderByChild, equalTo } from 'firebase/database';
-import { db } from './firebase';
+import { updateProfile } from 'firebase/auth';
+import { db, auth } from './firebase';
 import { isInWatchlist, isLiked, isWatched } from './firestore';
 
 // Helper to generate a 6-character alphanumeric code
@@ -194,6 +195,14 @@ export const updateUserProfile = async (userId, data) => {
   if (data.displayName !== undefined) updates[`users/${userId}/displayName`] = data.displayName;
   if (data.avatarUrl !== undefined) updates[`users/${userId}/avatarUrl`] = data.avatarUrl;
   await update(ref(db), updates);
+
+  if (auth.currentUser && auth.currentUser.uid === userId && data.displayName !== undefined) {
+    try {
+      await updateProfile(auth.currentUser, { displayName: data.displayName });
+    } catch (e) {
+      console.error('Error updating Firebase auth profile:', e);
+    }
+  }
 };
 
 // ── Notifications & Recommendations ──────────────────────────────────────────

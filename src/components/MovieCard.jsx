@@ -223,7 +223,7 @@ const MovieCard = memo((props) => {
             <button className="play-button" onClick={handlePlayTrailer} aria-label={`Play ${title} trailer`}>
               <span aria-hidden="true">&#9654;</span>
             </button>
-            <span className="movie-rating"><span className="star" aria-hidden="true">&#9733;</span> {rating}</span>
+            <span className="movie-rating"><span className="star" aria-hidden="true">&#9733;</span> {(rating && rating !== '—' && rating !== '-') ? rating : 'N/A'}</span>
             <span className="movie-year">{year}</span>
           </div>
         </div>
@@ -303,7 +303,7 @@ const MovieCard = memo((props) => {
                 <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" stroke="none" style={{ marginRight: '4px' }}>
                   <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                 </svg>
-                {rating}
+                {(rating && rating !== '—' && rating !== '-') ? rating : 'N/A'}
               </span>
               <span className="hover-meta-dot">&bull;</span>
               <span className="hover-year">{year}</span>

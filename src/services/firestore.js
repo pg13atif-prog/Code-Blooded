@@ -4,18 +4,41 @@ import { db } from './firebase';
 const getUserWatchlistRef = (userId) => ref(db, `users/${userId}/watchlist`);
 const getMovieDocRef = (userId, movieId) => ref(db, `users/${userId}/watchlist/${movieId}`);
 
+const sanitizeRating = (rawRating, movie) => {
+  if (rawRating !== undefined && rawRating !== null && rawRating !== '—' && rawRating !== '-' && rawRating !== 'N/A' && rawRating !== '') {
+    const num = Number(rawRating);
+    if (!isNaN(num) && num > 0) return num.toFixed(1);
+    if (typeof rawRating === 'string' && rawRating.trim().length > 0 && rawRating !== '0.0' && rawRating !== '0') {
+      return rawRating;
+    }
+  }
+  if (movie?.vote_average && Number(movie.vote_average) > 0) {
+    return Number(movie.vote_average).toFixed(1);
+  }
+  if (movie?.voteAverage && Number(movie.voteAverage) > 0) {
+    return Number(movie.voteAverage).toFixed(1);
+  }
+  return 'N/A';
+};
+
+const sanitizeMovie = (movie) => {
+  if (!movie) return movie;
+  const rating = sanitizeRating(movie.rating, movie);
+  const year = (movie.year && movie.year !== '—' && movie.year !== '-') ? movie.year : (movie.releaseDate?.slice(0, 4) || 'N/A');
+  return { ...movie, rating, year };
+};
+
 export const addToWatchlist = async (userId, movie) => {
   if (!userId || !movie) return;
   const movieRef = getMovieDocRef(userId, movie.id);
   
-  // Store enough data to display it on the profile/watchlist page correctly
   await set(movieRef, {
     id: movie.id,
     title: movie.title || movie.originalTitle || 'Unknown Title',
     poster: movie.poster !== undefined ? movie.poster : null,
     category: movie.category || 'Movie',
-    year: movie.year || '—',
-    rating: movie.rating || '—',
+    year: (movie.year && movie.year !== '—' && movie.year !== '-') ? movie.year : (movie.releaseDate?.slice(0, 4) || 'N/A'),
+    rating: sanitizeRating(movie.rating, movie),
     mediaType: movie.mediaType || 'movie',
     addedAt: new Date().toISOString()
   });
@@ -41,7 +64,7 @@ export const getWatchlist = async (userId) => {
   
   if (snapshot.exists()) {
     const data = snapshot.val();
-    return Object.values(data).filter(Boolean);
+    return Object.values(data).filter(Boolean).map(sanitizeMovie);
   }
   return [];
 };
@@ -55,22 +78,19 @@ export const addRecentlyViewed = async (userId, movie) => {
   const snapshot = await get(historyRef);
   let history = snapshot.exists() ? snapshot.val() : [];
   
-  // Remove if it already exists to put it at the top
   history = history.filter(item => item.id !== movie.id);
   
-  // Add to top
   history.unshift({
     id: movie.id,
     title: movie.title || movie.originalTitle || 'Unknown Title',
     poster: movie.poster !== undefined ? movie.poster : null,
     category: movie.category || 'Movie',
-    year: movie.year || '—',
-    rating: movie.rating || '—',
+    year: (movie.year && movie.year !== '—' && movie.year !== '-') ? movie.year : (movie.releaseDate?.slice(0, 4) || 'N/A'),
+    rating: sanitizeRating(movie.rating, movie),
     mediaType: movie.mediaType || 'movie',
     viewedAt: new Date().toISOString()
   });
   
-  // Limit to 20
   history = history.slice(0, 20);
   
   await set(historyRef, history);
@@ -81,7 +101,8 @@ export const getRecentlyViewed = async (userId) => {
   const historyRef = getRecentlyViewedRef(userId);
   const snapshot = await get(historyRef);
   if (snapshot.exists()) {
-    return snapshot.val();
+    const data = snapshot.val();
+    return (Array.isArray(data) ? data : Object.values(data)).filter(Boolean).map(sanitizeMovie);
   }
   return [];
 };
@@ -98,8 +119,8 @@ export const addToWatched = async (userId, movie, runtime = 0) => {
     title: movie.title || movie.originalTitle || 'Unknown Title',
     poster: movie.poster !== undefined ? movie.poster : null,
     category: movie.category || 'Movie',
-    year: movie.year || '—',
-    rating: movie.rating || '—',
+    year: (movie.year && movie.year !== '—' && movie.year !== '-') ? movie.year : (movie.releaseDate?.slice(0, 4) || 'N/A'),
+    rating: sanitizeRating(movie.rating, movie),
     mediaType: movie.mediaType || 'movie',
     runtime: runtime || 0,
     addedAt: new Date().toISOString()
@@ -124,7 +145,7 @@ export const getWatched = async (userId) => {
   const watchedRef = getWatchedRef(userId);
   const snapshot = await get(watchedRef);
   if (snapshot.exists()) {
-    return Object.values(snapshot.val()).filter(Boolean);
+    return Object.values(snapshot.val()).filter(Boolean).map(sanitizeMovie);
   }
   return [];
 };
@@ -141,8 +162,8 @@ export const addToLiked = async (userId, movie) => {
     title: movie.title || movie.originalTitle || 'Unknown Title',
     poster: movie.poster !== undefined ? movie.poster : null,
     category: movie.category || 'Movie',
-    year: movie.year || '—',
-    rating: movie.rating || '—',
+    year: (movie.year && movie.year !== '—' && movie.year !== '-') ? movie.year : (movie.releaseDate?.slice(0, 4) || 'N/A'),
+    rating: sanitizeRating(movie.rating, movie),
     mediaType: movie.mediaType || 'movie',
     addedAt: new Date().toISOString()
   });
@@ -166,7 +187,7 @@ export const getLiked = async (userId) => {
   const likedRef = getLikedRef(userId);
   const snapshot = await get(likedRef);
   if (snapshot.exists()) {
-    return Object.values(snapshot.val()).filter(Boolean);
+    return Object.values(snapshot.val()).filter(Boolean).map(sanitizeMovie);
   }
   return [];
 };

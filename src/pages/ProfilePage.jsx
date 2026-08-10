@@ -46,7 +46,7 @@ const MediaListItem = ({ movie, onRemove, onNavigate }) => {
         <h4>{movie.title}</h4>
         <p>{movie.year} · {movie.category} · {movie.mediaType === 'tv' ? 'TV' : 'Movie'}</p>
       </div>
-      <div className="profile-list-rating">★ {movie.rating}</div>
+      <div className="profile-list-rating">★ {(movie.rating && movie.rating !== '—' && movie.rating !== '-') ? movie.rating : 'N/A'}</div>
     </div>
   );
 };

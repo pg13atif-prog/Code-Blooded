@@ -256,7 +256,7 @@ const UserListPage = ({ initialType = 'liked' }) => {
                       <div className="ul-info">
                         <h3>{movie.title || movie.name}</h3>
                         <p>{movie.year} • {movie.category} • {movie.mediaType === 'tv' ? 'TV Show' : 'Movie'}</p>
-                        <div className="ul-rating">★ {movie.rating}</div>
+                        <div className="ul-rating">★ {(movie.rating && movie.rating !== '—' && movie.rating !== '-') ? movie.rating : 'N/A'}</div>
                       </div>
                       <button className="ul-row-remove" onClick={(e) => handleRemove(e, movie)}>Remove</button>
                     </div>

@@ -171,7 +171,9 @@ const FriendsPage = () => {
         setSentRecs(prev => ({ ...prev, [movieId]: false }));
         setRecFeedback(`Unsent recommendation for "${movieData.title || movieData.name}".`);
       } else {
-        await recommendMovie(currentUser.uid, currentUser.email?.split('@')[0] || 'Friend', selectedFriend.uid, movieData);
+        const myData = await getFriendData(currentUser.uid).catch(() => null);
+        const myName = myData?.username || currentUser.displayName || (currentUser.email ? currentUser.email.split('@')[0] : 'Friend');
+        await recommendMovie(currentUser.uid, myName, selectedFriend.uid, movieData);
         setSentRecs(prev => ({ ...prev, [movieId]: true }));
         setRecFeedback(`Successfully recommended "${movieData.title || movieData.name}"!`);
       }
