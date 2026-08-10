@@ -33,6 +33,17 @@ const AiResultSkeleton = () => (
   </div>
 );
 
+const DYNAMIC_SUGGESTIONS = [
+  "A psychological thriller set in space with a mind-bending twist",
+  "Gritty 90s neo-noir crime masterpiece with razor-sharp dialogue",
+  "Hilarious feel-good comedy perfect for a relaxed weekend night",
+  "Visually stunning anime or Studio Ghibli fantasy adventure",
+  "Deeply emotional A24 indie drama with incredible performances",
+  "High-octane action thriller featuring real-world practical stunts",
+  "Charming romantic comedy with great chemistry and witty banter",
+  "Spine-tingling horror movie with dark atmosphere and suspense"
+];
+
 const AiDiscoveryPage = () => {
   const [prompt, setPrompt] = useState(() => sessionStorage.getItem('cinescope_ai_prompt') || '');
   const [results, setResults] = useState(() => {
@@ -44,6 +55,40 @@ const AiDiscoveryPage = () => {
   const [error, setError] = useState(null);
   const [captionIndex, setCaptionIndex] = useState(0);
   const [selectedRationaleModal, setSelectedRationaleModal] = useState(null);
+
+  // Dynamic Typewriter state
+  const [suggestionIndex, setSuggestionIndex] = useState(0);
+  const [displayedSuggestion, setDisplayedSuggestion] = useState('');
+  const [isTyping, setIsTyping] = useState(true);
+  const [isCopied, setIsCopied] = useState(false);
+
+  useEffect(() => {
+    const currentFullText = DYNAMIC_SUGGESTIONS[suggestionIndex];
+
+    let timer;
+    if (isTyping) {
+      if (displayedSuggestion.length < currentFullText.length) {
+        timer = setTimeout(() => {
+          setDisplayedSuggestion(currentFullText.slice(0, displayedSuggestion.length + 1));
+        }, 35);
+      } else {
+        timer = setTimeout(() => {
+          setIsTyping(false);
+        }, 3000);
+      }
+    } else {
+      if (displayedSuggestion.length > 0) {
+        timer = setTimeout(() => {
+          setDisplayedSuggestion(currentFullText.slice(0, displayedSuggestion.length - 1));
+        }, 20);
+      } else {
+        setSuggestionIndex((prev) => (prev + 1) % DYNAMIC_SUGGESTIONS.length);
+        setIsTyping(true);
+      }
+    }
+
+    return () => clearTimeout(timer);
+  }, [displayedSuggestion, isTyping, suggestionIndex]);
 
   useEffect(() => {
     if (selectedRationaleModal) {
@@ -94,11 +139,9 @@ const AiDiscoveryPage = () => {
       // 2. Fetch TMDB details for each recommendation
       const tmdbPromises = aiRecs.map(async (rec) => {
         try {
-          // Construct precise search query with year if returned by AI to avoid wrong remakes/unrelated titles
           const searchQuery = rec.year ? `${rec.title} ${rec.year}` : rec.title;
           const searchData = await searchMedia(searchQuery);
 
-          // Find exact match matching mediaType and year if available
           let match = searchData.find(item => 
             item.mediaType === (rec.mediaType || 'movie') &&
             (!rec.year || String(item.year) === String(rec.year))
@@ -152,31 +195,44 @@ const AiDiscoveryPage = () => {
             disabled={loading}
           />
           <button type="submit" className="ai-search-btn" disabled={loading || !prompt.trim()}>
-            {loading ? 'Thinking...' : '✨ Let CineAI Decide'}
+            {loading ? 'Thinking...' : '✨ Discover Movies'}
           </button>
         </form>
 
-        <div className="ai-suggested-pills">
-          <span className="pills-label">Try asking:</span>
-          {[
-            "🌌 Mind-bending sci-fi thriller set in space",
-            "🔪 90s gritty neo-noir crime masterpiece",
-            "🍿 Hilarious feel-good comedy for a relaxed night",
-            "🎨 Visually stunning animated Ghibli/anime film",
-            "🎭 Deeply emotional A24 indie drama"
-          ].map((p) => (
-            <button
-              key={p}
-              type="button"
-              className="ai-pill-btn"
-              onClick={() => {
-                const textOnly = p.replace(/^[\s\S]*?\s/, '');
-                setPrompt(textOnly);
-              }}
-            >
-              {p}
-            </button>
-          ))}
+        <div className="ai-dynamic-suggestion-bar">
+          <span className="ai-suggestion-label">Try asking:</span>
+          <div className="ai-typewriter-wrapper">
+            <span className="ai-typewriter-text">{displayedSuggestion}</span>
+            <span className="ai-typewriter-cursor">|</span>
+          </div>
+          <button
+            type="button"
+            className={`ai-copy-prompt-btn ${isCopied ? 'copied' : ''}`}
+            title="Use this prompt"
+            onClick={() => {
+              const fullText = DYNAMIC_SUGGESTIONS[suggestionIndex];
+              setPrompt(fullText);
+              setIsCopied(true);
+              setTimeout(() => setIsCopied(false), 1800);
+            }}
+          >
+            {isCopied ? (
+              <>
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                <span>Copied</span>
+              </>
+            ) : (
+              <>
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                </svg>
+                <span>Use Prompt</span>
+              </>
+            )}
+          </button>
         </div>
       </div>
 
