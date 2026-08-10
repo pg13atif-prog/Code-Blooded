@@ -768,7 +768,13 @@ const Navbar = () => {
           className={`mobile-nav-item ${currentPath === '#profile' ? 'active' : ''}`}
         >
           {currentUser ? (
-            <div className="mobile-nav-avatar">{avatarLetter}</div>
+            <div className="mobile-nav-avatar">
+              {userAvatar ? (
+                <img src={userAvatar} alt={username} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+              ) : (
+                avatarLetter
+              )}
+            </div>
           ) : (
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>

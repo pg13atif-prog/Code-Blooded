@@ -73,6 +73,11 @@ const SocialPage = () => {
         setMatchLoading(true);
         setTimeout(() => executeMatch(code), 50);
       }
+    } else if (window.__cinescope_last_match_result) {
+      setMatchResult(window.__cinescope_last_match_result);
+      if (window.__cinescope_last_match_code) {
+        setSearchCode(window.__cinescope_last_match_code);
+      }
     }
   }, []);
 
@@ -152,13 +157,17 @@ const SocialPage = () => {
 
       const hydratedRecs = (await Promise.all(tmdbPromises)).filter(Boolean);
 
-      setMatchResult({
+      const res = {
         compatibility: compatibilityData.compatibility,
         summary: cleanSummary,
         breakdown: compatibilityData.breakdown,
         sharedFavorites,
         recommendations: hydratedRecs
-      });
+      };
+
+      window.__cinescope_last_match_result = res;
+      window.__cinescope_last_match_code = codeToSearch;
+      setMatchResult(res);
 
     } catch (err) {
       console.error(err);
@@ -198,45 +207,72 @@ const SocialPage = () => {
                 {matchLoading ? 'Comparing...' : 'Compare Watchlists'}
               </button>
             </form>
-            {matchError && <p className="error-text" style={{ marginTop: '1rem' }}>{matchError}</p>}
+            {matchError && <p className="error-text">{matchError}</p>}
           </div>
         </div>
       )}
 
       {matchLoading && (
-        <div className="ai-loading-state" style={{ marginTop: '3rem' }}>
-          <div className="ai-spinner"></div>
-          <p>{loadingCaption}</p>
+        <div className="ai-loading-state glass-panel" style={{ maxWidth: '600px', margin: '2rem auto', padding: '3rem' }}>
+          <div className="ai-pulse"></div>
+          <h2>Finding Best Matches</h2>
+          <p className="loading-caption" style={{ color: 'var(--color-accent)', fontWeight: 600 }}>{loadingCaption}</p>
         </div>
       )}
 
-      {matchResult && (
-        <div className="match-results animated-entrance">
+      {matchResult && !matchLoading && (
+        <div className="match-results">
+          {/* Top Left Back Button */}
+          <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-start', marginBottom: '1.5rem' }}>
+            <button 
+              type="button" 
+              className="match-back-btn" 
+              onClick={() => {
+                window.__cinescope_last_match_result = null;
+                window.__cinescope_last_match_code = null;
+                setMatchResult(null);
+                window.location.hash = '#friends';
+              }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                background: 'rgba(255, 255, 255, 0.08)',
+                border: '1px solid rgba(255, 255, 255, 0.16)',
+                color: '#ffffff',
+                padding: '0.55rem 1.15rem',
+                borderRadius: '999px',
+                fontSize: '0.88rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                backdropFilter: 'blur(12px)',
+                transition: 'all 0.22s ease'
+              }}
+            >
+              ← Back to Friends
+            </button>
+          </div>
+
           <div className="compatibility-score">
-            <h3>Compatibility Score</h3>
+            <h3>Taste Match</h3>
             <div className="score-circle">
               <span>{matchResult.compatibility}%</span>
             </div>
             {matchResult.summary && (
-              <p className="compatibility-summary">{matchResult.summary}</p>
+              <p className="compatibility-summary">"{matchResult.summary}"</p>
             )}
           </div>
 
-          {matchResult.breakdown && (
+          {matchResult.breakdown && matchResult.breakdown.length > 0 && (
             <div className="compatibility-breakdown">
-              <h3>Taste Breakdown</h3>
+              <h3>Match Breakdown</h3>
               <div className="breakdown-bars">
-                {[
-                  { label: 'Genre Overlap', value: matchResult.breakdown.genreOverlap, icon: '🎭' },
-                  { label: 'Era Alignment', value: matchResult.breakdown.eraAlignment, icon: '📅' },
-                  { label: 'Rating Standards', value: matchResult.breakdown.ratingStandards, icon: '⭐' },
-                  { label: 'Thematic Taste', value: matchResult.breakdown.thematicTaste, icon: '🎯' },
-                ].map((dim) => (
-                  <div key={dim.label} className="breakdown-row">
-                    <span className="breakdown-label">{dim.icon} {dim.label}</span>
+                {matchResult.breakdown.map((dim, idx) => (
+                  <div key={idx} className="breakdown-row">
+                    <span className="breakdown-label">{dim.dimension}</span>
                     <div className="breakdown-track">
-                      <div
-                        className="breakdown-fill"
+                      <div 
+                        className="breakdown-fill" 
                         style={{ width: `${dim.value}%` }}
                       />
                     </div>
@@ -337,13 +373,42 @@ const SocialPage = () => {
                       {movie.category && <span className="ai-rec-tag">{movie.category}</span>}
                       <span className="ai-rec-tag type">{movie.mediaType === 'tv' ? 'TV Show' : 'Movie'}</span>
                     </div>
-                    <p className="ai-rec-rationale-text">
-                      "{movie.rationale}"
-                    </p>
+                    <button 
+                      type="button" 
+                      className="see-why-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedRationaleModal({ title: movie.title, rationale: movie.rationale });
+                      }}
+                    >
+                      See Why
+                    </button>
                   </div>
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Rationale Modal */}
+      {selectedRationaleModal && (
+        <div className="modal-overlay" onClick={() => setSelectedRationaleModal(null)}>
+          <div className="modal-content glass-panel" style={{ maxWidth: '500px', width: '90%', padding: '2rem', position: 'relative' }} onClick={(e) => e.stopPropagation()}>
+            <button 
+              type="button" 
+              className="modal-close" 
+              onClick={() => setSelectedRationaleModal(null)}
+              style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', fontSize: '1rem' }}
+            >
+              ✕
+            </button>
+            <h2 style={{ fontSize: '1.3rem', marginBottom: '1rem', color: '#fff' }}>
+              Why {selectedRationaleModal.title}?
+            </h2>
+            <p style={{ fontSize: '1rem', lineHeight: '1.6', color: 'rgba(255,255,255,0.85)', margin: 0 }}>
+              {selectedRationaleModal.rationale}
+            </p>
           </div>
         </div>
       )}

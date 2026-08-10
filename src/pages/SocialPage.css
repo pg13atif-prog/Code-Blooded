@@ -553,8 +553,39 @@
   }
 
   .ai-rec-rating,
-  .ai-rec-tags,
+  .ai-rec-tags {
+    display: flex !important;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+  }
+
   .ai-rec-rationale-text {
     display: none !important;
+  }
+
+  .see-why-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0.5rem auto 0;
+    padding: 0.38rem 0.85rem;
+    background: rgba(229, 9, 20, 0.16);
+    border: 1px solid rgba(229, 9, 20, 0.45);
+    border-radius: 999px;
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(229, 9, 20, 0.3);
+  }
+
+  .see-why-btn:hover {
+    background: rgba(229, 9, 20, 0.38);
+    border-color: rgba(229, 9, 20, 0.75);
+    transform: translateY(-1px);
   }
 }

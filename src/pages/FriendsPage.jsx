@@ -204,7 +204,7 @@ const FriendsPage = () => {
 
       <div className="friends-tabs">
         <button className={`friends-tab-btn ${activeTab === 'list' ? 'active' : ''}`} onClick={() => setActiveTab('list')}>
-          My Friends ({friends.length})
+          My Friends
         </button>
         <button className={`friends-tab-btn ${activeTab === 'requests' ? 'active' : ''}`} onClick={() => setActiveTab('requests')}>
           Requests {incoming.length > 0 && <span className="req-badge">{incoming.length}</span>}

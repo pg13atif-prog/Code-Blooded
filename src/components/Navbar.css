@@ -709,6 +709,10 @@
 }
 
 @media (max-width: 860px) {
+  .navbar__profile-container {
+    display: none !important;
+  }
+
   .navbar {
     display: flex;
     justify-content: space-between;

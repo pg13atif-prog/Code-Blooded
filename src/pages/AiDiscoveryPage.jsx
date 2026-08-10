@@ -213,7 +213,7 @@ const AiDiscoveryPage = () => {
                       <span className="ai-result-rating">★ {movie.rating}</span>
                     </div>
                     <p className="ai-result-rationale">
-                      {movie.overview || movie.rationale}
+                      {movie.rationale || movie.overview}
                     </p>
                   </div>
                 </motion.div>

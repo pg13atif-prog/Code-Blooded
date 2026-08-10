@@ -56,6 +56,13 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
   const [minRating, setMinRating] = useState(0);
   const [sortBy, setSortBy] = useState('popularity.desc');
 
+  // --- Pending (Draft) Filter State ---
+  const [pendingGenres, setPendingGenres] = useState([]);
+  const [pendingDecade, setPendingDecade] = useState('');
+  const [pendingYears, setPendingYears] = useState([]);
+  const [pendingMinRating, setPendingMinRating] = useState(0);
+  const [pendingSortBy, setPendingSortBy] = useState('popularity.desc');
+
   // --- Filter results ---
   const [filterResults, setFilterResults] = useState([]);
   const [filterStatus, setFilterStatus] = useState('loading'); // loading | success | error
@@ -68,6 +75,18 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
   useEffect(() => {
     setFilterMediaType(activeTab === 'tv' ? 'tv' : (activeTab === 'trending' ? 'trending' : 'movie'));
   }, [activeTab]);
+
+  // Sync pending filter state when filter panel opens
+  const toggleFilterPanel = () => {
+    if (!showFilters) {
+      setPendingGenres(selectedGenres);
+      setPendingDecade(selectedDecade);
+      setPendingYears(selectedYears);
+      setPendingMinRating(minRating);
+      setPendingSortBy(sortBy);
+    }
+    setShowFilters(prev => !prev);
+  };
 
   // --- Filter apply function ---
   const applyFilters = useCallback(async (isLoadMore = false, targetPage = 1) => {
@@ -88,34 +107,26 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
         setFilterTotalPages(response.totalPages || 10);
         setFilterPage(response.page || targetPage);
         setFilterStatus('success');
-        return;
-      }
-
-      let yearsParam = [];
-      if (selectedDecade) {
-        yearsParam = selectedDecade;
-      } else if (selectedYears.length > 0) {
-        yearsParam = selectedYears;
-      }
-
-      const response = await discoverMedia({
-        mediaType: filterMediaType,
-        genreIds: selectedGenres,
-        years: yearsParam,
-        minRating,
-        sortBy,
-        page: targetPage,
-      });
-
-      if (isLoadMore) {
-        setFilterResults(prev => [...prev, ...response.results]);
       } else {
-        setFilterResults(response.results);
-      }
+        const response = await discoverMedia({
+          mediaType: filterMediaType,
+          genreIds: selectedGenres,
+          years: selectedDecade || selectedYears,
+          minRating,
+          sortBy,
+          page: targetPage,
+        });
 
-      setFilterTotalPages(response.totalPages);
-      setFilterPage(response.page);
-      setFilterStatus('success');
+        if (isLoadMore) {
+          setFilterResults(prev => [...prev, ...response.results]);
+        } else {
+          setFilterResults(response.results);
+        }
+
+        setFilterTotalPages(response.totalPages);
+        setFilterPage(response.page);
+        setFilterStatus('success');
+      }
     } catch (err) {
       console.error('Error discovering content:', err);
       if (!isLoadMore) setFilterStatus('error');
@@ -124,12 +135,12 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
     }
   }, [filterMediaType, trendingTimeWindow, selectedGenres, selectedDecade, selectedYears, minRating, sortBy]);
 
-  // Auto-fetch when mediaType changes
+  // Auto-fetch when mediaType, active filters or trendingTimeWindow change
   useEffect(() => {
     window.scrollTo(0, 0);
     setFilterPage(1);
     applyFilters(false, 1);
-  }, [filterMediaType, applyFilters]);
+  }, [filterMediaType, trendingTimeWindow, selectedGenres, selectedDecade, selectedYears, minRating, sortBy, applyFilters]);
 
   // Infinite scroll IntersectionObserver
   useEffect(() => {
@@ -155,8 +166,12 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
   }, [filterPage, filterTotalPages, loadingMore, filterStatus, applyFilters]);
 
   const handleApplyFilters = () => {
+    setSelectedGenres(pendingGenres);
+    setSelectedDecade(pendingDecade);
+    setSelectedYears(pendingYears);
+    setMinRating(pendingMinRating);
+    setSortBy(pendingSortBy);
     setFilterPage(1);
-    applyFilters(false, 1);
   };
 
   const handleLoadMore = () => {
@@ -167,22 +182,22 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
 
   const toggleGenre = (genreId) => {
     const id = Number(genreId);
-    setSelectedGenres(prev =>
+    setPendingGenres(prev =>
       prev.includes(id) ? prev.filter(g => g !== id) : [...prev, id]
     );
   };
 
   const toggleYear = (year) => {
-    setSelectedDecade('');
+    setPendingDecade('');
     const y = Number(year);
-    setSelectedYears(prev =>
+    setPendingYears(prev =>
       prev.includes(y) ? prev.filter(item => item !== y) : [...prev, y]
     );
   };
 
   const selectDecade = (value) => {
-    setSelectedYears([]);
-    setSelectedDecade(prev => (prev === value ? '' : value));
+    setPendingYears([]);
+    setPendingDecade(prev => (prev === value ? '' : value));
   };
 
   return (
@@ -251,12 +266,15 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
           {filterMediaType !== 'trending' && (
             <button 
               className={`discover-icon-filter-btn ${showFilters ? 'active' : ''}`}
-              onClick={() => setShowFilters(!showFilters)}
+              onClick={toggleFilterPanel}
               title="Advanced Filters"
             >
               <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
               </svg>
+              {(selectedGenres.length > 0 || selectedDecade || selectedYears.length > 0 || minRating > 0) && (
+                <span className="filter-badge" />
+              )}
             </button>
           )}
         </div>
@@ -321,8 +339,8 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
                 <div className="filter-sort-group">
                   <span className="filter-sort-label">SORT BY</span>
                   <CustomSelect
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
+                    value={pendingSortBy}
+                    onChange={(e) => setPendingSortBy(e.target.value)}
                     className="filter-sort-select"
                     options={SORT_OPTIONS}
                   />
@@ -334,7 +352,7 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
                 <label className="filter-section-label">GENRES</label>
                 <div className="filter-chips">
                   {DISPLAY_GENRES.map((genre) => {
-                    const isSelected = selectedGenres.includes(genre.id);
+                    const isSelected = pendingGenres.includes(genre.id);
                     return (
                       <button
                         key={genre.id}
@@ -355,7 +373,7 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
                   {DECADES.map(d => (
                     <button
                       key={d.value}
-                      className={`filter-chip ${selectedDecade === d.value ? 'filter-chip--active' : ''}`}
+                      className={`filter-chip ${pendingDecade === d.value ? 'filter-chip--active' : ''}`}
                       onClick={() => selectDecade(d.value)}
                     >
                       {d.label}
@@ -369,7 +387,7 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
                     {SPECIFIC_YEARS.map(yr => (
                       <button
                         key={yr}
-                        className={`filter-chip filter-chip--sm ${selectedYears.includes(yr) ? 'filter-chip--active' : ''}`}
+                        className={`filter-chip filter-chip--sm ${pendingYears.includes(yr) ? 'filter-chip--active' : ''}`}
                         onClick={() => toggleYear(yr)}
                       >
                         {yr}
@@ -389,8 +407,8 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
                     {RATING_OPTIONS.map(opt => (
                       <button
                         key={opt.value}
-                        className={`filter-chip filter-chip--rating ${minRating === opt.value ? 'filter-chip--active' : ''}`}
-                        onClick={() => setMinRating(opt.value)}
+                        className={`filter-chip filter-chip--rating ${pendingMinRating === opt.value ? 'filter-chip--active' : ''}`}
+                        onClick={() => setPendingMinRating(opt.value)}
                       >
                         {opt.label}
                       </button>
