@@ -230,8 +230,7 @@
   color: rgba(255, 255, 255, 0.85);
   font-style: italic;
   max-width: 550px;
-  text-align: justify;
-  text-justify: inter-word;
+  text-align: left;
 }
 
 /* Breakdown Section */
