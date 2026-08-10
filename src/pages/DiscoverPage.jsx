@@ -271,20 +271,34 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
               </h2>
               <p style={{ margin: '0.2rem 0 0', fontSize: '0.82rem', color: 'rgba(255,255,255,0.6)' }}>Most popular movies and TV shows across the globe right now</p>
             </div>
-            <div style={{ display: 'flex', gap: '0.4rem', background: 'rgba(0,0,0,0.4)', padding: '4px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <div className="discover-pill-toggle">
               <button 
+                type="button" 
                 className={`pill-btn ${trendingTimeWindow === 'day' ? 'active' : ''}`}
                 onClick={() => setTrendingTimeWindow('day')}
-                style={{ padding: '0.4rem 0.9rem', fontSize: '0.82rem', borderRadius: '9px', cursor: 'pointer' }}
               >
-                Today
+                {trendingTimeWindow === 'day' && (
+                  <motion.div
+                    layoutId="trendingTimePill"
+                    className="discover-tab-pill-active"
+                    transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                  />
+                )}
+                <span className="pill-btn-label">Today</span>
               </button>
               <button 
+                type="button" 
                 className={`pill-btn ${trendingTimeWindow === 'week' ? 'active' : ''}`}
                 onClick={() => setTrendingTimeWindow('week')}
-                style={{ padding: '0.4rem 0.9rem', fontSize: '0.82rem', borderRadius: '9px', cursor: 'pointer' }}
               >
-                This Week
+                {trendingTimeWindow === 'week' && (
+                  <motion.div
+                    layoutId="trendingTimePill"
+                    className="discover-tab-pill-active"
+                    transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                  />
+                )}
+                <span className="pill-btn-label">This Week</span>
               </button>
             </div>
           </div>
