@@ -47,12 +47,12 @@ function App() {
   const [tvShows, setTvShows] = useState([]);
   const [trending, setTrending] = useState([]);
   const [status, setStatus] = useState("loading");
-  
+
   // Recommendation state
   const [recommended, setRecommended] = useState([]);
   const [likedTitle, setLikedTitle] = useState("");
   const { currentUser } = useAuth();
-  
+
   // Routing state
   const [currentRoute, setCurrentRoute] = useState('home'); // home, movies, tvshows, search, profile, movie-detail, trending-movies, trending-tv
   const [currentParams, setCurrentParams] = useState(null);
@@ -60,7 +60,7 @@ function App() {
   useEffect(() => {
     const parseHash = () => {
       const hash = window.location.hash;
-      
+
       const episodeMatch = hash.match(/^#episode\/tv\/(\d+)\/season\/(\d+)\/episode\/(\d+)/);
       if (episodeMatch) {
         setCurrentRoute('episode-detail');
@@ -74,7 +74,7 @@ function App() {
         setCurrentParams({ type: detailMatch[1], id: detailMatch[2] });
         return;
       }
-      
+
       const searchMatch = hash.match(/^#search\?q=(.*)/);
       if (searchMatch) {
         setCurrentRoute('search');
@@ -88,7 +88,7 @@ function App() {
         setCurrentParams({ tab: discoverMatch[1] });
         return;
       }
-      
+
       const cineAiMatch = hash.match(/^#cineai\/(what-to-watch|planner|pick-for-me|debate)/);
       if (cineAiMatch) {
         setCurrentRoute('cineai-tool');
@@ -177,7 +177,7 @@ function App() {
   useEffect(() => {
     // Only load home page data if we're on the home page or haven't loaded it yet
     if (movies.length > 0) return;
-    
+
     const controller = new AbortController();
 
     Promise.all([
@@ -220,7 +220,7 @@ function App() {
           // Pick a random movie from watchlist
           const randomMovie = watchlist[Math.floor(Math.random() * watchlist.length)];
           const similar = await getSimilarMovies(randomMovie.id, randomMovie.mediaType || 'movie');
-          
+
           if (similar.length > 0) {
             setLikedTitle(randomMovie.title);
             setRecommended(similar);
@@ -246,16 +246,16 @@ function App() {
           episodeNumber={currentParams.episodeNumber}
           onBack={() => window.history.length > 2 ? window.history.back() : window.location.hash = ''}
         />;
-      
+
       case 'movie-detail':
-        return <MovieDetail movieId={currentParams?.id} mediaType={currentParams?.type || 'movie'} onBack={() => { 
+        return <MovieDetail movieId={currentParams?.id} mediaType={currentParams?.type || 'movie'} onBack={() => {
           if (window.history.length > 2) {
             window.history.back();
           } else {
-            window.location.hash = ""; 
+            window.location.hash = "";
           }
         }} />;
-      
+
       case 'movies':
       case 'tvshows':
       case 'trending-tv':
