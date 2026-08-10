@@ -343,8 +343,9 @@ export const getAiRecommendations = async (prompt) => {
 export const getAiPlannerRecommendation = async (answers) => {
   const systemInstruction = `
     You are CineAI, an elite movie sommelier. 
-    The user has answered questions about their mood, genre, timeline, and company.
-    Return EXACTLY ONE perfect movie recommendation in JSON format:
+    The user has answered questions about their mood, genre, timeline, and company: ${JSON.stringify(answers)}.
+    CRITICAL VARIETY RULE: Do NOT default to obvious blockbusters (like Interstellar, Inception, or The Dark Knight) every time. Explore diverse cinema across different decades, indie hits, cult classics, international cinema, and hidden gems tailored specifically to their answers.
+    Return EXACTLY ONE perfect movie or TV show recommendation in JSON format:
     {
       "title": "Exact Title",
       "mediaType": "movie",
@@ -354,15 +355,22 @@ export const getAiPlannerRecommendation = async (answers) => {
   `;
 
   try {
-    return await callOpenRouter(systemInstruction, JSON.stringify(answers), 0.7);
+    return await callOpenRouter(systemInstruction, JSON.stringify(answers), 0.85);
   } catch (err) {
     console.warn('OpenRouter rate limited or unavailable, using Planner fallback:', err.message);
     const pool = [
-      { title: "Interstellar", mediaType: "movie", rationale: "A breathtaking cinematic masterpiece perfectly tailored for an immersive movie night." },
-      { title: "The Dark Knight", mediaType: "movie", rationale: "An intense, thrilling experience guaranteed to keep everyone on the edge of their seats." },
-      { title: "La La Land", mediaType: "movie", rationale: "A vibrant, emotionally resonant musical film that blends romance, passion, and artistic ambition." },
+      { title: "Ex Machina", mediaType: "movie", rationale: "A sleek, tense psychological sci-fi thriller about artificial intelligence and deception." },
+      { title: "Nightcrawler", mediaType: "movie", rationale: "An edge-of-your-seat crime thriller featuring an unforgettably chilling lead performance." },
+      { title: "The Nice Guys", mediaType: "movie", rationale: "A razor-sharp, hilarious 70s neo-noir comedy packed with brilliant chemistry and chaotic fun." },
+      { title: "Coherence", mediaType: "movie", rationale: "A mind-bending, low-budget sci-fi thriller that will keep you guessing long after the credits roll." },
+      { title: "Arrival", mediaType: "movie", rationale: "A deeply moving, atmospheric sci-fi masterpiece about communication, time, and humanity." },
+      { title: "Knives Out", mediaType: "movie", rationale: "A brilliantly crafted modern whodunit mystery packed with twists and stellar ensemble performances." },
+      { title: "Children of Men", mediaType: "movie", rationale: "A masterclass in dystopian cinema with incredible single-take action and visceral immersion." },
+      { title: "La La Land", mediaType: "movie", rationale: "A vibrant, emotionally resonant musical film blending romance, passion, and artistic ambition." },
       { title: "Superbad", mediaType: "movie", rationale: "A hilarious, endlessly quotable comedy classic ideal for relaxing and laughing out loud." },
-      { title: "Se7en", mediaType: "movie", rationale: "A dark, atmospheric psychological thriller with an unforgettable climax." }
+      { title: "Se7en", mediaType: "movie", rationale: "A dark, atmospheric psychological thriller with an unforgettable climax." },
+      { title: "In Bruges", mediaType: "movie", rationale: "A dark, witty hitman comedy-drama with incredible dialogue and existential undertones." },
+      { title: "Whiplash", mediaType: "movie", rationale: "An electrifying, high-stakes drama examining the ruthless pursuit of artistic perfection." }
     ];
     return pool[Math.floor(Math.random() * pool.length)];
   }
@@ -370,23 +378,24 @@ export const getAiPlannerRecommendation = async (answers) => {
 
 export const getAiPickForMe = async (excludeTitles = []) => {
   const themes = [
-    "90s cult classic thriller or crime masterpiece",
-    "mind-bending sci-fi epic or time travel adventure",
-    "high-octane modern action or martial arts spectacle",
-    "unforgettable animated masterpiece (Studio Ghibli, Pixar, or anime)",
-    "spine-tingling horror or psychological mystery",
-    "hilarious laugh-out-loud comedy or satirical fun",
-    "deeply emotional romantic drama or bittersweet love story",
+    "hidden gem 90s cult thriller or crime masterpiece",
+    "mind-bending sci-fi mystery or space time travel trip",
+    "high-octane modern action, martial arts, or revenge spectacle",
+    "unforgettable animated masterpiece (Studio Ghibli, Satoshi Kon, or Pixar)",
+    "spine-tingling psychological horror or modern mystery",
+    "hilarious laugh-out-loud comedy, satire, or buddy-cop fun",
+    "deeply emotional romantic drama, A24 indie, or bittersweet love story",
     "intense historical drama or gladiatorial epic",
-    "critically acclaimed international Oscar-winner",
+    "critically acclaimed international Oscar-winner or Korean/French thriller",
     "binge-worthy dark TV series or mystery miniseries"
   ];
 
   const selectedTheme = themes[Math.floor(Math.random() * themes.length)];
-  const randomSeed = `${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+  const randomSeed = `${Date.now()}_${Math.floor(Math.random() * 100000)}`;
 
   const systemInstruction = `
     You are CineAI, an expert film sommelier. Your goal is to pick exactly ONE universally acclaimed, highly entertaining movie or TV show matching the requested theme.
+    CRITICAL DIVERSITY RULE: Avoid constantly defaulting to the top 10 mainstream blockbusters (like Interstellar, Dark Knight, or Inception). Recommend underrated gems, cult classics, 90s/2000s classics, world cinema, or indie bangers.
     ${excludeTitles.length > 0 ? `CRITICAL: Do NOT recommend any of the following previously picked titles: ${excludeTitles.join(', ')}.` : ''}
     Return EXACTLY ONE recommendation in JSON format:
     {
@@ -397,24 +406,30 @@ export const getAiPickForMe = async (excludeTitles = []) => {
     Return ONLY JSON.
   `;
 
-  const userPrompt = `Surprise me with a guaranteed certified banger in the theme of: "${selectedTheme}". Request ID: ${randomSeed}.`;
+  const userPrompt = `Surprise me with a guaranteed certified banger in the theme of: "${selectedTheme}". Unique seed ID: ${randomSeed}.`;
 
   try {
     return await callOpenRouter(systemInstruction, userPrompt, 0.95);
   } catch (err) {
     console.warn('OpenRouter rate limited or unavailable, using Pick For Me fallback:', err.message);
     const pool = [
-      "Interstellar", "Inception", "Pulp Fiction", "The Dark Knight", "Parasite",
-      "Gladiator", "Whiplash", "Spirited Away", "Everything Everywhere All at Once",
-      "Fight Club", "Se7en", "The Matrix", "Dune: Part Two", "Oppenheimer",
-      "Spider-Man: Across the Spider-Verse", "Goodfellas", "No Country for Old Men",
-      "The Silence of the Lambs", "Mad Max: Fury Road", "La La Land", "Princess Mononoke",
-      "Inglourious Basterds", "Blade Runner 2049", "Get Out", "Oldboy",
-      "The Grand Budapest Hotel", "The Prestige", "Arrival", "Heat", "Prisoners",
-      "Alien", "The Thing", "Coco", "Wall-E", "Superbad", "The Truman Show",
-      "Before Sunrise", "Eternal Sunshine of the Spotless Mind", "Past Lives",
-      "Drive", "Nightcrawler", "Shutter Island", "The Departed", "Knives Out",
-      "1917", "Memories of Murder", "Your Name", "The Shawshank Redemption"
+      "Nightcrawler", "Coherence", "Arrival", "Children of Men", "Blade Runner 2049",
+      "Ex Machina", "Drive", "Primal Fear", "The Hunt", "Prisoners",
+      "Zodiac", "Memories of Murder", "No Country for Old Men", "Sicario", "The Departed",
+      "The Nice Guys", "In Bruges", "Knives Out", "The Truman Show", "Gattaca",
+      "Dark City", "Source Code", "Edge of Tomorrow", "Everything Everywhere All at Once",
+      "Parasite", "Whiplash", "Spirited Away", "Princess Mononoke", "Your Name",
+      "Spider-Man: Across the Spider-Verse", "Goodfellas", "The Silence of the Lambs",
+      "Mad Max: Fury Road", "La La Land", "Inglourious Basterds", "Get Out",
+      "Oldboy", "The Grand Budapest Hotel", "The Prestige", "Heat", "Alien",
+      "The Thing", "Coco", "Wall-E", "Superbad", "Before Sunrise",
+      "Eternal Sunshine of the Spotless Mind", "Past Lives", "Shutter Island", "1917",
+      "Anatomy of a Fall", "Portrait of a Lady on Fire", "Sound of Metal", "Tar",
+      "Barbarian", "Talk to Me", "A Quiet Place", "The Invisible Man", "It Follows",
+      "The Raid: Redemption", "Dredd", "Baby Driver", "Kill Bill: Vol. 1", "Sisu",
+      "Monkey Man", "Fantastic Mr. Fox", "Rango", "Puss in Boots: The Last Wish",
+      "Marcel the Shell with Shoes On", "Severance", "The Bear", "Succession",
+      "Arcane", "Chernobyl", "True Detective", "Black Mirror", "Beef", "Mindhunter"
     ];
     const normalizedExcluded = excludeTitles.map(t => t.toLowerCase());
     const available = pool.filter(t => !normalizedExcluded.includes(t.toLowerCase()));

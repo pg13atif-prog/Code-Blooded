@@ -17,22 +17,7 @@ const PickForMe = () => {
       const aiPick = await getAiPickForMe(seenTitles);
       if (!aiPick || !aiPick.title) throw new Error("AI returned empty result");
       
-      let searchTitle = aiPick.title;
-      // Guarantee no duplicate title in session
-      if (seenTitles.map(t => t.toLowerCase()).includes(searchTitle.toLowerCase())) {
-        const fallbacks = [
-          "Interstellar", "Inception", "Pulp Fiction", "The Dark Knight", "Parasite",
-          "Gladiator", "Whiplash", "Spirited Away", "Everything Everywhere All at Once",
-          "Fight Club", "Se7en", "The Matrix", "Dune: Part Two", "Oppenheimer",
-          "Spider-Man: Across the Spider-Verse", "Goodfellas", "No Country for Old Men",
-          "The Silence of the Lambs", "Mad Max: Fury Road", "La La Land", "Princess Mononoke",
-          "Inglourious Basterds", "Blade Runner 2049", "Get Out", "Oldboy",
-          "The Grand Budapest Hotel", "The Prestige", "Arrival", "Heat", "Prisoners"
-        ];
-        const unused = fallbacks.filter(f => !seenTitles.map(t => t.toLowerCase()).includes(f.toLowerCase()));
-        searchTitle = unused.length > 0 ? unused[Math.floor(Math.random() * unused.length)] : searchTitle;
-      }
-
+      const searchTitle = aiPick.title;
       const tmdbResults = await searchMedia(searchTitle);
       const match = tmdbResults.find(m => m.mediaType === (aiPick.mediaType || 'movie')) || tmdbResults[0];
       
