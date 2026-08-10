@@ -47,7 +47,7 @@ const PickForMe = () => {
         <p>The fastest way to pick a movie. Press the button, get a certified banger instantly.</p>
       </div>
 
-      <div className="pick-for-me-container">
+      <div className={`pick-for-me-container ${movie ? 'result-active' : ''}`}>
         {!movie && !loading && (
           <div className="pick-hero-wrapper animated-entrance">
             <div className="pick-hero-icon-ring">
