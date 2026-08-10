@@ -33,6 +33,12 @@ const dropdownVariants = {
   exit: { opacity: 0, x: "-50%", y: -12, scale: 0.97, transition: { duration: 0.22, ease: [0.16, 1, 0.3, 1] } },
 };
 
+const profileDropdownVariants = {
+  hidden: { opacity: 0, x: "0%", y: -16, scale: 0.97 },
+  visible: { opacity: 1, x: "0%", y: 0, scale: 1, transition: { duration: 0.24, ease: [0.16, 1, 0.3, 1] } },
+  exit: { opacity: 0, x: "0%", y: -12, scale: 0.97, transition: { duration: 0.22, ease: [0.16, 1, 0.3, 1] } },
+};
+
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -641,7 +647,7 @@ const Navbar = () => {
                 {isDropdownOpen && (
                   <motion.div
                     className="navbar__dropdown"
-                    variants={dropdownVariants}
+                    variants={profileDropdownVariants}
                     initial="hidden"
                     animate="visible"
                     exit="exit"

@@ -137,24 +137,38 @@
   font-weight: 600;
   font-size: 0.88rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: color 0.2s ease;
   white-space: nowrap;
   text-align: center;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-width: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.filter-btn-label {
+  position: relative;
+  z-index: 2;
+}
+
+.ach-filter-pill-active {
+  position: absolute;
+  inset: 0;
+  background: var(--color-accent, #e50914);
+  border-radius: 24px;
+  box-shadow: 0 4px 15px rgba(229, 9, 20, 0.35);
+  z-index: 0;
 }
 
 .filter-btn:hover {
   color: #fff;
-  background: rgba(255, 255, 255, 0.06);
 }
 
 .filter-btn.active {
-  background: var(--color-accent, #e50914);
+  background: transparent;
   color: #fff;
-  box-shadow: 0 4px 15px rgba(229, 9, 20, 0.35);
 }
 
 /* Achievements List Layout */

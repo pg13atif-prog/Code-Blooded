@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { getUserStats, ACHIEVEMENTS_LIST } from '../services/achievements';
 import { getWatchlist, getLiked, getWatched } from '../services/firestore';
@@ -95,13 +96,34 @@ const AchievementsPage = () => {
       {/* Filter Tabs */}
       <div className="achievements-filter-bar">
         <button className={`filter-btn ${filter === 'all' ? 'active' : ''}`} onClick={() => setFilter('all')}>
-          All ({totalCount})
+          {filter === 'all' && (
+            <motion.div
+              layoutId="achFilterPill"
+              className="ach-filter-pill-active"
+              transition={{ type: "spring", stiffness: 450, damping: 32 }}
+            />
+          )}
+          <span className="filter-btn-label">All ({totalCount})</span>
         </button>
         <button className={`filter-btn ${filter === 'unlocked' ? 'active' : ''}`} onClick={() => setFilter('unlocked')}>
-          Unlocked ({unlockedCount})
+          {filter === 'unlocked' && (
+            <motion.div
+              layoutId="achFilterPill"
+              className="ach-filter-pill-active"
+              transition={{ type: "spring", stiffness: 450, damping: 32 }}
+            />
+          )}
+          <span className="filter-btn-label">Unlocked ({unlockedCount})</span>
         </button>
         <button className={`filter-btn ${filter === 'locked' ? 'active' : ''}`} onClick={() => setFilter('locked')}>
-          Locked ({totalCount - unlockedCount})
+          {filter === 'locked' && (
+            <motion.div
+              layoutId="achFilterPill"
+              className="ach-filter-pill-active"
+              transition={{ type: "spring", stiffness: 450, damping: 32 }}
+            />
+          )}
+          <span className="filter-btn-label">Locked ({totalCount - unlockedCount})</span>
         </button>
       </div>
 
