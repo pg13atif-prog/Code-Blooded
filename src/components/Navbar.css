@@ -709,6 +709,8 @@
 }
 
 @media (max-width: 860px) {
+  .navbar__profile,
+  .navbar__login-btn,
   .navbar__profile-container {
     display: none !important;
   }
