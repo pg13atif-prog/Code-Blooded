@@ -27,13 +27,13 @@ const PickForMe = () => {
     try {
       const aiPick = await getAiPickForMe(seenTitles, activeVibe);
       if (!aiPick || !aiPick.title) throw new Error("AI returned empty result");
-      
+
       const searchTitle = aiPick.title;
       const tmdbResults = await searchMedia(searchTitle);
       const match = tmdbResults.find(m => m.mediaType === (aiPick.mediaType || 'movie')) || tmdbResults[0];
-      
+
       if (!match) throw new Error("Could not find title on TMDB");
-      
+
       setSeenTitles(prev => [...prev, match.title]);
       const cleanRationale = (aiPick.rationale || '').replace(/^["'“]/, '').replace(/["'”]$/, '').trim();
       setMovie({ ...match, rationale: cleanRationale });
@@ -88,7 +88,7 @@ const PickForMe = () => {
             </button>
 
             <div className="pick-stage-footer">
-              <span>⚡ Powered by Gemini 1.5 Flash AI</span>
+              <span>⚡ Powered by CineAI</span>
               <span className="dot">•</span>
               <span>🎬 10,000+ Curated Bangers</span>
             </div>
