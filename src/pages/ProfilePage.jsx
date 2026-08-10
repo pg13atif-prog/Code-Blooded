@@ -370,12 +370,7 @@ const ProfilePage = () => {
               </div>
             ) : (
               <>
-                <h1 className="profile-hero-name">
-                  {username}
-                  <button className="edit-profile-btn" onClick={() => { setEditName(username); setIsEditing(true); }} title="Edit Profile">
-                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                  </button>
-                </h1>
+                <h1 className="profile-hero-name">{username}</h1>
                 <p className="profile-hero-email">{email}</p>
                 {friendCode && (
                   <div className="profile-friend-code-display">
@@ -390,16 +385,16 @@ const ProfilePage = () => {
                     </button>
                   </div>
                 )}
+                <button 
+                  type="button" 
+                  className="profile-hero-edit-btn"
+                  onClick={() => { setEditName(username); setIsEditing(true); }}
+                >
+                  Edit Profile
+                </button>
               </>
             )}
           </div>
-          
-          <button className="profile-logout-btn" onClick={() => setIsLogoutModalOpen(true)}>
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
-            </svg>
-            Log Out
-          </button>
         </div>
       </div>
 
@@ -535,7 +530,7 @@ const ProfilePage = () => {
               onClick={() => setIsLogoutModalOpen(true)}
             >
               <span className="profile-logout-icon">🚪</span>
-              <span>Log Out of Account</span>
+              <span>Log Out</span>
             </button>
           </div>
         )}

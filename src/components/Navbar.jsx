@@ -171,14 +171,20 @@ const Navbar = () => {
     };
   }, []);
 
+  const addRecentSearch = (term) => {
+    if (!term || !term.trim()) return;
+    const cleanQuery = term.trim();
+    setRecentSearches(prev => {
+      const filtered = prev.filter(t => t.toLowerCase() !== cleanQuery.toLowerCase());
+      return [cleanQuery, ...filtered].slice(0, 5);
+    });
+  };
+
   const executeSearch = (query) => {
     if (!query.trim()) return;
-    const cleanQuery = query.trim();
-    if (!recentSearches.includes(cleanQuery)) {
-      setRecentSearches(prev => [cleanQuery, ...prev].slice(0, 5));
-    }
+    addRecentSearch(query);
     setShowSuggestions(false);
-    window.location.hash = `search?q=${encodeURIComponent(cleanQuery)}`;
+    window.location.hash = `search?q=${encodeURIComponent(query.trim())}`;
   };
 
   const handleSearchSubmit = (e) => {
@@ -587,6 +593,7 @@ const Navbar = () => {
                         key={item.id}
                         className={`autocomplete-item ${focusedIndex === i ? 'focused' : ''}`}
                         onClick={() => {
+                          addRecentSearch(item.title || item.name);
                           window.location.hash = `${item.mediaType || 'movie'}/${item.id}`;
                           setShowSuggestions(false);
                         }}
@@ -804,6 +811,7 @@ const Navbar = () => {
                         key={`${item.mediaType || 'movie'}-${item.id}`}
                         className="mobile-search-glass-item"
                         onClick={() => {
+                          addRecentSearch(item.title || item.name);
                           window.location.hash = `${item.mediaType || 'movie'}/${item.id}`;
                           setIsMobileSearchModalOpen(false);
                         }}
@@ -849,7 +857,7 @@ const Navbar = () => {
                         className="recent-term-glass-item"
                         onClick={() => setSearchQuery(term)}
                       >
-                        <span>🕒 {term}</span>
+                        <span>{term}</span>
                       </div>
                     ))}
                   </div>
