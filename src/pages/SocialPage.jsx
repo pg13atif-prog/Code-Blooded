@@ -86,10 +86,21 @@ const SocialPage = () => {
         setSearchCode(code);
         executeMatch(code);
       }
-    } else if (window.__cinescope_last_match_result) {
-      setMatchResult(window.__cinescope_last_match_result);
-      if (window.__cinescope_last_match_code) {
-        setSearchCode(window.__cinescope_last_match_code);
+    } else {
+      const savedResult = window.__cinescope_last_match_result || localStorage.getItem('cinescope_last_match_result');
+      const savedCode = window.__cinescope_last_match_code || localStorage.getItem('cinescope_last_match_code');
+      if (savedResult) {
+        try {
+          const parsed = typeof savedResult === 'string' ? JSON.parse(savedResult) : savedResult;
+          setMatchResult(parsed);
+          window.__cinescope_last_match_result = parsed;
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      if (savedCode) {
+        setSearchCode(savedCode);
+        window.__cinescope_last_match_code = savedCode;
       }
     }
   }, [currentUser]);
@@ -181,6 +192,12 @@ const SocialPage = () => {
 
       window.__cinescope_last_match_result = res;
       window.__cinescope_last_match_code = codeToSearch;
+      try {
+        localStorage.setItem('cinescope_last_match_result', JSON.stringify(res));
+        localStorage.setItem('cinescope_last_match_code', codeToSearch);
+      } catch (e) {
+        console.error('Failed to persist match result:', e);
+      }
       setMatchResult(res);
 
     } catch (err) {
@@ -251,6 +268,10 @@ const SocialPage = () => {
               onClick={() => {
                 window.__cinescope_last_match_result = null;
                 window.__cinescope_last_match_code = null;
+                try {
+                  localStorage.removeItem('cinescope_last_match_result');
+                  localStorage.removeItem('cinescope_last_match_code');
+                } catch (e) {}
                 setMatchResult(null);
                 window.location.hash = '#friends';
               }}
