@@ -526,21 +526,7 @@ const Navbar = () => {
         </ul>
 
         <div className="navbar__actions" id="navbar-actions">
-          {/* Mobile Notifications Bell (SVG Vector Icon) */}
-          <button
-            type="button"
-            className={`navbar__action-btn mobile-notif-btn ${isNotificationsOpen ? 'active' : ''}`}
-            onClick={() => setIsNotificationsOpen(true)}
-            aria-label="Notifications"
-          >
-            <div className="mobile-notif-icon-wrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mobile-notif-svg">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-              </svg>
-              {hasUnreadNotifications && <span className="mobile-notif-dot-badge"></span>}
-            </div>
-          </button>
+          {/* Search Icon & Input */}
           <div className="navbar__search-wrapper" ref={searchContainerRef}>
             <form className={`navbar__search-form ${isSearchActive ? 'active' : ''}`} onSubmit={handleSearchSubmit}>
               <button
@@ -661,69 +647,42 @@ const Navbar = () => {
             )}
           </div>
 
-          {currentUser ? (
-            <div className="navbar__profile-container" ref={dropdownRef}>
-              <button
-                className="navbar__profile"
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                aria-label="Profile Menu"
-                aria-expanded={isDropdownOpen}
-                style={{ padding: 0, overflow: 'hidden' }}
-              >
-                {userAvatar ? (
-                  <img src={userAvatar} alt={username} className="navbar__profile-avatar-img" />
-                ) : (
-                  avatarLetter
+          {/* Notifications Icon (placed to the right of search icon) */}
+          {currentUser && (
+            <button
+              type="button"
+              className={`navbar__action-btn notif-btn ${isNotificationsOpen ? 'active' : ''}`}
+              onClick={() => setIsNotificationsOpen(true)}
+              aria-label="Notifications"
+              title="Notifications"
+            >
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '20px', height: '20px' }}>
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                {hasUnreadNotifications && (
+                  <span style={{ position: 'absolute', top: '0px', right: '0px', width: '8px', height: '8px', background: '#e50914', borderRadius: '50%', boxShadow: '0 0 8px #e50914' }}></span>
                 )}
-              </button>
+              </div>
+            </button>
+          )}
 
-              <AnimatePresence>
-                {isDropdownOpen && (
-                  <motion.div
-                    className="navbar__dropdown"
-                    variants={profileDropdownVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
-                  >
-                    <div className="dropdown-header" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.9rem 1rem' }}>
-                      <div className="dropdown-avatar" style={{ width: '36px', height: '36px', borderRadius: '50%', overflow: 'hidden', flexShrink: 0, background: 'var(--color-accent, #e50914)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: '#fff' }}>
-                        {userAvatar ? (
-                          <img src={userAvatar} alt={username} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        ) : (
-                          avatarLetter
-                        )}
-                      </div>
-                      <div style={{ minWidth: 0, flex: 1 }}>
-                        <p style={{ margin: 0, fontWeight: 700, fontSize: '0.95rem', color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{username}</p>
-                        <p className="dropdown-email" style={{ margin: 0, fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{currentUser.isAnonymous ? 'Guest User' : currentUser.email}</p>
-                      </div>
-                    </div>
-                    <div className="dropdown-divider"></div>
-                    <button type="button" className="dropdown-item" onClick={(e) => handleNavClick(e, '#profile')}>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                      My Profile
-                    </button>
-                    <button type="button" className="dropdown-item" onClick={(e) => handleNavClick(e, '#achievements')}>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 17 7 17 7"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg>
-                      Achievements
-                    </button>
-                    <button type="button" className="dropdown-item" onClick={() => setIsNotificationsOpen(true)}>
-                      <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-                        {hasUnreadNotifications && <span style={{ position: 'absolute', top: '0px', right: '0px', width: '6px', height: '6px', background: '#e50914', borderRadius: '50%' }}></span>}
-                      </div>
-                      Notifications
-                    </button>
-                    <div className="dropdown-divider"></div>
-                    <button className="dropdown-item logout" onClick={() => { setIsLogoutModalOpen(true); setIsDropdownOpen(false); }}>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                      Log Out
-                    </button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+          {/* Profile Icon (Direct navigation to #profile) */}
+          {currentUser ? (
+            <button
+              className="navbar__profile"
+              onClick={(e) => handleNavClick(e, '#profile')}
+              aria-label="Profile"
+              title="View Profile"
+              style={{ padding: 0, overflow: 'hidden' }}
+            >
+              {userAvatar ? (
+                <img src={userAvatar} alt={username} className="navbar__profile-avatar-img" />
+              ) : (
+                avatarLetter
+              )}
+            </button>
           ) : (
             <button
               className="navbar__login-btn"
