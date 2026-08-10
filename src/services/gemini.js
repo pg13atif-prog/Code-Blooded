@@ -376,7 +376,7 @@ export const getAiPlannerRecommendation = async (answers) => {
   }
 };
 
-export const getAiPickForMe = async (excludeTitles = []) => {
+export const getAiPickForMe = async (excludeTitles = [], moodPrompt = '') => {
   const themes = [
     "hidden gem 90s cult thriller or crime masterpiece",
     "mind-bending sci-fi mystery or space time travel trip",
@@ -390,7 +390,10 @@ export const getAiPickForMe = async (excludeTitles = []) => {
     "binge-worthy dark TV series or mystery miniseries"
   ];
 
-  const selectedTheme = themes[Math.floor(Math.random() * themes.length)];
+  const selectedTheme = (moodPrompt && moodPrompt !== '🎲 Any Vibe')
+    ? `${moodPrompt} vibe`
+    : themes[Math.floor(Math.random() * themes.length)];
+
   const randomSeed = `${Date.now()}_${Math.floor(Math.random() * 100000)}`;
 
   const systemInstruction = `

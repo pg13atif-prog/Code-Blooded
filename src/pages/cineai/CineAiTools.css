@@ -47,7 +47,7 @@
 }
 
 .pick-for-me-container {
-  max-width: 720px;
+  max-width: 850px;
   margin: 0 auto;
   background: transparent;
   border: none;
@@ -63,14 +63,26 @@
   padding: 0 !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-  max-width: 960px;
+  max-width: 1080px;
 }
 
-.pick-hero-wrapper {
+/* Liquid Glass Stage Card for Pick For Me */
+.pick-stage-card {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(20, 10, 25, 0.9) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 28px;
+  padding: 3rem 2.5rem;
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.22), 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 35px rgba(229, 9, 20, 0.14);
+  max-width: 780px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
 }
 
 .pick-hero-icon-ring {
@@ -96,18 +108,73 @@
   100% { transform: translateY(-6px); box-shadow: 0 0 35px rgba(229, 9, 20, 0.35); }
 }
 
+.pick-vibe-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 1.75rem;
+  width: 100%;
+}
+
+.pick-vibe-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.55);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+}
+
+.pick-vibe-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+}
+
+.pick-vibe-chip {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.03) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 30px;
+  padding: 0.5rem 1.15rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.25);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pick-vibe-chip:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.06) 100%);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.pick-vibe-chip.active {
+  background: linear-gradient(135deg, rgba(150, 18, 28, 0.8) 0%, rgba(95, 10, 16, 0.9) 100%) !important;
+  border-color: rgba(229, 9, 20, 0.45) !important;
+  color: #ffffff !important;
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+  transform: translateY(-1px);
+}
+
 .massive-pick-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.65rem;
-  margin: 1rem auto;
+  margin: 0.5rem auto 0;
   background: linear-gradient(135deg, rgba(160, 20, 30, 0.88) 0%, rgba(100, 10, 18, 0.92) 100%);
   color: #fff;
   border: 1px solid rgba(229, 9, 20, 0.45);
   border-radius: 40px;
-  padding: 0.85rem 2.5rem;
-  font-size: 1.05rem;
+  padding: 0.9rem 2.8rem;
+  font-size: 1.08rem;
   font-weight: 700;
   cursor: pointer;
   backdrop-filter: blur(16px) saturate(180%);
@@ -130,6 +197,21 @@
 
 .massive-pick-btn:active {
   transform: translateY(0) scale(0.99);
+}
+
+.pick-stage-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1.75rem;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.pick-stage-footer .dot {
+  color: rgba(229, 9, 20, 0.6);
 }
 
 .pick-feature-tags {
