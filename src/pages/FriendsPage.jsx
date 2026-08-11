@@ -464,13 +464,29 @@ const FriendsPage = ({ initialTab = 'list' }) => {
                       <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{res.title || res.name}</h4>
                       <p style={{ margin: '2px 0 0', fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)' }}>{res.year}</p>
                     </div>
-                    <button 
-                      className={`btn-sm ${isSent ? 'btn-unsend' : 'btn-primary'}`} 
+                    <motion.button 
+                      key={isSent ? 'unsend' : 'send'}
+                      initial={{ scale: 0.94, opacity: 0.8 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                      className={`btn-primary btn-sm ${isSent ? 'btn-unsend' : ''}`} 
                       onClick={() => handleToggleRecommendation(res)}
-                      style={{ padding: '0.5rem 1rem', borderRadius: '30px', minWidth: '70px' }}
+                      style={{ 
+                        padding: '0.6rem 1.25rem', 
+                        borderRadius: '30px', 
+                        minWidth: '88px',
+                        height: '38px',
+                        fontSize: '0.88rem',
+                        fontWeight: 700,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxSizing: 'border-box',
+                        transition: 'background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease, color 0.35s ease'
+                      }}
                     >
                       {isSent ? 'Unsend' : 'Send'}
-                    </button>
+                    </motion.button>
                   </div>
                 );
               })}

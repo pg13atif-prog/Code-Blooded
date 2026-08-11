@@ -109,7 +109,7 @@ function App() {
         return;
       }
 
-      const cineAiMatch = hash.match(/^#cineai\/(what-to-watch|planner|pick-for-me|debate)/);
+      const cineAiMatch = hash.match(/^#(?:cineai|cineai-tool)\/(what-to-watch|planner|pick-for-me|debate)/);
       if (cineAiMatch) {
         setCurrentRoute('cineai-tool');
         setCurrentParams({ tool: cineAiMatch[1] });
