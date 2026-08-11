@@ -446,6 +446,41 @@
     border-radius: 12px;
   }
 
+  .ai-dynamic-suggestion-bar {
+    flex-wrap: wrap;
+    padding: 0.75rem 1rem;
+    border-radius: 18px;
+    gap: 0.4rem 0.65rem;
+    margin-top: 1rem;
+  }
+
+  .ai-suggestion-label {
+    font-size: 0.72rem;
+  }
+
+  .ai-copy-prompt-btn {
+    margin-left: auto;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  .ai-typewriter-wrapper {
+    width: 100%;
+    flex-basis: 100%;
+    min-height: auto;
+    margin-top: 0.2rem;
+  }
+
+  .ai-typewriter-text {
+    white-space: normal;
+    font-size: 0.86rem;
+    line-height: 1.45;
+    word-break: break-word;
+    text-overflow: clip;
+    overflow: visible;
+    color: rgba(255, 255, 255, 0.92);
+  }
+
   .ai-results-list {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
