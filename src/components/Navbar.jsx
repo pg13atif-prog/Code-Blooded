@@ -49,15 +49,14 @@ const profileDropdownVariants = {
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [isSearchActive, setIsSearchActive] = useState(false);
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const [searchFilterType, setSearchFilterType] = useState('all');
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [currentPath, setCurrentPath] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isProfileDropupOpen, setIsProfileDropupOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
-  const [isMobileSearchModalOpen, setIsMobileSearchModalOpen] = useState(false);
-  const [mobileSearchType, setMobileSearchType] = useState('all');
 
   // Desktop hover dropdowns
   const [openDropdown, setOpenDropdown] = useState(null); // 'discover' | 'cineai' | 'social' | null
@@ -90,7 +89,7 @@ const Navbar = () => {
 
   // Prevent background scrolling when mobile menu or modals are open
   useEffect(() => {
-    if (isMobileMenuOpen || isLogoutModalOpen || isNotificationsOpen || isAuthModalOpen || isMobileSearchModalOpen) {
+    if (isMobileMenuOpen || isLogoutModalOpen || isNotificationsOpen || isAuthModalOpen || isSearchModalOpen) {
       document.body.style.overflow = 'hidden';
       document.body.style.touchAction = 'none';
     } else {
@@ -101,7 +100,7 @@ const Navbar = () => {
       document.body.style.overflow = '';
       document.body.style.touchAction = '';
     };
-  }, [isMobileMenuOpen, isLogoutModalOpen, isNotificationsOpen, isAuthModalOpen, isMobileSearchModalOpen]);
+  }, [isMobileMenuOpen, isLogoutModalOpen, isNotificationsOpen, isAuthModalOpen, isSearchModalOpen]);
 
   useEffect(() => {
     if (currentUser) {
@@ -146,7 +145,7 @@ const Navbar = () => {
   }, [recentSearches]);
 
   useEffect(() => {
-    if (searchQuery.trim().length > 1 && (isSearchActive || isMobileSearchModalOpen)) {
+    if (searchQuery.trim().length > 1 && isSearchModalOpen) {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => {
         searchMedia(searchQuery.trim(), controller.signal).then(data => {
@@ -166,7 +165,21 @@ const Navbar = () => {
         setShowSuggestions(false);
       }
     }
-  }, [searchQuery, isSearchActive, isMobileSearchModalOpen]);
+  }, [searchQuery, isSearchModalOpen]);
+
+  // Global keyboard shortcuts (Ctrl+K, Cmd+K, Escape)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        setIsSearchModalOpen(prev => !prev);
+      } else if (e.key === 'Escape' && isSearchModalOpen) {
+        setIsSearchModalOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isSearchModalOpen]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -180,11 +193,8 @@ const Navbar = () => {
       if (hash.startsWith('#search?q=')) {
         const query = decodeURIComponent(hash.split('=')[1]);
         setSearchQuery(query);
-        setIsSearchActive(true);
-        setShowSuggestions(false);
       } else if (!hash.startsWith('#search')) {
         setSearchQuery('');
-        setIsSearchActive(false);
       }
       setIsMobileMenuOpen(false);
     };
@@ -230,28 +240,44 @@ const Navbar = () => {
     if (!query.trim()) return;
     addRecentSearch(query);
     setShowSuggestions(false);
+    setIsSearchModalOpen(false);
     window.location.hash = `search?q=${encodeURIComponent(query.trim())}`;
   };
 
   const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    if (focusedIndex >= 0 && suggestions.length > 0) {
-      const item = suggestions[focusedIndex];
+    if (e) e.preventDefault();
+    const filtered = suggestions.filter(item => {
+      if (searchFilterType === 'movie') return item.mediaType === 'movie' || (!item.mediaType && item.title);
+      if (searchFilterType === 'tv') return item.mediaType === 'tv' || (!item.mediaType && item.name);
+      return true;
+    });
+
+    if (focusedIndex >= 0 && filtered.length > 0) {
+      const item = filtered[focusedIndex];
+      addRecentSearch(item.title || item.name);
       window.location.hash = `${item.mediaType || 'movie'}/${item.id}`;
-      setShowSuggestions(false);
+      setIsSearchModalOpen(false);
     } else {
       executeSearch(searchQuery);
     }
   };
 
   const handleSearchKeyDown = (e) => {
-    if (!showSuggestions) return;
+    const filtered = suggestions.filter(item => {
+      if (searchFilterType === 'movie') return item.mediaType === 'movie' || (!item.mediaType && item.title);
+      if (searchFilterType === 'tv') return item.mediaType === 'tv' || (!item.mediaType && item.name);
+      return true;
+    });
+
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      setFocusedIndex(prev => (prev < suggestions.length - 1 ? prev + 1 : prev));
+      setFocusedIndex(prev => (prev < filtered.length - 1 ? prev + 1 : prev));
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       setFocusedIndex(prev => (prev > -1 ? prev - 1 : prev));
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSearchSubmit(e);
     }
   };
 
@@ -550,127 +576,23 @@ const Navbar = () => {
         </ul>
 
         <div className="navbar__actions" id="navbar-actions">
-          {/* Search Icon & Input */}
-          <div className="navbar__search-wrapper" ref={searchContainerRef}>
-            <form className={`navbar__search-form ${isSearchActive ? 'active' : ''}`} onSubmit={handleSearchSubmit}>
-              <button
-                type="button"
-                className="navbar__action-btn navbar__search-btn"
-                onClick={() => {
-                  if (isSearchActive && searchQuery) {
-                    handleSearchSubmit(new Event('submit'));
-                  } else {
-                    toggleSearch();
-                  }
-                }}
-                aria-label="Search"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="11" cy="11" r="8" />
-                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                </svg>
-              </button>
-              <input
-                ref={searchInputRef}
-                type="text"
-                className="navbar__search-input"
-                placeholder="Type here to search..."
-                value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  setShowSuggestions(true);
-                  setFocusedIndex(-1);
-                }}
-                onFocus={() => setShowSuggestions(true)}
-                onKeyDown={handleSearchKeyDown}
-              />
-              {isSearchActive && (
-                <button
-                  type="button"
-                  className="navbar__search-close-btn"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleSearch();
-                  }}
-                  aria-label="Close search"
-                >
-                  ✕
-                </button>
-              )}
-            </form>
-
-            {/* Autocomplete Dropdown */}
-            {isSearchActive && showSuggestions && (
-              (searchQuery.trim().length > 1) || 
-              (searchQuery.trim().length === 0 && recentSearches.length > 0)
-            ) && (
-              <div className="autocomplete-dropdown glass-panel">
-                {searchQuery.trim().length === 0 && recentSearches.length > 0 && (
-                  <div className="autocomplete-section">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <h4>Recent Searches</h4>
-                      <button 
-                        onClick={(e) => { e.stopPropagation(); setRecentSearches([]); }}
-                        style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem', cursor: 'pointer', padding: '0 0.5rem' }}
-                      >Clear All</button>
-                    </div>
-                    {recentSearches.map((term, i) => (
-                      <div key={i} className="autocomplete-item" onClick={() => executeSearch(term)}>
-                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" style={{ flexShrink: 0 }}><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                        <span style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{term}</span>
-                        <button 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setRecentSearches(prev => prev.filter(t => t !== term));
-                          }}
-                          style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', padding: '0.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                          title="Remove search"
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {searchQuery.trim().length > 1 && suggestions.length > 0 && (
-                  <div className="autocomplete-section">
-                    {suggestions.map((item, i) => (
-                      <div
-                        key={item.id}
-                        className={`autocomplete-item ${focusedIndex === i ? 'focused' : ''}`}
-                        onClick={() => {
-                          addRecentSearch(item.title || item.name);
-                          window.location.hash = `${item.mediaType || 'movie'}/${item.id}`;
-                          setShowSuggestions(false);
-                        }}
-                      >
-                        {item.poster ? (
-                          <img src={item.poster} alt="" />
-                        ) : (
-                          <div className="autocomplete-no-img"></div>
-                        )}
-                        <div className="autocomplete-info">
-                          <span>{item.title}</span>
-                          <small>{item.year} • {item.category}</small>
-                        </div>
-                      </div>
-                    ))}
-                    <div
-                      className="autocomplete-footer"
-                      onClick={() => executeSearch(searchQuery)}
-                    >
-                      View all results for "{searchQuery}" &rarr;
-                    </div>
-                  </div>
-                )}
-                {searchQuery.trim().length > 1 && suggestions.length === 0 && (
-                  <div className="autocomplete-section">
-                    <div className="autocomplete-item no-results">No results found for "{searchQuery}"</div>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+          {/* Spotlight Search Trigger Button */}
+          <button
+            type="button"
+            className="navbar__action-btn navbar__search-btn"
+            onClick={() => {
+              setIsSearchModalOpen(true);
+              setSearchQuery('');
+              setFocusedIndex(-1);
+            }}
+            aria-label="Search"
+            title="Search Movies & TV Shows (Ctrl + K)"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </button>
 
           {/* Notifications Icon (placed to the right of search icon) */}
           {currentUser && (
@@ -781,10 +703,11 @@ const Navbar = () => {
             <button 
               type="button" 
               onClick={() => {
-                setIsMobileSearchModalOpen(true);
+                setIsSearchModalOpen(true);
                 setSearchQuery('');
+                setFocusedIndex(-1);
               }} 
-              className={`mobile-nav-item ${isSearchingActive ? 'active' : ''}`}
+              className={`mobile-nav-item ${isSearchingActive || isSearchModalOpen ? 'active' : ''}`}
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="11" cy="11" r="8" />
@@ -818,32 +741,33 @@ const Navbar = () => {
         );
       })()}
 
-      {/* ── Fixed Mobile Search Overlay (Pinned Header + Scrollable Body) ── */}
-      {isMobileSearchModalOpen && (
-        <div className="mobile-search-overlay" onClick={() => setIsMobileSearchModalOpen(false)}>
-          <div className="mobile-search-sheet" onClick={(e) => e.stopPropagation()}>
+      {/* ── Unified Spotlight Search Modal (Desktop & Mobile) ── */}
+      {isSearchModalOpen && (
+        <div className="search-modal-overlay" onClick={() => setIsSearchModalOpen(false)}>
+          <div className="search-modal-container" onClick={(e) => e.stopPropagation()}>
             
-            {/* ── Fixed Top Header (Pinned at Top, Never Scrolls) ── */}
-            <div className="mobile-search-fixed-header">
-              <div className="mobile-search-header-row">
-                <h2 className="mobile-search-title">Search</h2>
+            {/* ── Fixed Top Header (Title + Filter Selector + Close Button + Search Input) ── */}
+            <div className="search-modal-fixed-header">
+              <div className="search-modal-header-top">
+                <h2 className="search-modal-title">Search</h2>
                 
-                <div className="mobile-search-header-actions">
+                <div className="search-modal-header-actions">
                   <CustomSelect
-                    value={mobileSearchType}
-                    onChange={(e) => setMobileSearchType(e.target.value)}
+                    value={searchFilterType}
+                    onChange={(e) => setSearchFilterType(e.target.value)}
                     options={MOBILE_SEARCH_TYPES}
-                    className="mobile-search-type-select"
+                    className="search-modal-type-select"
                   />
                   
                   <button
                     type="button"
-                    className="mobile-search-close-btn"
+                    className="search-modal-close-btn"
                     onClick={() => {
-                      setIsMobileSearchModalOpen(false);
+                      setIsSearchModalOpen(false);
                       setSearchQuery('');
                     }}
-                    aria-label="Close search"
+                    aria-label="Close search (Esc)"
+                    title="Close (Esc)"
                   >
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                       <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -854,93 +778,118 @@ const Navbar = () => {
               </div>
 
               {/* Fixed Search Input Bar */}
-              <div className="mobile-search-input-wrapper">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="modal-search-icon">
+              <div className="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="search-modal-icon">
                   <circle cx="11" cy="11" r="8" />
                   <line x1="21" y1="21" x2="16.65" y2="16.65" />
                 </svg>
                 <input
                   type="text"
-                  className="modal-search-input"
+                  className="search-modal-input"
                   placeholder="Type here to search..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && searchQuery.trim()) {
-                      e.preventDefault();
-                      executeSearch(searchQuery);
-                      setIsMobileSearchModalOpen(false);
-                    }
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setFocusedIndex(-1);
                   }}
+                  onKeyDown={handleSearchKeyDown}
                   autoFocus
                 />
-                {searchQuery.length > 0 && (
+                {searchQuery.length > 0 ? (
                   <button
                     type="button"
-                    className="mobile-search-clear-input-btn"
+                    className="search-modal-clear-btn"
                     onClick={() => setSearchQuery('')}
                     aria-label="Clear query"
                   >
                     ✕
                   </button>
+                ) : (
+                  <span className="search-modal-esc-badge">ESC</span>
                 )}
               </div>
             </div>
 
-            {/* ── Scrollable Body Area (Only Results Scroll) ── */}
-            <div className="mobile-search-scrollable-content">
+            {/* ── Scrollable Body Area (Only Results / Recents Scroll) ── */}
+            <div className="search-modal-scrollable-body">
               {searchQuery.trim().length > 1 ? (
                 (() => {
                   const filteredSuggestions = suggestions.filter(item => {
-                    if (mobileSearchType === 'movie') return item.mediaType === 'movie' || (!item.mediaType && item.title);
-                    if (mobileSearchType === 'tv') return item.mediaType === 'tv' || (!item.mediaType && item.name);
+                    if (searchFilterType === 'movie') return item.mediaType === 'movie' || (!item.mediaType && item.title);
+                    if (searchFilterType === 'tv') return item.mediaType === 'tv' || (!item.mediaType && item.name);
                     return true;
                   });
 
                   return filteredSuggestions.length > 0 ? (
-                    <div className="mobile-search-results-list">
-                      {filteredSuggestions.map((item) => (
+                    <div className="search-modal-results-list">
+                      {filteredSuggestions.map((item, idx) => (
                         <div
                           key={`${item.mediaType || 'movie'}-${item.id}`}
-                          className="mobile-search-glass-item"
+                          className={`search-modal-item-card ${focusedIndex === idx ? 'focused' : ''}`}
                           onClick={() => {
                             addRecentSearch(item.title || item.name);
                             window.location.hash = `${item.mediaType || 'movie'}/${item.id}`;
-                            setIsMobileSearchModalOpen(false);
+                            setIsSearchModalOpen(false);
                           }}
                         >
-                          <div className="ms-poster">
+                          <div className="search-item-poster">
                             {item.poster ? (
                               <img src={item.poster} alt={item.title || item.name} />
                             ) : (
-                              <div className="ms-no-poster">🎬</div>
+                              <div className="search-item-no-poster">🎬</div>
                             )}
                           </div>
-                          <div className="ms-info">
-                            <h5 className="ms-title">{item.title || item.name}</h5>
-                            <p className="ms-subtext">
-                              {item.year || ''} {item.year && (item.genre || item.mediaType) ? '•' : ''} {item.genre || (item.mediaType === 'tv' ? 'TV Show' : 'Movie')}
-                            </p>
+                          
+                          <div className="search-item-info">
+                            <h4 className="search-item-title">{item.title || item.name}</h4>
+                            
+                            <div className="search-item-meta">
+                              <span className="search-meta-type">{item.mediaType === 'tv' ? 'TV Show' : 'Movie'}</span>
+                              {item.year && item.year !== '—' && (
+                                <>
+                                  <span className="search-meta-sep">|</span>
+                                  <span className="search-meta-year">{item.year}</span>
+                                </>
+                              )}
+                              {item.rating && item.rating !== 'N/A' && Number(item.rating) > 0 && (
+                                <>
+                                  <span className="search-meta-sep">|</span>
+                                  <span className="search-meta-rating">
+                                    <span className="search-meta-star">★</span> {item.rating}
+                                  </span>
+                                </>
+                              )}
+                              {item.category && item.category !== 'Movie' && item.category !== 'TV Show' && (
+                                <>
+                                  <span className="search-meta-sep">|</span>
+                                  <span className="search-meta-genre">{item.category}</span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="search-item-action">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="search-item-chevron">
+                              <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
                           </div>
                         </div>
                       ))}
+
                       <div
-                        className="mobile-search-see-all-btn"
-                        onClick={() => {
-                          executeSearch(searchQuery);
-                          setIsMobileSearchModalOpen(false);
-                        }}
+                        className="search-modal-see-all-btn"
+                        onClick={() => executeSearch(searchQuery)}
                       >
                         View all results for "{searchQuery}" &rarr;
                       </div>
                     </div>
                   ) : (
-                    <div className="mobile-search-empty-glass">
+                    <div className="search-modal-empty-state">
                       <p>No results found for</p>
                       <strong>"{searchQuery}"</strong>
-                      {mobileSearchType !== 'all' && (
-                        <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', marginTop: '0.4rem', display: 'block' }}>
-                          in {mobileSearchType === 'movie' ? 'Movies' : 'TV Shows'}
+                      {searchFilterType !== 'all' && (
+                        <span className="search-modal-empty-sub">
+                          in {searchFilterType === 'movie' ? 'Movies' : 'TV Shows'}
                         </span>
                       )}
                     </div>
@@ -948,34 +897,36 @@ const Navbar = () => {
                 })()
               ) : (
                 recentSearches.length > 0 ? (
-                  <div className="mobile-recent-searches-glass">
-                    <div className="recent-header">
-                      <span className="recent-label">RECENT</span>
+                  <div className="search-modal-recent-card">
+                    <div className="search-recent-header">
+                      <span className="search-recent-label">RECENT</span>
                       <button
                         type="button"
-                        className="clear-recent-btn"
+                        className="search-clear-recent-btn"
                         onClick={() => setRecentSearches([])}
                       >
                         Clear
                       </button>
                     </div>
-                    <div className="recent-items-list">
+
+                    <div className="search-recent-list">
                       {recentSearches.map((term, idx) => (
                         <div
                           key={idx}
-                          className="recent-term-glass-item"
+                          className="search-recent-item"
                           onClick={() => setSearchQuery(term)}
                         >
-                          <div className="recent-term-left">
-                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="recent-clock-icon">
+                          <div className="search-recent-item-left">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="search-clock-icon">
                               <circle cx="12" cy="12" r="10"></circle>
                               <polyline points="12 6 12 12 16 14"></polyline>
                             </svg>
-                            <span className="recent-term-text">{term}</span>
+                            <span className="search-recent-term-text">{term}</span>
                           </div>
+
                           <button
                             type="button"
-                            className="recent-term-delete-btn"
+                            className="search-recent-delete-btn"
                             onClick={(e) => {
                               e.stopPropagation();
                               setRecentSearches(prev => prev.filter(t => t !== term));
@@ -989,9 +940,18 @@ const Navbar = () => {
                     </div>
                   </div>
                 ) : (
-                  <div className="mobile-search-placeholder-hint">
-                    <p className="ms-hint-title">Search CineScope</p>
-                    <p className="ms-hint-subtitle">Find millions of movies, TV shows, actors, and directors instantly.</p>
+                  <div className="search-modal-welcome-hint">
+                    <div className="search-hint-icon">🎬</div>
+                    <h3 className="search-hint-title">Search CineScope</h3>
+                    <p className="search-hint-subtitle">Search for movies, TV series, directors, actors, or genres.</p>
+                    
+                    <div className="search-quick-tags">
+                      <span onClick={() => setSearchQuery('Marvel')}>Marvel</span>
+                      <span onClick={() => setSearchQuery('Batman')}>Batman</span>
+                      <span onClick={() => setSearchQuery('Sci-Fi')}>Sci-Fi</span>
+                      <span onClick={() => setSearchQuery('Anime')}>Anime</span>
+                      <span onClick={() => setSearchQuery('Oscar')}>Oscar Winners</span>
+                    </div>
                   </div>
                 )
               )}
