@@ -2072,3 +2072,115 @@
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
   margin: 0.25rem 1rem;
 }
+
+/* ── Mobile Responsive Rules for Profile Page ── */
+@media (max-width: 768px) {
+  .profile-v2-body {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  .profile-hero-content {
+    flex-direction: column !important;
+    text-align: center !important;
+    align-items: center !important;
+    padding: 1rem 1rem 2rem !important;
+    gap: 1.25rem !important;
+  }
+
+  .profile-user-info {
+    align-items: center !important;
+    text-align: center !important;
+    width: 100% !important;
+  }
+
+  .profile-hero-name {
+    font-size: 1.6rem !important;
+    word-break: break-word !important;
+  }
+
+  .profile-friend-code-display {
+    margin: 0.5rem auto 0.75rem !important;
+  }
+
+  .profile-v2-actions {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  .profile-glass-card {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    padding: 1.2rem 1.1rem !important;
+    gap: 0.9rem !important;
+  }
+
+  .pgc-content {
+    width: 100% !important;
+  }
+
+  .pgc-title {
+    font-size: 1.15rem !important;
+  }
+
+  .pgc-desc {
+    font-size: 0.84rem !important;
+  }
+
+  .pgc-action-btn {
+    width: 100% !important;
+    max-width: 100% !important;
+    justify-content: center !important;
+    margin-top: 0.2rem !important;
+    box-sizing: border-box !important;
+  }
+
+  .my-library-unified-box {
+    padding: 1.1rem 0.85rem !important;
+    border-radius: 20px !important;
+  }
+
+  .my-library-item {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.85rem !important;
+    padding: 1rem 0.75rem !important;
+  }
+
+  .plc-left {
+    width: 100% !important;
+  }
+
+  .plc-text h3 {
+    font-size: 1rem !important;
+  }
+
+  .plc-text p {
+    font-size: 0.8rem !important;
+  }
+
+  .plc-btn {
+    width: 100% !important;
+    max-width: 100% !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+  }
+
+  .guest-link-banner {
+    padding: 1.25rem 1rem !important;
+  }
+
+  .guest-link-options {
+    width: 100% !important;
+  }
+
+  .link-inputs {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+
+  .link-inputs input,
+  .link-inputs button {
+    width: 100% !important;
+  }
+}
