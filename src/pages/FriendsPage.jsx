@@ -31,6 +31,14 @@ const FriendsPage = ({ initialTab = 'list' }) => {
   };
 
   const [activeTab, setActiveTab] = useState(getTabFromHash);
+  const [canAnimatePill, setCanAnimatePill] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCanAnimatePill(true);
+    }, 250);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -238,7 +246,7 @@ const FriendsPage = ({ initialTab = 'list' }) => {
           >
             {activeTab === 'list' && (
               <motion.div
-                layoutId="friendsActiveTabPill"
+                layoutId={canAnimatePill ? "friendsActiveTabPill" : undefined}
                 initial={false}
                 className="friends-active-pill-bg"
                 transition={{ type: "spring", stiffness: 450, damping: 32 }}
@@ -254,7 +262,7 @@ const FriendsPage = ({ initialTab = 'list' }) => {
           >
             {activeTab === 'requests' && (
               <motion.div
-                layoutId="friendsActiveTabPill"
+                layoutId={canAnimatePill ? "friendsActiveTabPill" : undefined}
                 initial={false}
                 className="friends-active-pill-bg"
                 transition={{ type: "spring", stiffness: 450, damping: 32 }}
@@ -272,7 +280,7 @@ const FriendsPage = ({ initialTab = 'list' }) => {
           >
             {activeTab === 'search' && (
               <motion.div
-                layoutId="friendsActiveTabPill"
+                layoutId={canAnimatePill ? "friendsActiveTabPill" : undefined}
                 initial={false}
                 className="friends-active-pill-bg"
                 transition={{ type: "spring", stiffness: 450, damping: 32 }}

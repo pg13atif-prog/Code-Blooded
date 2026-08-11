@@ -10,6 +10,15 @@ import './UserListPage.css';
 const UserListPage = ({ initialType = 'liked' }) => {
   const { currentUser } = useAuth();
   const [listType, setListType] = useState(initialType); // 'liked' | 'watchlist' | 'watched'
+  const [canAnimatePill, setCanAnimatePill] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCanAnimatePill(true);
+    }, 250);
+    return () => clearTimeout(timer);
+  }, []);
+
   const [watchlist, setWatchlist] = useState([]);
   const [liked, setLiked] = useState([]);
   const [watched, setWatched] = useState([]);
@@ -135,7 +144,7 @@ const UserListPage = ({ initialType = 'liked' }) => {
             >
               {listType === 'liked' && (
                 <motion.div
-                  layoutId="userListTabPill"
+                  layoutId={canAnimatePill ? "userListTabPill" : undefined}
                   initial={false}
                   className="list-tab-pill-active"
                   transition={{ type: "spring", stiffness: 450, damping: 32 }}
@@ -149,7 +158,7 @@ const UserListPage = ({ initialType = 'liked' }) => {
             >
               {listType === 'watchlist' && (
                 <motion.div
-                  layoutId="userListTabPill"
+                  layoutId={canAnimatePill ? "userListTabPill" : undefined}
                   initial={false}
                   className="list-tab-pill-active"
                   transition={{ type: "spring", stiffness: 450, damping: 32 }}
@@ -163,7 +172,7 @@ const UserListPage = ({ initialType = 'liked' }) => {
             >
               {listType === 'watched' && (
                 <motion.div
-                  layoutId="userListTabPill"
+                  layoutId={canAnimatePill ? "userListTabPill" : undefined}
                   initial={false}
                   className="list-tab-pill-active"
                   transition={{ type: "spring", stiffness: 450, damping: 32 }}
