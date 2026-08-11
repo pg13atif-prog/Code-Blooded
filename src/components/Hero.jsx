@@ -204,48 +204,46 @@ const Hero = ({ movies = [], movie = null, loading = false }) => {
             exit={{ opacity: 0, y: -15 }}
             transition={{ duration: 0.4 }}
           >
-            {/* Title / Official Stylized Title Logo */}
-            {(() => {
-              const logo = logoMap[featuredId] || LOGO_CACHE.get(featuredId);
-              if (logo && logo !== 'NO_LOGO') {
-                return (
-                  <div className="hero__title-logo-wrapper" id="hero-title">
+            {/* Unified Title Container (Logo or Text) */}
+            <div className="hero__title-container" id="hero-title">
+              {(() => {
+                const logo = logoMap[featuredId] || LOGO_CACHE.get(featuredId);
+                if (logo && logo !== 'NO_LOGO') {
+                  return (
                     <img
                       src={logo}
                       alt={currentSlide.title || 'Movie Title'}
                       className="hero__title-logo"
                     />
-                  </div>
-                );
-              }
-              if (logo === 'NO_LOGO') {
+                  );
+                }
                 return (
-                  <h1 className="hero__title" id="hero-title">
-                    {currentSlide.title || 'Interstellar'}
+                  <h1 className="hero__title">
+                    {currentSlide.title || 'Featured Title'}
                   </h1>
                 );
-              }
-              // Still pre-fetching: render zero-flash placeholder
-              return (
-                <div className="hero__title-placeholder" style={{ opacity: 0, height: '60px', marginBottom: '1.25rem' }}></div>
-              );
-            })()}
-
-            {/* Star Rating */}
-            <div className="hero__rating" id="hero-rating" aria-label={`Rating: ${currentSlide.rating} out of 10`}>
-              {[1, 2, 3, 4, 5].map((star) => (
-                <span key={star} className="hero__star" aria-hidden="true">
-                  ★
-                </span>
-              ))}
-              <span className="hero__rating-text">{currentSlide.rating || '9.2'} / 10</span>
+              })()}
             </div>
 
-            {/* Genres */}
-            <div className="hero__genres" id="hero-genres">
-              <span className="hero__genre">{currentSlide.category || 'Featured'}</span>
-              <span className="hero__genre-dot" aria-hidden="true" />
-              <span className="hero__genre">{currentSlide.year || '2024'}</span>
+            {/* Unified Meta Bar */}
+            <div className="hero__meta" id="hero-meta">
+              {currentSlide.rating && currentSlide.rating !== '—' && currentSlide.rating !== '-' && (
+                <span className="hero__meta-item hero__meta-rating">
+                  ★ {currentSlide.rating} / 10
+                </span>
+              )}
+              {currentSlide.category && (
+                <>
+                  <span className="hero__meta-dot" aria-hidden="true" />
+                  <span className="hero__meta-item">{currentSlide.category}</span>
+                </>
+              )}
+              {currentSlide.year && (
+                <>
+                  <span className="hero__meta-dot" aria-hidden="true" />
+                  <span className="hero__meta-item">{currentSlide.year}</span>
+                </>
+              )}
             </div>
 
             {/* Description */}
