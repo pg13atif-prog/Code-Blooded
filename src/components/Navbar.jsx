@@ -826,6 +826,13 @@ const Navbar = () => {
                 placeholder="Type here to search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && searchQuery.trim()) {
+                    e.preventDefault();
+                    executeSearch(searchQuery);
+                    setIsMobileSearchModalOpen(false);
+                  }
+                }}
                 autoFocus
               />
               <button
@@ -871,6 +878,15 @@ const Navbar = () => {
                         </div>
                       </div>
                     ))}
+                    <div
+                      className="mobile-search-see-all-btn"
+                      onClick={() => {
+                        executeSearch(searchQuery);
+                        setIsMobileSearchModalOpen(false);
+                      }}
+                    >
+                      View all results for "{searchQuery}" &rarr;
+                    </div>
                   </div>
                 ) : (
                   <div className="mobile-search-empty-glass">
