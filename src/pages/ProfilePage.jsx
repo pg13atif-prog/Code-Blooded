@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useAlert } from '../context/AlertContext';
 import { 
   getWatchlist, removeFromWatchlist,
   getWatched, removeFromWatched,
@@ -55,6 +56,7 @@ const MediaListItem = ({ movie, onRemove, onNavigate }) => {
 // ── Main Profile Page ─────────────────────────────────────────────────────────
 const ProfilePage = () => {
   const { currentUser, logout, linkGuestAccount, linkGuestWithGoogle, changePassword, sendResetEmailToCurrent, setAccountPassword } = useAuth();
+  const { showAlert, showToast } = useAlert();
 
   const [linkEmail, setLinkEmail] = useState('');
   const [linkPassword, setLinkPassword] = useState('');
@@ -398,9 +400,10 @@ const ProfilePage = () => {
           await updateUserProfile(currentUser.uid, { avatarUrl: dataUrl });
           setProfileData(prev => ({ ...prev, avatar: dataUrl }));
           window.dispatchEvent(new Event('user-profile-updated'));
+          showToast("Profile avatar updated!", "success");
         } catch (err) {
           console.error(err);
-          alert("Failed to upload avatar.");
+          showAlert({ title: "Upload Failed", message: "Failed to upload avatar.", type: "error" });
         } finally {
           setUploading(false);
         }

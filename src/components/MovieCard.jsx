@@ -1,6 +1,7 @@
 import { memo, useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useAuth } from '../context/AuthContext';
+import { useAlert } from '../context/AlertContext';
 import { 
   addToWatchlist, removeFromWatchlist, isInWatchlist,
   addToWatched, removeFromWatched, isWatched,
@@ -27,6 +28,7 @@ const MovieCard = memo((props) => {
   const cardRef = useRef(null);
   const hoverTimeout = useRef(null);
   const { currentUser } = useAuth();
+  const { showAlert } = useAlert();
 
   useEffect(() => {
     if (currentUser && id) {
@@ -63,11 +65,11 @@ const MovieCard = memo((props) => {
         setTrailerKey(videos[0].key);
         setShowTrailerModal(true);
       } else {
-        alert('No trailer available for this title.');
+        showAlert({ title: 'No Trailer', message: 'No trailer available for this title.', type: 'info' });
       }
     } catch (err) {
       console.error('Error fetching trailer:', err);
-      alert('Could not load trailer.');
+      showAlert({ title: 'Trailer Error', message: 'Could not load trailer.', type: 'error' });
     } finally {
       setTrailerLoading(false);
     }
@@ -110,7 +112,7 @@ const MovieCard = memo((props) => {
 
   const handleWatchlistClick = async (e) => {
     e.stopPropagation();
-    if (!currentUser) return alert('Please log in to add movies to your watchlist.');
+    if (!currentUser) return showAlert({ title: 'Sign In Required', message: 'Please log in to add movies to your watchlist.', type: 'info' });
     try {
       if (isSaved) {
         await removeFromWatchlist(currentUser.uid, id);
@@ -125,7 +127,7 @@ const MovieCard = memo((props) => {
 
   const handleLikeClick = async (e) => {
     e.stopPropagation();
-    if (!currentUser) return alert('Please log in to like titles.');
+    if (!currentUser) return showAlert({ title: 'Sign In Required', message: 'Please log in to like titles.', type: 'info' });
     try {
       if (isLikedItem) {
         await removeFromLiked(currentUser.uid, id);
@@ -140,7 +142,7 @@ const MovieCard = memo((props) => {
 
   const handleWatchedClick = async (e) => {
     e.stopPropagation();
-    if (!currentUser) return alert('Please log in to mark titles as watched.');
+    if (!currentUser) return showAlert({ title: 'Sign In Required', message: 'Please log in to mark titles as watched.', type: 'info' });
     try {
       if (isWatchedItem) {
         await removeFromWatched(currentUser.uid, id);

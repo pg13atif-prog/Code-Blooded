@@ -20,6 +20,7 @@ import { getRelationships, getFriendData, recommendMovie, unsendRecommendation }
 import AuthModal from '../components/AuthModal';
 import CustomSelect from '../components/CustomSelect';
 import { useAuth } from '../context/AuthContext';
+import { useAlert } from '../context/AlertContext';
 import MovieRow from '../components/MovieRow';
 import { MovieDetailSkeleton } from '../components/SkeletonLoader';
 import { checkAndUnlockAchievements, trackDetailView, incrementStat } from '../services/achievements';
@@ -155,6 +156,7 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
   const [selectedEpisode, setSelectedEpisode] = useState(null);
   
   const { currentUser } = useAuth();
+  const { showConfirm, showAlert, showToast } = useAlert();
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   const [customReviews, setCustomReviews] = useState([]);
@@ -278,7 +280,7 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
 
   const handleWatchlistClick = async () => {
     if (!currentUser) {
-      alert('Please log in to add movies to your watchlist.');
+      showAlert({ title: 'Sign In Required', message: 'Please log in to add movies to your watchlist.', type: 'info' });
       return;
     }
 
@@ -293,12 +295,12 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
       }
     } catch (err) {
       console.error('Error updating watchlist:', err);
-      alert(`Failed to update watchlist: ${err.message}`);
+      showAlert({ title: 'Watchlist Error', message: `Failed to update watchlist: ${err.message}`, type: 'error' });
     }
   };
 
   const handleLikeClick = async () => {
-    if (!currentUser) return alert('Please log in to like titles.');
+    if (!currentUser) return showAlert({ title: 'Sign In Required', message: 'Please log in to like titles.', type: 'info' });
     try {
       if (isLikedItem) {
         await removeFromLiked(currentUser.uid, movieId);
@@ -312,7 +314,7 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
   };
 
   const handleWatchedClick = async () => {
-    if (!currentUser) return alert('Please log in to mark titles as watched.');
+    if (!currentUser) return showAlert({ title: 'Sign In Required', message: 'Please log in to mark titles as watched.', type: 'info' });
     try {
       if (isWatchedItem) {
         await removeFromWatched(currentUser.uid, movieId);
@@ -372,18 +374,13 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
   };
 
   const handleMarkSeasonWatched = async () => {
-    if (!currentUser) return alert('Please log in to mark a season as watched.');
+    if (!currentUser) return showAlert({ title: 'Sign In Required', message: 'Please log in to mark a season as watched.', type: 'info' });
     if (!seasonDetails || !seasonDetails.episodes) return;
     
-    // We can just add the total runtime of the season to the user's watched list, 
-    // or add each episode individually. For simplicity we'll just add the series entry itself 
-    // but scale the runtime to the season length.
     const seasonRuntime = seasonDetails.episodes.length * (movie.runtimeMinutes || 45);
     try {
-      // For this simple implementation, we'll just re-add the main show but with updated runtime. 
-      // Ideally, episodes should be tracked individually, but this satisfies the basic request.
       await addToWatched(currentUser.uid, movie, seasonRuntime);
-      alert(`Season ${selectedSeason} marked as watched!`);
+      showToast(`Season ${selectedSeason} marked as watched!`, 'success');
       setIsWatchedItem(true);
       checkAndUnlockAchievements(currentUser.uid);
     } catch (err) { console.error(err); }
@@ -424,7 +421,15 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
 
   const handleDeleteMyReview = async () => {
     if (!currentUser || !myReview) return;
-    if (!window.confirm("Are you sure you want to delete your review?")) return;
+    const confirmed = await showConfirm({
+      title: "Delete Review?",
+      message: "Are you sure you want to delete your review? This action cannot be undone.",
+      confirmText: "Delete",
+      cancelText: "Cancel",
+      danger: true,
+      type: "danger"
+    });
+    if (!confirmed) return;
     try {
       await deleteCustomReview(movieId, currentUser.uid);
       setCustomReviews(prev => prev.filter(r => r.userId !== currentUser.uid));
@@ -432,9 +437,10 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
       setNewReviewContent('');
       setNewReviewRating('5.0');
       setPostAnonymously(false);
+      showToast("Review deleted", "info");
     } catch (err) {
       console.error("Failed to delete review:", err);
-      alert("Failed to delete review.");
+      showAlert({ title: "Delete Failed", message: "Failed to delete review.", type: "error" });
     }
   };
 
@@ -455,7 +461,7 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
 
     const parsedRating = parseFloat(newReviewRating);
     if (isNaN(parsedRating) || parsedRating < 0.1 || parsedRating > 5.0) {
-      alert("Please enter a valid rating between 0.1 and 5.0");
+      showAlert({ title: "Invalid Rating", message: "Please enter a valid rating between 0.1 and 5.0", type: "warning" });
       return;
     }
     const finalRating = parsedRating.toFixed(1);
@@ -493,9 +499,10 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
       setNewReviewContent('');
       setNewReviewRating('5.0');
       setPostAnonymously(false);
+      showToast("Review published!", "success");
     } catch (err) {
       console.error("Failed to post review:", err);
-      alert(`Failed to post review: ${err.message || 'Unknown error'}`);
+      showAlert({ title: "Review Error", message: `Failed to post review: ${err.message || 'Unknown error'}`, type: "error" });
     } finally {
       setIsSubmittingReview(false);
     }

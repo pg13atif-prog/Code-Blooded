@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
+import { useAlert } from '../context/AlertContext';
 import AuthModal from './AuthModal';
 import { searchMedia } from '../services/tmdb';
 import { getNotifications, removeNotification, getFriendData, subscribeToNotifications } from '../services/friends';
@@ -47,6 +48,8 @@ const profileDropdownVariants = {
 };
 
 const Navbar = () => {
+  const { currentUser, logout } = useAuth();
+  const { showAlert, showToast } = useAlert();
   const [scrolled, setScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
@@ -97,7 +100,6 @@ const Navbar = () => {
   const dropupRef = useRef(null);
   const searchContainerRef = useRef(null);
   const searchInputRef = useRef(null);
-  const { currentUser, logout } = useAuth();
 
   // Prevent background scrolling when mobile menu or modals are open
   useEffect(() => {
@@ -358,9 +360,10 @@ const Navbar = () => {
 
       // Delete from Firebase DB so it won't re-appear after modal is closed
       await removeNotification(currentUser.uid, notif.id);
+      showToast(`Added to your ${actionType}!`, 'success');
     } catch (err) {
       console.error(err);
-      alert('Failed to process recommendation.');
+      showAlert({ title: 'Action Failed', message: 'Failed to process recommendation.', type: 'error' });
     }
   };
 

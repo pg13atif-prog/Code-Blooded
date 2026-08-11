@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getTvEpisode, getMovieDetails } from '../services/tmdb';
 import { useAuth } from '../context/AuthContext';
+import { useAlert } from '../context/AlertContext';
 import { addToWatched, isWatched, removeFromWatched } from '../services/firestore';
 import './MovieDetail.css';
 
@@ -10,6 +11,7 @@ const TvEpisodePage = ({ seriesId, seasonNumber, episodeNumber, onBack }) => {
   const [status, setStatus] = useState('loading');
   const [isWatchedItem, setIsWatchedItem] = useState(false);
   const { currentUser } = useAuth();
+  const { showAlert } = useAlert();
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -42,7 +44,7 @@ const TvEpisodePage = ({ seriesId, seasonNumber, episodeNumber, onBack }) => {
   }, [currentUser, episode, seriesId, seasonNumber, episodeNumber]);
 
   const handleMarkWatched = async () => {
-    if (!currentUser) return alert('Please log in to mark episodes as watched.');
+    if (!currentUser) return showAlert({ title: 'Sign In Required', message: 'Please log in to mark episodes as watched.', type: 'info' });
     const episodeKey = `${seriesId}_s${seasonNumber}e${episodeNumber}`;
     const runtime = episode?.runtime || 45;
 

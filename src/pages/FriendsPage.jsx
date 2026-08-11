@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
+import { useAlert } from '../context/AlertContext';
 import { 
   searchByFriendCode, 
   sendFriendRequest, 
@@ -20,6 +21,7 @@ import './FriendsPage.css';
 
 const FriendsPage = ({ initialTab = 'list' }) => {
   const { currentUser } = useAuth();
+  const { showConfirm, showToast } = useAlert();
 
   const getTabFromHash = () => {
     const hash = window.location.hash;
@@ -132,9 +134,18 @@ const FriendsPage = ({ initialTab = 'list' }) => {
   };
 
   const handleRemove = async (id) => {
-    if (window.confirm("Are you sure you want to remove this friend?")) {
+    const confirmed = await showConfirm({
+      title: "Remove Friend?",
+      message: "Are you sure you want to remove this friend from your circle?",
+      confirmText: "Remove",
+      cancelText: "Cancel",
+      danger: true,
+      type: "danger"
+    });
+    if (confirmed) {
       await removeFriend(currentUser.uid, id);
       loadRelationships();
+      showToast("Friend removed", "info");
     }
   };
 
