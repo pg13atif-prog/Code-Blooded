@@ -5,7 +5,14 @@ import AuthModal from './AuthModal';
 import { searchMedia } from '../services/tmdb';
 import { getNotifications, removeNotification, getFriendData, subscribeToNotifications } from '../services/friends';
 import { addToWatchlist, addToLiked, addToWatched } from '../services/firestore';
+import CustomSelect from './CustomSelect';
 import './Navbar.css';
+
+const MOBILE_SEARCH_TYPES = [
+  { value: 'all', label: 'Movies & TV Shows' },
+  { value: 'movie', label: 'Movies Only' },
+  { value: 'tv', label: 'TV Shows Only' }
+];
 
 /* ── Dropdown menu configs ─────────────────────────────────── */
 const discoverItems = [
@@ -50,6 +57,7 @@ const Navbar = () => {
   const [isProfileDropupOpen, setIsProfileDropupOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isMobileSearchModalOpen, setIsMobileSearchModalOpen] = useState(false);
+  const [mobileSearchType, setMobileSearchType] = useState('all');
 
   // Desktop hover dropdowns
   const [openDropdown, setOpenDropdown] = useState(null); // 'discover' | 'cineai' | 'social' | null
@@ -158,7 +166,7 @@ const Navbar = () => {
         setShowSuggestions(false);
       }
     }
-  }, [searchQuery, isSearchActive]);
+  }, [searchQuery, isSearchActive, isMobileSearchModalOpen]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -810,116 +818,185 @@ const Navbar = () => {
         );
       })()}
 
-      {/* ── Centered Mobile Search Overlay (Full Blur Background, No Modal Box) ── */}
+      {/* ── Fixed Mobile Search Overlay (Pinned Header + Scrollable Body) ── */}
       {isMobileSearchModalOpen && (
         <div className="mobile-search-overlay" onClick={() => setIsMobileSearchModalOpen(false)}>
-          <div className="mobile-search-center-container" onClick={(e) => e.stopPropagation()}>
-            {/* Center Red Glowing Search Pill */}
-            <div className="mobile-center-search-pill">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="modal-search-icon">
-                <circle cx="11" cy="11" r="8" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
-              <input
-                type="text"
-                className="modal-search-input"
-                placeholder="Type here to search..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && searchQuery.trim()) {
-                    e.preventDefault();
-                    executeSearch(searchQuery);
-                    setIsMobileSearchModalOpen(false);
-                  }
-                }}
-                autoFocus
-              />
-              <button
-                type="button"
-                className="mobile-search-close-pill-btn"
-                onClick={() => {
-                  setIsMobileSearchModalOpen(false);
-                  setSearchQuery('');
-                }}
-                aria-label="Close search"
-              >
-                ✕
-              </button>
+          <div className="mobile-search-sheet" onClick={(e) => e.stopPropagation()}>
+            
+            {/* ── Fixed Top Header (Pinned at Top, Never Scrolls) ── */}
+            <div className="mobile-search-fixed-header">
+              <div className="mobile-search-header-row">
+                <h2 className="mobile-search-title">Search</h2>
+                
+                <div className="mobile-search-header-actions">
+                  <CustomSelect
+                    value={mobileSearchType}
+                    onChange={(e) => setMobileSearchType(e.target.value)}
+                    options={MOBILE_SEARCH_TYPES}
+                    className="mobile-search-type-select"
+                  />
+                  
+                  <button
+                    type="button"
+                    className="mobile-search-close-btn"
+                    onClick={() => {
+                      setIsMobileSearchModalOpen(false);
+                      setSearchQuery('');
+                    }}
+                    aria-label="Close search"
+                  >
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              {/* Fixed Search Input Bar */}
+              <div className="mobile-search-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="modal-search-icon">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <input
+                  type="text"
+                  className="modal-search-input"
+                  placeholder="Type here to search..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && searchQuery.trim()) {
+                      e.preventDefault();
+                      executeSearch(searchQuery);
+                      setIsMobileSearchModalOpen(false);
+                    }
+                  }}
+                  autoFocus
+                />
+                {searchQuery.length > 0 && (
+                  <button
+                    type="button"
+                    className="mobile-search-clear-input-btn"
+                    onClick={() => setSearchQuery('')}
+                    aria-label="Clear query"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
             </div>
 
-            {/* Results Floating Below Pill */}
-            <div className="mobile-search-results-area">
+            {/* ── Scrollable Body Area (Only Results Scroll) ── */}
+            <div className="mobile-search-scrollable-content">
               {searchQuery.trim().length > 1 ? (
-                suggestions.length > 0 ? (
-                  <div className="mobile-search-results-list">
-                    {suggestions.map((item) => (
+                (() => {
+                  const filteredSuggestions = suggestions.filter(item => {
+                    if (mobileSearchType === 'movie') return item.mediaType === 'movie' || (!item.mediaType && item.title);
+                    if (mobileSearchType === 'tv') return item.mediaType === 'tv' || (!item.mediaType && item.name);
+                    return true;
+                  });
+
+                  return filteredSuggestions.length > 0 ? (
+                    <div className="mobile-search-results-list">
+                      {filteredSuggestions.map((item) => (
+                        <div
+                          key={`${item.mediaType || 'movie'}-${item.id}`}
+                          className="mobile-search-glass-item"
+                          onClick={() => {
+                            addRecentSearch(item.title || item.name);
+                            window.location.hash = `${item.mediaType || 'movie'}/${item.id}`;
+                            setIsMobileSearchModalOpen(false);
+                          }}
+                        >
+                          <div className="ms-poster">
+                            {item.poster ? (
+                              <img src={item.poster} alt={item.title || item.name} />
+                            ) : (
+                              <div className="ms-no-poster">🎬</div>
+                            )}
+                          </div>
+                          <div className="ms-info">
+                            <h5 className="ms-title">{item.title || item.name}</h5>
+                            <p className="ms-subtext">
+                              {item.year || ''} {item.year && (item.genre || item.mediaType) ? '•' : ''} {item.genre || (item.mediaType === 'tv' ? 'TV Show' : 'Movie')}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
                       <div
-                        key={`${item.mediaType || 'movie'}-${item.id}`}
-                        className="mobile-search-glass-item"
+                        className="mobile-search-see-all-btn"
                         onClick={() => {
-                          addRecentSearch(item.title || item.name);
-                          window.location.hash = `${item.mediaType || 'movie'}/${item.id}`;
+                          executeSearch(searchQuery);
                           setIsMobileSearchModalOpen(false);
                         }}
                       >
-                        <div className="ms-poster">
-                          {item.poster ? (
-                            <img src={item.poster} alt={item.title || item.name} />
-                          ) : (
-                            <div className="ms-no-poster">🎬</div>
-                          )}
-                        </div>
-                        <div className="ms-info">
-                          <h5 className="ms-title">{item.title || item.name}</h5>
-                          <p className="ms-subtext">
-                            {item.year || ''} {item.year && (item.genre || item.mediaType) ? '•' : ''} {item.genre || (item.mediaType === 'tv' ? 'TV Show' : 'Movie')}
-                          </p>
-                        </div>
+                        View all results for "{searchQuery}" &rarr;
                       </div>
-                    ))}
-                    <div
-                      className="mobile-search-see-all-btn"
-                      onClick={() => {
-                        executeSearch(searchQuery);
-                        setIsMobileSearchModalOpen(false);
-                      }}
-                    >
-                      View all results for "{searchQuery}" &rarr;
                     </div>
-                  </div>
-                ) : (
-                  <div className="mobile-search-empty-glass">
-                    <p>No results found for</p>
-                    <strong>"{searchQuery}"</strong>
-                  </div>
-                )
+                  ) : (
+                    <div className="mobile-search-empty-glass">
+                      <p>No results found for</p>
+                      <strong>"{searchQuery}"</strong>
+                      {mobileSearchType !== 'all' && (
+                        <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', marginTop: '0.4rem', display: 'block' }}>
+                          in {mobileSearchType === 'movie' ? 'Movies' : 'TV Shows'}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })()
               ) : (
-                recentSearches.length > 0 && (
+                recentSearches.length > 0 ? (
                   <div className="mobile-recent-searches-glass">
                     <div className="recent-header">
-                      <span>Recent Searches</span>
+                      <span className="recent-label">RECENT</span>
                       <button
                         type="button"
                         className="clear-recent-btn"
                         onClick={() => setRecentSearches([])}
                       >
-                        Clear All
+                        Clear
                       </button>
                     </div>
-                    {recentSearches.map((term, idx) => (
-                      <div
-                        key={idx}
-                        className="recent-term-glass-item"
-                        onClick={() => setSearchQuery(term)}
-                      >
-                        <span>{term}</span>
-                      </div>
-                    ))}
+                    <div className="recent-items-list">
+                      {recentSearches.map((term, idx) => (
+                        <div
+                          key={idx}
+                          className="recent-term-glass-item"
+                          onClick={() => setSearchQuery(term)}
+                        >
+                          <div className="recent-term-left">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="recent-clock-icon">
+                              <circle cx="12" cy="12" r="10"></circle>
+                              <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                            <span className="recent-term-text">{term}</span>
+                          </div>
+                          <button
+                            type="button"
+                            className="recent-term-delete-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setRecentSearches(prev => prev.filter(t => t !== term));
+                            }}
+                            title="Remove search"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mobile-search-placeholder-hint">
+                    <p className="ms-hint-title">Search CineScope</p>
+                    <p className="ms-hint-subtitle">Find millions of movies, TV shows, actors, and directors instantly.</p>
                   </div>
                 )
               )}
             </div>
+
           </div>
         </div>
       )}

@@ -1442,62 +1442,138 @@
 }
 
 /* Centered Mobile Search Overlay (Full Blur Background, No Inner Modal Container Box) */
+/* ==========================================================================
+   Redesigned Fixed Mobile Search Overlay (Pinned Top Header + Scrolling Body)
+   ========================================================================== */
 .mobile-search-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(5, 8, 16, 0.84);
+  background: rgba(6, 8, 14, 0.92);
   backdrop-filter: blur(36px) saturate(220%);
   -webkit-backdrop-filter: blur(36px) saturate(220%);
-  z-index: 2000;
+  z-index: 2500;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 4.5rem 1.25rem 2rem;
-  overflow-y: auto;
-  box-sizing: border-box;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  overflow: hidden;
+  animation: mobileSearchFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.mobile-search-overlay::-webkit-scrollbar {
-  display: none;
-  width: 0;
-  height: 0;
+@keyframes mobileSearchFadeIn {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
 }
 
-.mobile-search-center-container {
+.mobile-search-sheet {
   width: 100%;
-  max-width: 440px;
+  height: 100%;
+  max-width: 600px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Fixed Top Header (Pinned, Never Scrolls Away) ── */
+.mobile-search-fixed-header {
+  flex-shrink: 0;
+  padding: 1.2rem 1.25rem 1rem;
+  background: rgba(12, 16, 28, 0.88);
+  backdrop-filter: blur(28px) saturate(200%);
+  -webkit-backdrop-filter: blur(28px) saturate(200%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  z-index: 20;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.mobile-search-header-row {
+  display: flex;
   align-items: center;
-  animation: searchCenterFade 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  justify-content: space-between;
+  gap: 0.75rem;
 }
 
-@keyframes searchCenterFade {
-  from { opacity: 0; transform: translateY(-16px) scale(0.97); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+.mobile-search-title {
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.5px;
+  margin: 0;
+  font-family: inherit;
 }
 
-/* Red Glowing Search Pill */
-.mobile-center-search-pill {
+.mobile-search-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.mobile-search-type-select .custom-select-trigger {
+  padding: 0.45rem 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 12px;
+  color: #ffffff;
+}
+
+.mobile-search-type-select .custom-select-trigger:hover,
+.mobile-search-type-select .custom-select-trigger.open {
+  border-color: rgba(229, 9, 20, 0.5);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.mobile-search-close-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mobile-search-close-btn:hover,
+.mobile-search-close-btn:active {
+  background: #e50914;
+  border-color: #e50914;
+  transform: scale(1.05);
+}
+
+/* ── Fixed Search Input Bar ── */
+.mobile-search-input-wrapper {
   width: 100%;
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.85rem 1.2rem;
-  background: rgba(18, 24, 38, 0.95);
-  border: 1.5px solid #e50914;
-  border-radius: 999px;
-  box-shadow: 0 0 20px rgba(229, 9, 20, 0.5), 0 10px 30px rgba(0, 0, 0, 0.7);
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 4px 18px rgba(0, 0, 0, 0.35);
+  transition: border-color 0.22s ease, box-shadow 0.22s ease;
   box-sizing: border-box;
+}
+
+.mobile-search-input-wrapper:focus-within {
+  border-color: rgba(229, 9, 20, 0.75);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 20px rgba(229, 9, 20, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.15);
 }
 
 .modal-search-icon {
   width: 20px;
   height: 20px;
-  color: rgba(255, 255, 255, 0.75);
+  color: rgba(255, 255, 255, 0.6);
   flex-shrink: 0;
 }
 
@@ -1506,43 +1582,56 @@
   background: transparent;
   border: none;
   color: #ffffff;
-  font-size: 1.02rem;
+  font-size: 1rem;
   font-weight: 500;
   outline: none;
+  font-family: inherit;
 }
 
 .modal-search-input::placeholder {
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.4);
 }
 
-.mobile-search-close-pill-btn {
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+.mobile-search-clear-input-btn {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
   color: #ffffff;
-  width: 28px;
-  height: 28px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-  font-size: 0.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 0.7rem;
   cursor: pointer;
-  padding: 0;
   flex-shrink: 0;
-  transition: all 0.2s ease;
+  transition: all 0.18s ease;
 }
 
-.mobile-search-close-pill-btn:hover {
+.mobile-search-clear-input-btn:hover {
   background: #e50914;
-  border-color: #e50914;
 }
 
-/* Floating Results Area Below Search Pill */
-.mobile-search-results-area {
-  width: 100%;
-  margin-top: 1.25rem;
+/* ── Scrollable Body Area (Only Content Scrolls) ── */
+.mobile-search-scrollable-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.25rem 1.25rem 3.5rem;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-sizing: border-box;
 }
 
+.mobile-search-scrollable-content::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* ── Live Suggestions Results List ── */
 .mobile-search-results-list {
   display: flex;
   flex-direction: column;
@@ -1554,14 +1643,14 @@
   align-items: center;
   gap: 1rem;
   padding: 0.85rem 1.1rem;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0.03) 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
   backdrop-filter: blur(24px) saturate(200%);
   -webkit-backdrop-filter: blur(24px) saturate(200%);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 18px;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.15);
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .mobile-search-glass-item:hover,
@@ -1570,33 +1659,6 @@
   border-color: rgba(229, 9, 20, 0.5);
   transform: translateY(-2px);
   box-shadow: 0 8px 28px rgba(229, 9, 20, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.3);
-}
-
-.mobile-search-see-all-btn {
-  padding: 0.95rem 1rem;
-  margin-top: 0.4rem;
-  margin-bottom: 1.5rem;
-  font-size: 0.92rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.75);
-  text-align: center;
-  cursor: pointer;
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  transition: color 0.2s ease, text-shadow 0.2s ease, transform 0.2s ease;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.mobile-search-see-all-btn:hover,
-.mobile-search-see-all-btn:active {
-  color: #e50914 !important;
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  text-shadow: 0 0 12px rgba(229, 9, 20, 0.5);
-  transform: translateY(-1px);
 }
 
 .ms-poster {
@@ -1644,12 +1706,40 @@
   margin: 0;
 }
 
+.mobile-search-see-all-btn {
+  padding: 0.95rem 1rem;
+  margin-top: 0.4rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.75);
+  text-align: center;
+  cursor: pointer;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  transition: color 0.2s ease, text-shadow 0.2s ease, transform 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.mobile-search-see-all-btn:hover,
+.mobile-search-see-all-btn:active {
+  color: #e50914 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  text-shadow: 0 0 12px rgba(229, 9, 20, 0.5);
+  transform: translateY(-1px);
+}
+
 .mobile-search-empty-glass {
   text-align: center;
-  padding: 3rem 1rem;
+  padding: 3rem 1.5rem;
   background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: 20px;
   color: rgba(255, 255, 255, 0.5);
   font-size: 0.95rem;
@@ -1657,57 +1747,128 @@
 
 .mobile-search-empty-glass strong {
   display: block;
-  margin-top: 0.25rem;
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 1.05rem;
+  margin-top: 0.35rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.1rem;
 }
 
+/* ── Recent Searches Card (Matching Reference Aesthetic with Liquid Glass Polish) ── */
 .mobile-recent-searches-glass {
+  background: rgba(14, 19, 32, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  padding: 1.15rem 1.25rem;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
-  padding: 1rem;
+  gap: 0.85rem;
 }
 
 .recent-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.5);
+  padding-bottom: 0.35rem;
+}
+
+.recent-label {
+  font-size: 0.76rem;
   font-weight: 700;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 1.2px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 0.25rem;
 }
 
 .clear-recent-btn {
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.4);
-  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.82rem;
+  font-weight: 500;
   cursor: pointer;
+  transition: color 0.18s ease;
+  padding: 0;
 }
 
 .clear-recent-btn:hover {
   color: #e50914;
 }
 
-.recent-term-glass-item {
-  padding: 0.7rem 0.9rem;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(255, 255, 255, 0.88);
-  font-size: 0.92rem;
-  cursor: pointer;
-  transition: background 0.2s ease;
+.recent-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
 }
 
-.recent-term-glass-item:hover {
-  background: rgba(255, 255, 255, 0.1);
+.recent-term-glass-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0.6rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.recent-term-glass-item:hover,
+.recent-term-glass-item:active {
+  background: rgba(255, 255, 255, 0.08);
   color: #ffffff;
+}
+
+.recent-term-left {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.recent-clock-icon {
+  color: rgba(255, 255, 255, 0.4);
+  flex-shrink: 0;
+}
+
+.recent-term-text {
+  font-size: 0.95rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recent-term-delete-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.82rem;
+  padding: 0.3rem 0.5rem;
+  cursor: pointer;
+  transition: color 0.18s ease;
+}
+
+.recent-term-delete-btn:hover {
+  color: #ff4d4d;
+}
+
+.mobile-search-placeholder-hint {
+  text-align: center;
+  padding: 4rem 1.5rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.ms-hint-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 0.4rem;
+}
+
+.ms-hint-subtitle {
+  font-size: 0.88rem;
+  line-height: 1.45;
+  margin: 0;
 }
