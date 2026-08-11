@@ -177,6 +177,18 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
     }
   }, [currentUser, movieId]);
   
+  // Disable body scrolling when modals are open
+  useEffect(() => {
+    if (showTrailerModal || selectedEpisode || showRecModal || selectedStill) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [showTrailerModal, selectedEpisode, showRecModal, selectedStill]);
+  
   // Fetch TV Season details
   useEffect(() => {
     if (movie && movie.mediaType === 'tv' && movie.seasons && movie.seasons.length > 0) {

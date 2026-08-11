@@ -71,22 +71,7 @@ const executeRequest = async (model, systemInstruction, userPrompt, temperature,
 };
 
 const callOpenRouter = async (systemInstruction, userPrompt, temperature = 0.7) => {
-  // 1. Try Qwen models on OpenRouter first as explicitly requested
-  if (openRouterApiKey) {
-    const qwenModels = [
-      "qwen/qwen-2.5-72b-instruct",
-      "qwen/qwen-2.5-72b-instruct:free"
-    ];
-    for (const model of qwenModels) {
-      try {
-        return await executeRequest(model, systemInstruction, userPrompt, temperature, true);
-      } catch (err) {
-        console.warn(`Failed with OpenRouter model ${model}:`, err.message);
-      }
-    }
-  }
-
-  // 2. Try Groq Cloud API (Qwen & LLaMA Models)
+  // 1. Try Groq Cloud API (LLaMA Models) first
   if (groqApiKey) {
     const groqModels = [
       "llama-3.3-70b-versatile",
@@ -97,6 +82,22 @@ const callOpenRouter = async (systemInstruction, userPrompt, temperature = 0.7) 
         return await executeGroqRequest(model, systemInstruction, userPrompt, temperature);
       } catch (err) {
         console.warn(`Failed with Groq ${model}:`, err.message);
+      }
+    }
+  }
+
+  // 2. Try OpenRouter as fallback
+  if (openRouterApiKey) {
+    const openRouterModels = [
+      "openai/gpt-oss-120b",
+      "qwen/qwen-2.5-72b-instruct",
+      "qwen/qwen-2.5-72b-instruct:free"
+    ];
+    for (const model of openRouterModels) {
+      try {
+        return await executeRequest(model, systemInstruction, userPrompt, temperature, true);
+      } catch (err) {
+        console.warn(`Failed with OpenRouter model ${model}:`, err.message);
       }
     }
   }
