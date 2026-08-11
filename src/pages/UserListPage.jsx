@@ -102,10 +102,6 @@ const UserListPage = ({ initialType = 'liked' }) => {
     return list;
   }, [activeRawList, searchQuery, filter, sortBy]);
 
-  if (loading) {
-    return <UserListSkeleton />;
-  }
-
   if (!currentUser) return null;
 
   return (
@@ -213,54 +209,57 @@ const UserListPage = ({ initialType = 'liked' }) => {
       </div>
 
       {/* Content */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={`${listType}-${filter}-${sortBy}-${searchQuery}-${viewMode}`}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0, transition: { duration: 0.28, ease: [0.16, 1, 0.3, 1] } }}
-          exit={{ opacity: 0, y: -10, transition: { duration: 0.24, ease: [0.16, 1, 0.3, 1] } }}
-        >
-          {filteredAndSortedList.length === 0 ? (
-            <div className="user-list-empty glass-panel">
-              <span className="empty-icon">🎬</span>
-              <h2>No titles found</h2>
-              <p>
-                {searchQuery.trim() 
-                  ? 'No titles match your search criteria.' 
-                  : listType === 'liked' 
-                    ? 'You haven\'t liked any movies or TV shows yet.' 
-                    : listType === 'watchlist' 
-                      ? 'Your watchlist is currently empty.' 
-                      : 'You haven\'t marked any titles as watched yet.'}
-              </p>
-            </div>
-          ) : (
-            <div className={`user-list-grid ${viewMode}`}>
-              {filteredAndSortedList.map(movie => (
-                <div key={movie.id} className="user-list-item-wrapper">
-                  {viewMode === 'grid' ? (
-                    <div className="user-list-card-wrapper">
-                      <MovieCard {...movie} disableHover={true} onRemove={(e) => handleRemove(e, movie)} />
-                    </div>
-                  ) : (
-                    <div className="user-list-row-item" onClick={() => window.location.hash = `${movie.mediaType || 'movie'}/${movie.id}`}>
-                      <div className="ul-poster">
-                        {movie.poster ? <img src={movie.poster} alt={movie.title || movie.name} /> : <div className="ul-no-poster">{(movie.title || movie.name)?.charAt(0)}</div>}
+      {loading ? (
+        <UserListSkeleton />
+      ) : (
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={`${listType}-${filter}-${sortBy}-${searchQuery}-${viewMode}`}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0, transition: { duration: 0.28, ease: [0.16, 1, 0.3, 1] } }}
+            exit={{ opacity: 0, y: -10, transition: { duration: 0.24, ease: [0.16, 1, 0.3, 1] } }}
+          >
+            {filteredAndSortedList.length === 0 ? (
+              <div className="user-list-empty glass-panel">
+                <span className="empty-icon">🎬</span>
+                <h2>No titles found</h2>
+                <p>
+                  {searchQuery.trim() 
+                    ? 'No titles match your search criteria.' 
+                    : listType === 'liked' 
+                      ? 'You haven\'t liked any movies or TV shows yet.' 
+                      : listType === 'watchlist' 
+                        ? 'Your watchlist is currently empty.' 
+                        : 'You haven\'t marked any titles as watched yet.'}
+                </p>
+              </div>
+            ) : (
+              <div className={`user-list-grid ${viewMode}`}>
+                {filteredAndSortedList.map(movie => (
+                  <div key={movie.id} className="user-list-item-wrapper">
+                    {viewMode === 'grid' ? (
+                      <div className="user-list-card-wrapper">
+                        <MovieCard {...movie} disableHover={true} />
                       </div>
-                      <div className="ul-info">
-                        <h3>{movie.title || movie.name}</h3>
-                        <p>{movie.year} • {movie.category} • {movie.mediaType === 'tv' ? 'TV Show' : 'Movie'}</p>
-                        <div className="ul-rating">★ {(movie.rating && movie.rating !== '—' && movie.rating !== '-') ? movie.rating : 'N/A'}</div>
+                    ) : (
+                      <div className="user-list-row-item" onClick={() => window.location.hash = `${movie.mediaType || 'movie'}/${movie.id}`}>
+                        <div className="ul-poster">
+                          {movie.poster ? <img src={movie.poster} alt={movie.title || movie.name} /> : <div className="ul-no-poster">{(movie.title || movie.name)?.charAt(0)}</div>}
+                        </div>
+                        <div className="ul-info">
+                          <h3>{movie.title || movie.name}</h3>
+                          <p>{movie.year} • {movie.category} • {movie.mediaType === 'tv' ? 'TV Show' : 'Movie'}</p>
+                          <div className="ul-rating">★ {(movie.rating && movie.rating !== '—' && movie.rating !== '-') ? movie.rating : 'N/A'}</div>
+                        </div>
                       </div>
-                      <button className="ul-row-remove" onClick={(e) => handleRemove(e, movie)}>Remove</button>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </motion.div>
-      </AnimatePresence>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
+      )}
     </div>
   );
 };

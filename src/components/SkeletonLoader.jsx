@@ -117,51 +117,26 @@ export const ProfileSkeleton = () => {
 
 export const UserListSkeleton = () => {
   return (
-    <div className="user-list-page page-container" style={{ paddingTop: '110px' }}>
-      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '2rem' }}>
-        <Skeleton width="220px" height="2.5rem" borderRadius="10px" />
-      </div>
-      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '2.5rem' }}>
-        <div style={{ display: 'flex', gap: '0.5rem', width: '100%', maxWidth: '540px' }}>
-          <Skeleton width="33%" height="2.6rem" borderRadius="30px" />
-          <Skeleton width="33%" height="2.6rem" borderRadius="30px" />
-          <Skeleton width="33%" height="2.6rem" borderRadius="30px" />
-        </div>
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '1.25rem' }}>
-        {Array.from({ length: 12 }).map((_, i) => (
-          <CardSkeleton key={i} />
-        ))}
-      </div>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '1.25rem', width: '100%', marginTop: '1.5rem' }}>
+      {Array.from({ length: 12 }).map((_, i) => (
+        <CardSkeleton key={i} />
+      ))}
     </div>
   );
 };
 
 export const FriendsSkeleton = () => {
   return (
-    <div className="friends-page page-container" style={{ paddingTop: '110px' }}>
-      <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-        <Skeleton width="220px" height="2.5rem" borderRadius="10px" style={{ margin: '0 auto 0.6rem' }} />
-        <Skeleton width="320px" height="1.2rem" borderRadius="6px" style={{ margin: '0 auto' }} />
-      </div>
-      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '2rem' }}>
-        <div style={{ display: 'flex', gap: '0.5rem', width: '100%', maxWidth: '600px' }}>
-          <Skeleton width="33%" height="2.6rem" borderRadius="30px" />
-          <Skeleton width="33%" height="2.6rem" borderRadius="30px" />
-          <Skeleton width="33%" height="2.6rem" borderRadius="30px" />
-        </div>
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.25rem' }}>
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i} style={{ padding: '1.25rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <Skeleton width="56px" height="56px" borderRadius="50%" style={{ flexShrink: 0 }} />
-            <div style={{ flex: 1 }}>
-              <Skeleton width="130px" height="1.4rem" borderRadius="6px" style={{ marginBottom: '0.4rem' }} />
-              <Skeleton width="90px" height="1rem" borderRadius="4px" />
-            </div>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.25rem', width: '100%', marginTop: '1.5rem' }}>
+      {[1, 2, 3, 4].map((i) => (
+        <div key={i} style={{ padding: '1.25rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <Skeleton width="56px" height="56px" borderRadius="50%" style={{ flexShrink: 0 }} />
+          <div style={{ flex: 1 }}>
+            <Skeleton width="130px" height="1.4rem" borderRadius="6px" style={{ marginBottom: '0.4rem' }} />
+            <Skeleton width="90px" height="1rem" borderRadius="4px" />
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
     </div>
   );
 };
