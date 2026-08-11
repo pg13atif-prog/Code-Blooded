@@ -1661,8 +1661,8 @@
 
 .search-modal-item-card {
   display: flex;
-  align-items: center;
-  gap: 1.1rem;
+  flex-direction: column;
+  align-items: stretch;
   padding: 0.85rem 1.1rem;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
   backdrop-filter: blur(20px);
@@ -1671,7 +1671,8 @@
   border-radius: 16px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
   cursor: pointer;
-  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: background 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease, transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
 }
 
 .search-modal-item-card:hover,
@@ -1680,6 +1681,19 @@
   border-color: rgba(229, 9, 20, 0.45);
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(229, 9, 20, 0.3);
+}
+
+.search-modal-item-card.expanded {
+  border-color: rgba(229, 9, 20, 0.55);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.09) 0%, rgba(18, 22, 36, 0.95) 100%);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55), 0 0 20px rgba(229, 9, 20, 0.2);
+}
+
+.search-item-main-row {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  width: 100%;
 }
 
 .search-item-poster {
@@ -1767,18 +1781,115 @@
   color: rgba(255, 255, 255, 0.55);
 }
 
-.search-item-action {
+.search-item-expand-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.65);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.35);
-  transition: all 0.2s ease;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.search-modal-item-card:hover .search-item-action,
-.search-modal-item-card.focused .search-item-action {
+.search-item-expand-btn:hover {
+  background: rgba(229, 9, 20, 0.2);
+  border-color: rgba(229, 9, 20, 0.5);
+  color: #ffffff;
+  transform: scale(1.08);
+}
+
+.search-item-chevron {
+  transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.search-item-expand-btn.expanded {
+  background: rgba(229, 9, 20, 0.25);
+  border-color: rgba(229, 9, 20, 0.65);
+  color: #ff4d4d;
+}
+
+.search-item-expand-btn.expanded .search-item-chevron {
+  transform: rotate(180deg);
+}
+
+/* ── Expandable Plot Summary Panel ── */
+.search-item-overview-panel {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  width: 100%;
+}
+
+.search-item-overview-divider {
+  height: 1px;
+  width: 100%;
+  background: linear-gradient(90deg, rgba(229, 9, 20, 0.45) 0%, rgba(255, 255, 255, 0.12) 50%, transparent 100%);
+  margin-bottom: 0.25rem;
+}
+
+.search-item-overview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.overview-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
   color: #e50914;
-  transform: translateX(3px);
+  background: rgba(229, 9, 20, 0.12);
+  border: 1px solid rgba(229, 9, 20, 0.25);
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+}
+
+.search-item-overview-text {
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.78);
+  margin: 0;
+  text-align: left;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.search-item-overview-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.35rem;
+}
+
+.search-item-view-details-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 9px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.search-item-view-details-btn:hover {
+  background: #e50914;
+  border-color: #e50914;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(229, 9, 20, 0.4);
 }
 
 .search-modal-see-all-btn {

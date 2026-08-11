@@ -79,6 +79,18 @@ const Navbar = () => {
   });
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
+  const [expandedCardIds, setExpandedCardIds] = useState({});
+
+  const toggleCardExpand = (itemKey) => {
+    setExpandedCardIds(prev => ({
+      ...prev,
+      [itemKey]: !prev[itemKey]
+    }));
+  };
+
+  useEffect(() => {
+    setExpandedCardIds({});
+  }, [searchQuery, isSearchModalOpen]);
 
   const navRef = useRef(null);
   const dropdownRef = useRef(null);
@@ -814,59 +826,114 @@ const Navbar = () => {
 
                   return filteredSuggestions.length > 0 ? (
                     <div className="search-modal-results-list">
-                      {filteredSuggestions.map((item, idx) => (
-                        <div
-                          key={`${item.mediaType || 'movie'}-${item.id}`}
-                          className={`search-modal-item-card ${focusedIndex === idx ? 'focused' : ''}`}
-                          onClick={() => {
-                            addRecentSearch(item.title || item.name);
-                            window.location.hash = `${item.mediaType || 'movie'}/${item.id}`;
-                            setIsSearchModalOpen(false);
-                          }}
-                        >
-                          <div className="search-item-poster">
-                            {item.poster ? (
-                              <img src={item.poster} alt={item.title || item.name} />
-                            ) : (
-                              <div className="search-item-no-poster">🎬</div>
-                            )}
-                          </div>
-                          
-                          <div className="search-item-info">
-                            <h4 className="search-item-title">{item.title || item.name}</h4>
-                            
-                            <div className="search-item-meta">
-                              <span className="search-meta-type">{item.mediaType === 'tv' ? 'TV Show' : 'Movie'}</span>
-                              {item.year && item.year !== '—' && (
-                                <>
-                                  <span className="search-meta-sep">|</span>
-                                  <span className="search-meta-year">{item.year}</span>
-                                </>
-                              )}
-                              {item.rating && item.rating !== 'N/A' && Number(item.rating) > 0 && (
-                                <>
-                                  <span className="search-meta-sep">|</span>
-                                  <span className="search-meta-rating">
-                                    <span className="search-meta-star">★</span> {item.rating}
-                                  </span>
-                                </>
-                              )}
-                              {item.category && item.category !== 'Movie' && item.category !== 'TV Show' && (
-                                <>
-                                  <span className="search-meta-sep">|</span>
-                                  <span className="search-meta-genre">{item.category}</span>
-                                </>
-                              )}
-                            </div>
-                          </div>
+                      {filteredSuggestions.map((item, idx) => {
+                        const itemKey = `${item.mediaType || 'movie'}-${item.id}`;
+                        const isExpanded = !!expandedCardIds[itemKey];
 
-                          <div className="search-item-action">
-                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="search-item-chevron">
-                              <polyline points="6 9 12 15 18 9"></polyline>
-                            </svg>
+                        return (
+                          <div
+                            key={itemKey}
+                            className={`search-modal-item-card ${focusedIndex === idx ? 'focused' : ''} ${isExpanded ? 'expanded' : ''}`}
+                            onClick={() => {
+                              addRecentSearch(item.title || item.name);
+                              window.location.hash = `${item.mediaType || 'movie'}/${item.id}`;
+                              setIsSearchModalOpen(false);
+                            }}
+                          >
+                            <div className="search-item-main-row">
+                              <div className="search-item-poster">
+                                {item.poster ? (
+                                  <img src={item.poster} alt={item.title || item.name} />
+                                ) : (
+                                  <div className="search-item-no-poster">🎬</div>
+                                )}
+                              </div>
+                              
+                              <div className="search-item-info">
+                                <h4 className="search-item-title">{item.title || item.name}</h4>
+                                
+                                <div className="search-item-meta">
+                                  <span className="search-meta-type">{item.mediaType === 'tv' ? 'TV Show' : 'Movie'}</span>
+                                  {item.year && item.year !== '—' && (
+                                    <>
+                                      <span className="search-meta-sep">|</span>
+                                      <span className="search-meta-year">{item.year}</span>
+                                    </>
+                                  )}
+                                  {item.rating && item.rating !== 'N/A' && Number(item.rating) > 0 && (
+                                    <>
+                                      <span className="search-meta-sep">|</span>
+                                      <span className="search-meta-rating">
+                                        <span className="search-meta-star">★</span> {item.rating}
+                                      </span>
+                                    </>
+                                  )}
+                                  {item.category && item.category !== 'Movie' && item.category !== 'TV Show' && (
+                                    <>
+                                      <span className="search-meta-sep">|</span>
+                                      <span className="search-meta-genre">{item.category}</span>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+
+                              <button
+                                type="button"
+                                className={`search-item-expand-btn ${isExpanded ? 'expanded' : ''}`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleCardExpand(itemKey);
+                                }}
+                                aria-label={isExpanded ? "Collapse plot summary" : "Expand plot summary"}
+                                title={isExpanded ? "Collapse summary" : "View plot summary"}
+                              >
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="search-item-chevron">
+                                  <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                              </button>
+                            </div>
+
+                            {/* Expandable Plot Summary Panel */}
+                            <AnimatePresence>
+                              {isExpanded && (
+                                <motion.div
+                                  className="search-item-overview-panel"
+                                  initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                                  animate={{ opacity: 1, height: 'auto', marginTop: 12 }}
+                                  exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                                  transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <div className="search-item-overview-divider" />
+                                  <div className="search-item-overview-header">
+                                    <span className="overview-badge">Plot Summary</span>
+                                  </div>
+                                  <p className="search-item-overview-text">
+                                    {item.overview || "No plot summary available for this title."}
+                                  </p>
+                                  <div className="search-item-overview-footer">
+                                    <button
+                                      type="button"
+                                      className="search-item-view-details-btn"
+                                      onClick={() => {
+                                        addRecentSearch(item.title || item.name);
+                                        window.location.hash = `${item.mediaType || 'movie'}/${item.id}`;
+                                        setIsSearchModalOpen(false);
+                                      }}
+                                    >
+                                      <span>View Full Details</span>
+                                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                        <polyline points="12 5 19 12 12 19"></polyline>
+                                      </svg>
+                                    </button>
+                                  </div>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
 
                       <div
                         className="search-modal-see-all-btn"
