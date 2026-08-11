@@ -268,7 +268,7 @@ const FriendsPage = ({ initialTab = 'list' }) => {
 
       <div className="friends-content">
         {loading ? (
-          <FriendsSkeleton />
+          <FriendsSkeleton activeTab={activeTab} />
         ) : (
           <>
             {/* ── My Friends Tab ── */}

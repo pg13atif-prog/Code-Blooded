@@ -210,7 +210,7 @@ const UserListPage = ({ initialType = 'liked' }) => {
 
       {/* Content */}
       {loading ? (
-        <UserListSkeleton />
+        <UserListSkeleton viewMode={viewMode} />
       ) : (
         <AnimatePresence mode="wait">
           <motion.div

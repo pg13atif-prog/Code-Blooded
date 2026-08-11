@@ -115,7 +115,24 @@ export const ProfileSkeleton = () => {
   );
 };
 
-export const UserListSkeleton = () => {
+export const UserListSkeleton = ({ viewMode = 'grid' }) => {
+  if (viewMode === 'list') {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%', marginTop: '1.5rem' }}>
+        {[1, 2, 3, 4, 5, 6].map((i) => (
+          <div key={i} style={{ padding: '0.85rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '14px', display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+            <Skeleton width="60px" height="85px" borderRadius="8px" style={{ flexShrink: 0 }} />
+            <div style={{ flex: 1 }}>
+              <Skeleton width="45%" height="1.3rem" borderRadius="6px" style={{ marginBottom: '0.5rem' }} />
+              <Skeleton width="30%" height="0.9rem" borderRadius="4px" />
+            </div>
+            <Skeleton width="60px" height="1.5rem" borderRadius="6px" style={{ flexShrink: 0 }} />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '1.25rem', width: '100%', marginTop: '1.5rem' }}>
       {Array.from({ length: 12 }).map((_, i) => (
@@ -125,18 +142,66 @@ export const UserListSkeleton = () => {
   );
 };
 
-export const FriendsSkeleton = () => {
-  return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.25rem', width: '100%', marginTop: '1.5rem' }}>
-      {[1, 2, 3, 4].map((i) => (
-        <div key={i} style={{ padding: '1.25rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <Skeleton width="56px" height="56px" borderRadius="50%" style={{ flexShrink: 0 }} />
-          <div style={{ flex: 1 }}>
-            <Skeleton width="130px" height="1.4rem" borderRadius="6px" style={{ marginBottom: '0.4rem' }} />
-            <Skeleton width="90px" height="1rem" borderRadius="4px" />
+export const FriendsSkeleton = ({ activeTab = 'list' }) => {
+  if (activeTab === 'requests') {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', width: '100%', marginTop: '1rem' }}>
+        <Skeleton width="180px" height="1.4rem" borderRadius="6px" style={{ marginBottom: '0.5rem' }} />
+        {[1, 2].map((i) => (
+          <div key={i} style={{ padding: '1.25rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <Skeleton width="52px" height="52px" borderRadius="50%" style={{ flexShrink: 0 }} />
+              <div>
+                <Skeleton width="140px" height="1.3rem" borderRadius="6px" style={{ marginBottom: '0.4rem' }} />
+                <Skeleton width="100px" height="0.9rem" borderRadius="4px" />
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: '0.6rem' }}>
+              <Skeleton width="80px" height="2.2rem" borderRadius="20px" />
+              <Skeleton width="80px" height="2.2rem" borderRadius="20px" />
+            </div>
           </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (activeTab === 'search') {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%', marginTop: '1rem' }}>
+        {/* My Friend Code Box Skeleton */}
+        <div style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div>
+            <Skeleton width="120px" height="0.9rem" borderRadius="4px" style={{ marginBottom: '0.5rem' }} />
+            <Skeleton width="160px" height="1.8rem" borderRadius="8px" />
+          </div>
+          <Skeleton width="100px" height="2.4rem" borderRadius="20px" />
         </div>
-      ))}
+
+        {/* Search Input Box Skeleton */}
+        <div style={{ display: 'flex', gap: '0.8rem', width: '100%' }}>
+          <Skeleton height="3rem" borderRadius="30px" style={{ flex: 1 }} />
+          <Skeleton width="110px" height="3rem" borderRadius="30px" />
+        </div>
+      </div>
+    );
+  }
+
+  // Default: 'list' (My Friends)
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', width: '100%', marginTop: '1rem' }}>
+      <Skeleton height="2.8rem" borderRadius="30px" style={{ marginBottom: '0.5rem' }} />
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.25rem' }}>
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} style={{ padding: '1.25rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <Skeleton width="56px" height="56px" borderRadius="50%" style={{ flexShrink: 0 }} />
+            <div style={{ flex: 1 }}>
+              <Skeleton width="130px" height="1.4rem" borderRadius="6px" style={{ marginBottom: '0.4rem' }} />
+              <Skeleton width="90px" height="1rem" borderRadius="4px" />
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
