@@ -186,6 +186,7 @@
   height: 8px;
   border-radius: 50%;
   background: #ff4d58;
+  flex-shrink: 0;
 }
 
 .custom-floating-toast.success .toast-dot {
