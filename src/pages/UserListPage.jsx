@@ -134,7 +134,7 @@ const UserListPage = ({ initialType = 'liked' }) => {
                 transition={{ type: "spring", stiffness: 450, damping: 32 }}
               />
             )}
-            <span className="list-tab-btn-label">❤️ Liked <span>({liked.length})</span></span>
+            <span className="list-tab-btn-label">Liked <span>({liked.length})</span></span>
           </button>
           <button 
             className={`list-tab-btn ${listType === 'watchlist' ? 'active' : ''}`}
@@ -147,7 +147,7 @@ const UserListPage = ({ initialType = 'liked' }) => {
                 transition={{ type: "spring", stiffness: 450, damping: 32 }}
               />
             )}
-            <span className="list-tab-btn-label">🔖 Watchlist <span>({watchlist.length})</span></span>
+            <span className="list-tab-btn-label">Watchlist <span>({watchlist.length})</span></span>
           </button>
           <button 
             className={`list-tab-btn ${listType === 'watched' ? 'active' : ''}`}
@@ -160,7 +160,7 @@ const UserListPage = ({ initialType = 'liked' }) => {
                 transition={{ type: "spring", stiffness: 450, damping: 32 }}
               />
             )}
-            <span className="list-tab-btn-label">✅ Watched <span>({watched.length})</span></span>
+            <span className="list-tab-btn-label">Watched <span>({watched.length})</span></span>
           </button>
         </div>
       </div>
