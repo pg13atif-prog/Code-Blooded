@@ -141,7 +141,6 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
 
   // Auto-fetch when mediaType, active filters or trendingTimeWindow change
   useEffect(() => {
-    window.scrollTo(0, 0);
     setFilterPage(1);
     applyFilters(false, 1);
   }, [filterMediaType, trendingTimeWindow, selectedGenres, selectedDecade, selectedYears, minRating, sortBy, applyFilters]);

@@ -475,42 +475,51 @@
 }
 
 .autocomplete-dropdown::-webkit-scrollbar {
-  width: 5px;
+  width: 6px;
 }
 
 .autocomplete-dropdown::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(0, 0, 0, 0.2);
   margin: 6px 0;
-}
-
-.autocomplete-dropdown::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.25);
   border-radius: 10px;
 }
 
+.autocomplete-dropdown::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(229, 9, 20, 0.6) 0%, rgba(180, 10, 15, 0.8) 100%);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
 .autocomplete-dropdown::-webkit-scrollbar-thumb:hover {
-  background: #e50914;
+  background: linear-gradient(180deg, rgba(255, 45, 55, 0.8) 0%, rgba(229, 9, 20, 0.9) 100%);
 }
 
 .autocomplete-footer {
-  padding: 0.65rem 0.85rem;
-  margin-top: 0.25rem;
-  font-size: 0.8rem;
+  padding: 0.8rem 1rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: var(--color-accent, #e50914);
   text-align: center;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition: all 0.2s ease;
+  background: transparent;
+  border: none;
+  align-self: center;
 }
 
 .autocomplete-footer:hover {
-  background: rgba(229, 9, 20, 0.12);
-  color: #ff3b47;
+  color: #ff4d4d;
+  transform: translateY(-2px);
+  text-shadow: 0 0 10px rgba(229, 9, 20, 0.4);
 }
 
 .autocomplete-section {
   padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .autocomplete-section h4 {
@@ -527,15 +536,21 @@
   align-items: center;
   gap: 1rem;
   padding: 0.7rem 0.8rem;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   color: #fff;
+  border: 1px solid transparent;
 }
 
 .autocomplete-item:hover,
 .autocomplete-item.focused {
-  background: rgba(255, 255, 255, 0.07);
+  background: rgba(229, 9, 20, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-color: rgba(229, 9, 20, 0.3);
+  box-shadow: 0 4px 15px rgba(229, 9, 20, 0.2);
+  transform: translateY(-1px);
 }
 
 .autocomplete-item img {

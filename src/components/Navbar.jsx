@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import AuthModal from './AuthModal';
 import { searchMedia } from '../services/tmdb';
-import { getNotifications, removeNotification, getFriendData } from '../services/friends';
+import { getNotifications, removeNotification, getFriendData, subscribeToNotifications } from '../services/friends';
 import { addToWatchlist, addToLiked, addToWatched } from '../services/firestore';
 import './Navbar.css';
 
@@ -82,7 +82,8 @@ const Navbar = () => {
 
   // Prevent background scrolling when mobile menu or modals are open
   useEffect(() => {
-    if (isMobileMenuOpen || isLogoutModalOpen || isNotificationsOpen || isAuthModalOpen) {
+    const isMobileSearch = isSearchActive && window.matchMedia("(max-width: 768px)").matches;
+    if (isMobileMenuOpen || isLogoutModalOpen || isNotificationsOpen || isAuthModalOpen || isMobileSearch) {
       document.body.style.overflow = 'hidden';
       document.body.style.touchAction = 'none';
     } else {
@@ -93,11 +94,14 @@ const Navbar = () => {
       document.body.style.overflow = '';
       document.body.style.touchAction = '';
     };
-  }, [isMobileMenuOpen, isLogoutModalOpen, isNotificationsOpen, isAuthModalOpen]);
+  }, [isMobileMenuOpen, isLogoutModalOpen, isNotificationsOpen, isAuthModalOpen, isSearchActive]);
 
   useEffect(() => {
     if (currentUser) {
-      getNotifications(currentUser.uid).then(setNotifications).catch(console.error);
+      const unsubscribe = subscribeToNotifications(currentUser.uid, (notifs) => {
+        setNotifications(notifs);
+      });
+      return () => unsubscribe();
     } else {
       setNotifications([]);
     }

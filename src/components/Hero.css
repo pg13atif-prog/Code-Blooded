@@ -379,6 +379,10 @@
     align-items: flex-end;
   }
 
+  .hero__backdrop img {
+    object-position: center;
+  }
+
   .hero__content {
     padding: var(--space-xl) var(--space-md);
     padding-bottom: calc(var(--space-xl) + 4rem);

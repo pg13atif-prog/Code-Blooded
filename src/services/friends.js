@@ -1,4 +1,4 @@
-import { ref, get, set, remove, update, query, orderByChild, equalTo } from 'firebase/database';
+import { ref, get, set, remove, update, query, orderByChild, equalTo, onValue } from 'firebase/database';
 import { updateProfile } from 'firebase/auth';
 import { db, auth } from './firebase';
 import { isInWatchlist, isLiked, isWatched } from './firestore';
@@ -293,4 +293,36 @@ export const removeNotification = async (userId, notifId) => {
   const updates = {};
   updates[`users/${userId}/notifications/${notifId}`] = null;
   await update(ref(db), updates);
+};
+
+export const subscribeToNotifications = (userId, callback) => {
+  if (!userId) return () => {};
+  const notifRef = ref(db, `users/${userId}/notifications`);
+  const unsubscribe = onValue(notifRef, (snap) => {
+    if (!snap.exists()) {
+      callback([]);
+      return;
+    }
+    const data = snap.val();
+    const list = Object.values(data).sort((a, b) => b.timestamp - a.timestamp);
+    callback(list);
+  });
+  return unsubscribe;
+};
+
+export const subscribeToRelationships = (userId, callback) => {
+  if (!userId) return () => {};
+  const userRef = ref(db, `users/${userId}`);
+  const unsubscribe = onValue(userRef, (snap) => {
+    if (!snap.exists()) {
+      callback({ friends: [], incoming: [], outgoing: [] });
+      return;
+    }
+    const data = snap.val();
+    const friends = data.friends ? Object.keys(data.friends) : [];
+    const incoming = data.incomingRequests ? Object.keys(data.incomingRequests) : [];
+    const outgoing = data.outgoingRequests ? Object.keys(data.outgoingRequests) : [];
+    callback({ friends, incoming, outgoing });
+  });
+  return unsubscribe;
 };

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
-import { getWatchlist, getLiked, getWatched, removeFromWatchlist, removeFromLiked, removeFromWatched } from '../services/firestore';
+import { getWatchlist, getLiked, getWatched, removeFromWatchlist, removeFromLiked, removeFromWatched, addToWatched } from '../services/firestore';
 import MovieCard from '../components/MovieCard';
 import CustomSelect from '../components/CustomSelect';
 import { UserListSkeleton } from '../components/SkeletonLoader';
@@ -73,6 +73,20 @@ const UserListPage = ({ initialType = 'liked' }) => {
     } else if (listType === 'watched') {
       await removeFromWatched(currentUser.uid, movie.id);
       setWatched(prev => prev.filter(m => m.id !== movie.id));
+    }
+  };
+
+  const handleMarkWatched = async (e, movie) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (!currentUser) return;
+    try {
+      await addToWatched(currentUser.uid, movie, 120);
+      await removeFromWatchlist(currentUser.uid, movie.id);
+      setWatchlist(prev => prev.filter(m => m.id !== movie.id));
+      setWatched(prev => [...prev, movie]);
+    } catch (err) {
+      console.error('Failed to mark as watched:', err);
     }
   };
 
@@ -240,6 +254,17 @@ const UserListPage = ({ initialType = 'liked' }) => {
                     {viewMode === 'grid' ? (
                       <div className="user-list-card-wrapper" style={{ position: 'relative' }}>
                         <MovieCard {...movie} disableHover={true} />
+                        {listType === 'watchlist' && (
+                          <button
+                            type="button"
+                            className="user-list-watched-btn"
+                            onClick={(e) => handleMarkWatched(e, movie)}
+                            title="Mark as Watched"
+                            aria-label="Mark as Watched"
+                          >
+                            ✓
+                          </button>
+                        )}
                         <button
                           type="button"
                           className="user-list-remove-btn"
@@ -260,6 +285,16 @@ const UserListPage = ({ initialType = 'liked' }) => {
                           <p>{movie.year} • {movie.category} • {movie.mediaType === 'tv' ? 'TV Show' : 'Movie'}</p>
                           <div className="ul-rating">★ {(movie.rating && movie.rating !== '—' && movie.rating !== '-') ? movie.rating : 'N/A'}</div>
                         </div>
+                        {listType === 'watchlist' && (
+                          <button
+                            type="button"
+                            className="ul-row-watched-btn"
+                            onClick={(e) => handleMarkWatched(e, movie)}
+                            title="Mark as Watched"
+                          >
+                            Mark Watched
+                          </button>
+                        )}
                         <button
                           type="button"
                           className="ul-row-remove-btn"

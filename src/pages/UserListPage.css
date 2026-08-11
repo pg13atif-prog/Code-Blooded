@@ -225,13 +225,13 @@
 
 .user-list-remove-btn {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: -8px;
+  right: -8px;
   z-index: 10;
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.75);
+  background: rgba(0, 0, 0, 0.85);
   border: 1px solid rgba(255, 255, 255, 0.25);
   color: #ffffff;
   font-size: 0.82rem;
@@ -242,19 +242,52 @@
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   transition: all 0.2s ease;
-  opacity: 0.85;
+  opacity: 0;
+}
+
+.user-list-watched-btn {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  z-index: 10;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+  opacity: 0;
 }
 
 .user-list-card-wrapper:hover .user-list-remove-btn,
-.user-list-remove-btn:hover {
+.user-list-card-wrapper:hover .user-list-watched-btn {
   opacity: 1;
+}
+
+.user-list-remove-btn:hover {
   background: rgba(229, 9, 20, 0.9);
   border-color: #ff4d4d;
   transform: scale(1.1);
   box-shadow: 0 4px 12px rgba(229, 9, 20, 0.5);
 }
 
-.ul-row-remove-btn {
+.user-list-watched-btn:hover {
+  background: rgba(46, 204, 113, 0.9);
+  border-color: #2ecc71;
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(46, 204, 113, 0.5);
+}
+
+.ul-row-remove-btn,
+.ul-row-watched-btn {
   background: rgba(229, 9, 20, 0.15);
   border: 1px solid rgba(229, 9, 20, 0.4);
   color: #ff4d4d;
@@ -264,8 +297,19 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  margin-left: auto;
+  margin-left: 0.5rem;
   flex-shrink: 0;
+}
+
+.ul-row-watched-btn {
+  background: rgba(46, 204, 113, 0.15);
+  border-color: rgba(46, 204, 113, 0.4);
+  color: #2ecc71;
+  margin-left: auto;
+}
+
+.ul-row-remove-btn {
+  margin-left: 0.5rem;
 }
 
 .ul-row-remove-btn:hover {
@@ -273,6 +317,13 @@
   color: #ffffff;
   border-color: #ff4d4d;
   box-shadow: 0 2px 10px rgba(229, 9, 20, 0.4);
+}
+
+.ul-row-watched-btn:hover {
+  background: rgba(46, 204, 113, 0.9);
+  color: #ffffff;
+  border-color: #2ecc71;
+  box-shadow: 0 2px 10px rgba(46, 204, 113, 0.4);
 }
 
 /* Empty State */

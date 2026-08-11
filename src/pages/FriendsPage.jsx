@@ -11,7 +11,8 @@ import {
   cancelFriendRequest,
   removeFriend,
   recommendMovie,
-  unsendRecommendation
+  unsendRecommendation,
+  subscribeToRelationships
 } from '../services/friends';
 import { searchMedia } from '../services/tmdb';
 import { FriendsSkeleton } from '../components/SkeletonLoader';
@@ -60,28 +61,27 @@ const FriendsPage = ({ initialTab = 'list' }) => {
   
   useEffect(() => {
     if (!currentUser) return;
-    loadRelationships();
-  }, [currentUser]);
-
-  const loadRelationships = async () => {
+    
     setLoading(true);
-    try {
-      const { friends: fIds, incoming: iIds, outgoing: oIds } = await getRelationships(currentUser.uid);
-      
-      const fetchAll = async (ids) => {
-        const data = await Promise.all(ids.map(id => getFriendData(id)));
-        return data.filter(Boolean);
-      };
+    const unsubscribe = subscribeToRelationships(currentUser.uid, async ({ friends: fIds, incoming: iIds, outgoing: oIds }) => {
+      try {
+        const fetchAll = async (ids) => {
+          const data = await Promise.all(ids.map(id => getFriendData(id)));
+          return data.filter(Boolean);
+        };
 
-      setFriends(await fetchAll(fIds));
-      setIncoming(await fetchAll(iIds));
-      setOutgoing(await fetchAll(oIds));
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+        setFriends(await fetchAll(fIds));
+        setIncoming(await fetchAll(iIds));
+        setOutgoing(await fetchAll(oIds));
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [currentUser]);
 
   const handleSearchCode = async (e) => {
     e.preventDefault();

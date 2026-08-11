@@ -168,6 +168,7 @@ const ProfilePage = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [sortBy, setSortBy] = useState('recent'); // 'recent' | 'title' | 'rating'
   const [friendCode, setFriendCode] = useState('');
+  const [copiedCode, setCopiedCode] = useState(false);
   
   const [profileData, setProfileData] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -469,10 +470,18 @@ const ProfilePage = () => {
                     <span className="fc-code">{friendCode}</span>
                     <button 
                       className="fc-copy-btn" 
-                      onClick={() => navigator.clipboard.writeText(friendCode)}
+                      onClick={() => {
+                        navigator.clipboard.writeText(friendCode);
+                        setCopiedCode(true);
+                        setTimeout(() => setCopiedCode(false), 2000);
+                      }}
                       title="Copy Friend Code"
                     >
-                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                      {copiedCode ? (
+                        <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#2ecc71', marginLeft: '4px' }}>Copied!</span>
+                      ) : (
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                      )}
                     </button>
                   </div>
                 )}
@@ -938,24 +947,16 @@ const ProfilePage = () => {
                   <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }} />
                 </div>
 
+                <div style={{ textAlign: 'center', marginBottom: '0.5rem' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.6)' }}>Forgot current password?</span>
+                </div>
                 <button 
                   type="button" 
+                  className="reset-email-btn"
                   onClick={handleSendResetEmail} 
                   disabled={pwdLoading}
-                  style={{
-                    width: '100%',
-                    background: 'rgba(255, 255, 255, 0.06)',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    color: '#fff',
-                    padding: '0.75rem',
-                    borderRadius: '30px',
-                    fontSize: '0.88rem',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease'
-                  }}
                 >
-                  Forgot Current Password? Send Reset Email Link
+                  Send Reset Email Link
                 </button>
               </>
             )}

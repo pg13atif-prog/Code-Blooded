@@ -97,7 +97,6 @@ const AdvancedBrowsePage = ({ initialMediaType = 'movie', hideHeaderTitle = fals
   }, [mediaType, selectedGenres, selectedDecade, selectedYears, minRating, sortBy]);
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
     setPage(1);
     fetchFilterResults(false, 1);
   }, [mediaType, selectedGenres, selectedDecade, selectedYears, minRating, sortBy, fetchFilterResults]);

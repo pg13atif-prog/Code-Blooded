@@ -2184,3 +2184,23 @@
     width: 100% !important;
   }
 }
+
+.reset-email-btn {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  padding: 0.75rem;
+  border-radius: 30px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.reset-email-btn:hover {
+  background: rgba(229, 9, 20, 0.8);
+  border-color: rgba(229, 9, 20, 1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(229, 9, 20, 0.3);
+}
