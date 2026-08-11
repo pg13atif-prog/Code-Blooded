@@ -1391,7 +1391,7 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
                           <button 
                             className={`btn-sm ${isSent ? 'btn-unsend' : 'btn-primary'}`} 
                             onClick={() => handleToggleSendRec(f.uid)} 
-                            style={{ padding: '0.4rem 1rem', fontSize: '0.8rem', borderRadius: '8px', minWidth: '70px' }}
+                            style={{ padding: '0.4rem 1rem', fontSize: '0.8rem', borderRadius: '30px', minWidth: '70px' }}
                           >
                             {isSent ? 'Unsend' : 'Send'}
                           </button>

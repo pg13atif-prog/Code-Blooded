@@ -456,9 +456,9 @@ const FriendsPage = ({ initialTab = 'list' }) => {
                       <p style={{ margin: '2px 0 0', fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)' }}>{res.year}</p>
                     </div>
                     <button 
-                      className={`btn-sm ${isSent ? 'btn-unsend' : 'btn-secondary'}`} 
+                      className={`btn-sm ${isSent ? 'btn-unsend' : 'btn-primary'}`} 
                       onClick={() => handleToggleRecommendation(res)}
-                      style={{ padding: '0.5rem 1rem', borderRadius: '8px', minWidth: '70px' }}
+                      style={{ padding: '0.5rem 1rem', borderRadius: '30px', minWidth: '70px' }}
                     >
                       {isSent ? 'Unsend' : 'Send'}
                     </button>
