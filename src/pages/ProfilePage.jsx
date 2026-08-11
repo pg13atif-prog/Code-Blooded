@@ -15,6 +15,7 @@ import { db } from '../services/firebase';
 import CustomSelect from '../components/CustomSelect';
 
 import AuthModal from '../components/AuthModal';
+import { ProfileSkeleton } from '../components/SkeletonLoader';
 
 // ── Compact List Card with Remove button ──────────────────────────────────────
 const MediaListItem = ({ movie, onRemove, onNavigate }) => {
@@ -314,7 +315,7 @@ const ProfilePage = () => {
   };
 
   if (loading) {
-    return <div className="page-container" style={{ paddingTop: '100px', textAlign: 'center', color: '#fff' }}>Loading Profile...</div>;
+    return <ProfileSkeleton />;
   }
 
   if (!currentUser) {
