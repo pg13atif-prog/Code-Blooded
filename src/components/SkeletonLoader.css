@@ -158,3 +158,59 @@
     width: 100% !important;
   }
 }
+
+/* ── Movie Detail Skeleton Styles ────────────────────────────────────────── */
+.skeleton-movie-detail {
+  position: relative;
+  min-height: 100vh;
+  padding-top: 80px;
+}
+
+.skeleton-movie-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 55vh;
+  opacity: 0.4;
+  z-index: 0;
+}
+
+.skeleton-movie-container {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 120px 1.5rem 5rem;
+}
+
+.skeleton-movie-grid {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+.skeleton-movie-poster {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .skeleton-movie-grid {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+  .skeleton-movie-poster {
+    max-width: 220px;
+  }
+  .skeleton-movie-info {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+}

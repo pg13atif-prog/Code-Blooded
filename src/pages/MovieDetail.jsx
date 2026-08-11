@@ -21,6 +21,7 @@ import AuthModal from '../components/AuthModal';
 import CustomSelect from '../components/CustomSelect';
 import { useAuth } from '../context/AuthContext';
 import MovieRow from '../components/MovieRow';
+import { MovieDetailSkeleton } from '../components/SkeletonLoader';
 import { checkAndUnlockAchievements, trackDetailView, incrementStat } from '../services/achievements';
 import './MovieDetail.css';
 
@@ -513,41 +514,7 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
   }, [similarMovies, recommendations]);
 
   if (status === 'loading') {
-    return (
-      <div className="movie-detail-page skeleton-page">
-        <div className="detail-header-nav">
-          <div className="skeleton skeleton-btn"></div>
-        </div>
-        <div className="detail-hero">
-          <div className="skeleton skeleton-backdrop"></div>
-        </div>
-        <div className="detail-container">
-          <div className="detail-main-grid">
-            <div className="detail-poster-col">
-              <div className="skeleton skeleton-poster"></div>
-              <div className="skeleton skeleton-sidebar"></div>
-            </div>
-            <div className="detail-info-col">
-              <div className="skeleton skeleton-title"></div>
-              <div className="skeleton skeleton-tagline"></div>
-              <div className="skeleton skeleton-badges"></div>
-              <div className="skeleton skeleton-actions"></div>
-              <div className="skeleton skeleton-overview"></div>
-              <div className="skeleton skeleton-overview-line"></div>
-              <div className="skeleton skeleton-overview-line short"></div>
-              <div className="cast-grid" style={{ marginTop: '3rem' }}>
-                {[1, 2, 3, 4].map(i => (
-                  <div key={i} className="cast-card">
-                    <div className="skeleton skeleton-avatar"></div>
-                    <div className="skeleton skeleton-text"></div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <MovieDetailSkeleton />;
   }
 
   if (status === 'error' || !movie) {

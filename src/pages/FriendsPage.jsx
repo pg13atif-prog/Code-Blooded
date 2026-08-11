@@ -14,6 +14,7 @@ import {
   unsendRecommendation
 } from '../services/friends';
 import { searchMedia } from '../services/tmdb';
+import { FriendsSkeleton } from '../components/SkeletonLoader';
 import './FriendsPage.css';
 
 const FriendsPage = () => {
@@ -254,7 +255,7 @@ const FriendsPage = () => {
 
       <div className="friends-content">
         {loading ? (
-          <div className="friends-loading">Loading...</div>
+          <FriendsSkeleton />
         ) : (
           <>
             {/* ── My Friends Tab ── */}

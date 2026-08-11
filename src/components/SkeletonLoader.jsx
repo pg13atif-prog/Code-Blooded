@@ -114,3 +114,86 @@ export const ProfileSkeleton = () => {
     </div>
   );
 };
+
+export const UserListSkeleton = () => {
+  return (
+    <div className="user-list-page page-container" style={{ paddingTop: '110px' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '2rem' }}>
+        <Skeleton width="220px" height="2.5rem" borderRadius="10px" />
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '2.5rem' }}>
+        <div style={{ display: 'flex', gap: '0.5rem', width: '100%', maxWidth: '540px' }}>
+          <Skeleton width="33%" height="2.6rem" borderRadius="30px" />
+          <Skeleton width="33%" height="2.6rem" borderRadius="30px" />
+          <Skeleton width="33%" height="2.6rem" borderRadius="30px" />
+        </div>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '1.25rem' }}>
+        {Array.from({ length: 12 }).map((_, i) => (
+          <CardSkeleton key={i} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export const FriendsSkeleton = () => {
+  return (
+    <div className="friends-page page-container" style={{ paddingTop: '110px' }}>
+      <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+        <Skeleton width="220px" height="2.5rem" borderRadius="10px" style={{ margin: '0 auto 0.6rem' }} />
+        <Skeleton width="320px" height="1.2rem" borderRadius="6px" style={{ margin: '0 auto' }} />
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '2rem' }}>
+        <div style={{ display: 'flex', gap: '0.5rem', width: '100%', maxWidth: '600px' }}>
+          <Skeleton width="33%" height="2.6rem" borderRadius="30px" />
+          <Skeleton width="33%" height="2.6rem" borderRadius="30px" />
+          <Skeleton width="33%" height="2.6rem" borderRadius="30px" />
+        </div>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.25rem' }}>
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} style={{ padding: '1.25rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <Skeleton width="56px" height="56px" borderRadius="50%" style={{ flexShrink: 0 }} />
+            <div style={{ flex: 1 }}>
+              <Skeleton width="130px" height="1.4rem" borderRadius="6px" style={{ marginBottom: '0.4rem' }} />
+              <Skeleton width="90px" height="1rem" borderRadius="4px" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export const MovieDetailSkeleton = () => {
+  return (
+    <div className="skeleton-movie-detail">
+      <div className="skeleton-movie-backdrop">
+        <Skeleton height="100%" borderRadius="0px" />
+      </div>
+      <div className="skeleton-movie-container page-container">
+        <div className="skeleton-movie-grid">
+          <div className="skeleton-movie-poster">
+            <Skeleton height="100%" borderRadius="16px" />
+          </div>
+          <div className="skeleton-movie-info">
+            <Skeleton width="70%" height="3rem" borderRadius="12px" style={{ marginBottom: '1rem' }} />
+            <Skeleton width="40%" height="1.4rem" borderRadius="6px" style={{ marginBottom: '1.2rem' }} />
+            <Skeleton width="50%" height="1.8rem" borderRadius="20px" style={{ marginBottom: '1.5rem' }} />
+            <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
+              <Skeleton width="160px" height="3rem" borderRadius="30px" />
+              <Skeleton width="160px" height="3rem" borderRadius="30px" />
+            </div>
+            <Skeleton width="100%" height="4.5rem" borderRadius="10px" style={{ marginBottom: '2rem' }} />
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              {[1, 2, 3, 4].map(i => (
+                <Skeleton key={i} width="60px" height="60px" borderRadius="50%" />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

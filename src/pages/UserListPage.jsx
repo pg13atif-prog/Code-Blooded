@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { getWatchlist, getLiked, getWatched, removeFromWatchlist, removeFromLiked, removeFromWatched } from '../services/firestore';
 import MovieCard from '../components/MovieCard';
 import CustomSelect from '../components/CustomSelect';
+import { UserListSkeleton } from '../components/SkeletonLoader';
 import './UserListPage.css';
 
 const UserListPage = ({ initialType = 'liked' }) => {
@@ -102,13 +103,7 @@ const UserListPage = ({ initialType = 'liked' }) => {
   }, [activeRawList, searchQuery, filter, sortBy]);
 
   if (loading) {
-    return (
-      <div className="user-list-page page-container">
-        <div style={{ textAlign: 'center', padding: '5rem 0', color: 'rgba(255,255,255,0.5)' }}>
-          Loading your collection...
-        </div>
-      </div>
-    );
+    return <UserListSkeleton />;
   }
 
   if (!currentUser) return null;
