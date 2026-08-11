@@ -5,11 +5,9 @@
 .custom-dialog-overlay {
   position: fixed;
   inset: 0;
-  background: 
-    radial-gradient(circle at 50% 30%, rgba(185, 9, 11, 0.22) 0%, transparent 60%),
-    rgba(4, 6, 12, 0.82);
-  backdrop-filter: blur(40px) saturate(220%);
-  -webkit-backdrop-filter: blur(40px) saturate(220%);
+  background: rgba(4, 6, 12, 0.85);
+  backdrop-filter: blur(36px) saturate(190%);
+  -webkit-backdrop-filter: blur(36px) saturate(190%);
   z-index: 99999;
   display: flex;
   align-items: center;
@@ -22,17 +20,15 @@
   width: 100%;
   max-width: 440px;
   background: 
-    radial-gradient(ellipse at top left, rgba(255, 255, 255, 0.18) 0%, transparent 45%),
-    radial-gradient(ellipse at bottom right, rgba(185, 9, 11, 0.25) 0%, transparent 55%),
-    linear-gradient(145deg, rgba(22, 28, 44, 0.82) 0%, rgba(8, 11, 20, 0.94) 100%);
-  backdrop-filter: blur(48px) saturate(220%) brightness(1.1);
-  -webkit-backdrop-filter: blur(48px) saturate(220%) brightness(1.1);
-  border: 1.5px solid rgba(255, 255, 255, 0.2);
+    radial-gradient(ellipse at top left, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+    linear-gradient(145deg, rgba(22, 28, 44, 0.88) 0%, rgba(10, 14, 25, 0.96) 100%);
+  backdrop-filter: blur(48px) saturate(200%) brightness(1.08);
+  -webkit-backdrop-filter: blur(48px) saturate(200%) brightness(1.08);
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
   border-radius: 26px;
   box-shadow: 
     0 32px 80px rgba(0, 0, 0, 0.85),
-    0 0 50px rgba(185, 9, 11, 0.25),
-    inset 0 1.5px 0 0 rgba(255, 255, 255, 0.4),
+    inset 0 1.5px 0 0 rgba(255, 255, 255, 0.35),
     inset 0 -1.5px 0 0 rgba(0, 0, 0, 0.6);
   padding: 2rem 1.8rem 1.8rem;
   display: flex;
@@ -45,8 +41,8 @@
 
 /* Icon Badges */
 .custom-dialog-icon-badge {
-  width: 58px;
-  height: 58px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -54,29 +50,26 @@
   flex-shrink: 0;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.35), 0 8px 24px rgba(0, 0, 0, 0.4);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.25), 0 4px 16px rgba(0, 0, 0, 0.4);
 }
 
 .custom-dialog-icon-badge.danger {
-  background: linear-gradient(135deg, rgba(229, 9, 20, 0.3) 0%, rgba(120, 5, 12, 0.5) 100%);
-  border: 1.5px solid rgba(255, 75, 85, 0.6);
+  background: linear-gradient(135deg, rgba(229, 9, 20, 0.16) 0%, rgba(80, 5, 10, 0.3) 100%);
+  border: 1.5px solid rgba(255, 75, 85, 0.35);
   color: #ff4d58;
-  box-shadow: 0 0 30px rgba(229, 9, 20, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.4);
 }
 
 .custom-dialog-icon-badge.info,
 .custom-dialog-icon-badge.question {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.25) 0%, rgba(30, 58, 138, 0.45) 100%);
-  border: 1.5px solid rgba(96, 165, 250, 0.5);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.18) 0%, rgba(30, 58, 138, 0.3) 100%);
+  border: 1.5px solid rgba(96, 165, 250, 0.35);
   color: #60a5fa;
-  box-shadow: 0 0 25px rgba(59, 130, 246, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.35);
 }
 
 .custom-dialog-icon-badge.success {
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.25) 0%, rgba(20, 83, 45, 0.45) 100%);
-  border: 1.5px solid rgba(74, 222, 128, 0.5);
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.18) 0%, rgba(20, 83, 45, 0.3) 100%);
+  border: 1.5px solid rgba(74, 222, 128, 0.35);
   color: #4ade80;
-  box-shadow: 0 0 25px rgba(34, 197, 94, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.35);
 }
 
 /* Content */
@@ -134,32 +127,32 @@
 /* Cancel Button */
 .custom-dialog-btn--cancel {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
   color: rgba(255, 255, 255, 0.85) !important;
   box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2), 0 4px 14px rgba(0, 0, 0, 0.35) !important;
 }
 
 .custom-dialog-btn--cancel:hover {
   background: rgba(255, 255, 255, 0.14) !important;
-  border-color: rgba(255, 255, 255, 0.3) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
   color: #ffffff !important;
   transform: translateY(-2px);
 }
 
-/* Danger / Confirm Button (Signature Maroon) */
+/* Danger / Confirm Button (Signature Maroon without excessive neon red glow) */
 .custom-dialog-btn--danger,
 .custom-dialog-btn--confirm {
   background: linear-gradient(135deg, #8b0000 0%, #b9090b 55%, #580002 100%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
   color: #ffffff !important;
-  box-shadow: 0 6px 20px rgba(185, 9, 11, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.35) !important;
 }
 
 .custom-dialog-btn--danger:hover,
 .custom-dialog-btn--confirm:hover {
   background: linear-gradient(135deg, #a50002 0%, #d10a0d 55%, #6f0003 100%) !important;
-  border-color: rgba(255, 255, 255, 0.4) !important;
-  box-shadow: 0 8px 26px rgba(185, 9, 11, 0.75), inset 0 1px 1px rgba(255, 255, 255, 0.55) !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.45) !important;
   transform: translateY(-2px);
 }
 
@@ -193,17 +186,14 @@
   height: 8px;
   border-radius: 50%;
   background: #ff4d58;
-  box-shadow: 0 0 8px #ff4d58;
 }
 
 .custom-floating-toast.success .toast-dot {
   background: #4ade80;
-  box-shadow: 0 0 8px #4ade80;
 }
 
 .custom-floating-toast.info .toast-dot {
   background: #60a5fa;
-  box-shadow: 0 0 8px #60a5fa;
 }
 
 @media (max-width: 480px) {
