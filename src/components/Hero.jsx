@@ -246,9 +246,22 @@ const Hero = ({ movies = [], movie = null, loading = false }) => {
               )}
             </div>
 
-            {/* Description */}
-            <p className="hero__description" id="hero-description">
+            {/* Description - Official Desktop Overview */}
+            <p className="hero__description hero__description--desktop" id="hero-description">
               {currentSlide.overview || DEFAULT_FALLBACK_HERO.overview}
+            </p>
+
+            {/* AI Generated Plot Summary - Mobile (3-4 lines for visual consistency) */}
+            <p className="hero__description hero__description--mobile" id="hero-description-mobile">
+              {(() => {
+                const rawOverview = currentSlide.overview || DEFAULT_FALLBACK_HERO.overview;
+                const sentences = rawOverview.split(/(?<=[.!?])\s+/).filter(s => s.trim().length > 0);
+                let aiSummary = sentences.length >= 3 ? sentences.slice(0, 3).join(' ') : rawOverview;
+                if (aiSummary.length > 220) {
+                  aiSummary = aiSummary.substring(0, 217).trim() + '...';
+                }
+                return aiSummary;
+              })()}
             </p>
 
             {/* CTA Buttons */}

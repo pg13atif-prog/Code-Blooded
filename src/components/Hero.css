@@ -124,6 +124,14 @@
   margin-bottom: var(--space-xl);
 }
 
+.hero__description--desktop {
+  display: block;
+}
+
+.hero__description--mobile {
+  display: none;
+}
+
 /* ---------- CTA Buttons ---------- */
 .hero__actions {
   display: flex;
@@ -399,9 +407,21 @@
     justify-content: center;
   }
 
-  .hero__description {
-    font-size: 0.9rem;
-    max-width: 100%;
+  .hero__description--desktop {
+    display: none !important;
+  }
+
+  .hero__description--mobile {
+    display: -webkit-box !important;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.82);
+    max-width: 90%;
+    margin: 0.5rem auto 1.25rem;
     text-align: center;
   }
 
@@ -443,10 +463,6 @@
   .hero__title-logo {
     max-width: 220px;
     max-height: 65px;
-  }
-
-  .hero__description {
-    text-align: center;
   }
 
   .hero__actions {
