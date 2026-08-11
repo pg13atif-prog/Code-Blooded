@@ -96,12 +96,20 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
-      setLoading(false);
-    });
+    try {
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        setCurrentUser(user);
+        setLoading(false);
+      }, (err) => {
+        console.error("Auth state change error:", err);
+        setLoading(false);
+      });
 
-    return unsubscribe;
+      return unsubscribe;
+    } catch (err) {
+      console.error("Auth initialization error:", err);
+      setLoading(false);
+    }
   }, []);
 
   const value = {
