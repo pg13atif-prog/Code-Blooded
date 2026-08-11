@@ -160,8 +160,8 @@
 .custom-floating-toast {
   position: fixed;
   bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 50% !important;
+  transform: translateX(-50%) !important;
   z-index: 100000;
   display: flex;
   align-items: center;

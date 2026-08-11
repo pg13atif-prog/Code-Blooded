@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useAlert } from '../context/AlertContext';
 import AuthModal from './AuthModal';
 import { searchMedia } from '../services/tmdb';
-import { getNotifications, removeNotification, getFriendData, subscribeToNotifications } from '../services/friends';
+import { getNotifications, removeNotification, getFriendData, subscribeToNotifications, subscribeToRelationships, acceptFriendRequest, rejectFriendRequest } from '../services/friends';
 import { addToWatchlist, addToLiked, addToWatched } from '../services/firestore';
 import CustomSelect from './CustomSelect';
 import './Navbar.css';
@@ -18,15 +18,15 @@ const MOBILE_SEARCH_TYPES = [
 /* ── Dropdown menu configs ─────────────────────────────────── */
 const discoverItems = [
   { icon: '🎬', label: 'Movies', desc: 'Browse the complete movie library.', hash: '#discover/movies' },
-  { icon: '📺', label: 'TV Shows', desc: 'Explore popular series.', hash: '#discover/tv' },
-  { icon: '🔥', label: 'Trending', desc: "See what\u2019s popular today.", hash: '#discover/trending' },
+  { icon: '📺', label: 'TV Shows', desc: 'Explore trending series & shows.', hash: '#discover/tv' },
+  { icon: '🔥', label: 'Trending', desc: 'What everyone is watching this week.', hash: '#discover/trending' },
 ];
 
 const cineaiItems = [
-  { icon: '✨', label: 'What Should I Watch?', desc: 'Describe your mood and let CineAI recommend.', hash: '#cineai/what-to-watch' },
-  { icon: '🎬', label: 'Movie Night Planner', desc: 'Plan the perfect movie night.', hash: '#cineai/planner' },
-  { icon: '🎲', label: 'Pick For Me', desc: 'One click. One recommendation.', hash: '#cineai/pick-for-me' },
-  { icon: '⚔️', label: 'Movie Debate', desc: 'Compare two movies with AI.', hash: '#cineai/debate' },
+  { icon: '🎬', label: 'What Should I Watch?', desc: 'AI-powered movie recommendations based on mood.', hash: '#cineai-tool/what-to-watch' },
+  { icon: '🎯', label: 'Pick For Me', desc: 'Can’t decide? Let AI spin the wheel for you.', hash: '#cineai-tool/pick-for-me' },
+  { icon: '🎭', label: 'Movie Debate', desc: 'Pick two movies and let AI declare the winner.', hash: '#cineai-tool/debate' },
+  { icon: '📅', label: 'Weekend Watch Planner', desc: 'Get a custom watch schedule for your weekend.', hash: '#cineai-tool/planner' },
 ];
 
 const friendsItems = [
@@ -69,9 +69,10 @@ const Navbar = () => {
   
   // Notifications
   const [notifications, setNotifications] = useState([]);
+  const [incomingRequestsList, setIncomingRequestsList] = useState([]);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [addedNotifs, setAddedNotifs] = useState({});
-  const hasUnreadNotifications = notifications.length > 0;
+  const hasUnreadNotifications = notifications.length > 0 || incomingRequestsList.length > 0;
   const [userProfile, setUserProfile] = useState(null);
 
   // Autocomplete state
@@ -118,12 +119,29 @@ const Navbar = () => {
 
   useEffect(() => {
     if (currentUser) {
-      const unsubscribe = subscribeToNotifications(currentUser.uid, (notifs) => {
+      const unsubNotifs = subscribeToNotifications(currentUser.uid, (notifs) => {
         setNotifications(notifs);
       });
-      return () => unsubscribe();
+      const unsubRel = subscribeToRelationships(currentUser.uid, async (rel) => {
+        if (rel && rel.incoming && rel.incoming.length > 0) {
+          try {
+            const reqData = await Promise.all(rel.incoming.map(id => getFriendData(id).catch(() => null)));
+            setIncomingRequestsList(reqData.filter(Boolean));
+          } catch (e) {
+            console.error("Error loading incoming requests:", e);
+            setIncomingRequestsList([]);
+          }
+        } else {
+          setIncomingRequestsList([]);
+        }
+      });
+      return () => {
+        unsubNotifs();
+        unsubRel();
+      };
     } else {
       setNotifications([]);
+      setIncomingRequestsList([]);
     }
   }, [currentUser]);
 
@@ -358,8 +376,6 @@ const Navbar = () => {
         }
       }));
 
-      // Delete from Firebase DB so it won't re-appear after modal is closed
-      await removeNotification(currentUser.uid, notif.id);
       showToast(`Added to your ${actionType}!`, 'success');
     } catch (err) {
       console.error(err);
@@ -372,11 +388,12 @@ const Navbar = () => {
     setNotifications(prev => prev.filter(n => n.id !== notif.id));
   };
 
-  const handleCloseNotificationsModal = () => {
+  const handleCloseNotificationsModal = async () => {
     setIsNotificationsOpen(false);
     const addedIds = Object.keys(addedNotifs);
     if (addedIds.length > 0) {
       setNotifications(prev => prev.filter(n => !addedIds.includes(n.id)));
+      await Promise.all(addedIds.map(id => removeNotification(currentUser.uid, id).catch(() => null)));
       setAddedNotifs({});
     }
   };
@@ -1033,16 +1050,62 @@ const Navbar = () => {
           <div className="modal-content notifications-modal" onClick={e => e.stopPropagation()}>
             <button className="modal-close" onClick={handleCloseNotificationsModal}>✕</button>
             <h2>Notifications</h2>
-            {notifications.length === 0 ? (
+            {notifications.length === 0 && incomingRequestsList.length === 0 ? (
               <p style={{ color: 'rgba(255,255,255,0.5)', textAlign: 'center', padding: '2rem' }}>You have no notifications.</p>
             ) : (
               <div className="notifications-list">
+                {/* Friend Requests */}
+                {incomingRequestsList.map(req => (
+                  <div key={`req_${req.uid}`} className="notification-card-item friend-request-card" style={{ borderLeft: '3px solid #6366f1' }}>
+                    <div className="notif-card-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                        <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'linear-gradient(135deg, #e50914, #6366f1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 'bold', color: '#fff', overflow: 'hidden' }}>
+                          {req.avatar ? <img src={req.avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : req.username.charAt(0).toUpperCase()}
+                        </div>
+                        <strong>{req.username}</strong>
+                      </div>
+                      <span style={{ fontSize: '0.72rem', background: 'rgba(99, 102, 241, 0.2)', color: '#818cf8', padding: '2px 8px', borderRadius: '6px', fontWeight: 600 }}>Friend Request</span>
+                    </div>
+                    <p className="notif-card-body" style={{ margin: '0.4rem 0 0.8rem' }}>
+                      sent you a friend request!
+                    </p>
+                    <div className="notif-card-actions" style={{ display: 'flex', gap: '0.5rem' }}>
+                      <button 
+                        className="notif-action-btn active-watched" 
+                        onClick={async () => {
+                          await acceptFriendRequest(currentUser.uid, req.uid);
+                          showToast(`Accepted ${req.username}'s friend request!`, 'success');
+                        }}
+                        style={{ background: '#16a34a', borderColor: '#22c55e', color: '#fff', flex: 1 }}
+                      >
+                        Accept
+                      </button>
+                      <button 
+                        className="notif-action-btn active-liked" 
+                        onClick={async () => {
+                          await rejectFriendRequest(currentUser.uid, req.uid);
+                          showToast(`Rejected friend request`, 'info');
+                        }}
+                        style={{ background: 'rgba(239,68,68,0.2)', borderColor: '#ef4444', color: '#f87171', flex: 1 }}
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  </div>
+                ))}
+
+                {/* Movie Recommendations */}
                 {notifications.map(notif => {
                   const notifState = addedNotifs[notif.id] || {};
                   return (
                     <div key={notif.id} className="notification-card-item">
-                      <div className="notif-card-header">
-                        <strong>{notif.fromName}</strong>
+                      <div className="notif-card-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                          <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'linear-gradient(135deg, #e50914, #ff6b35)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 'bold', color: '#fff', overflow: 'hidden', flexShrink: 0 }}>
+                            {notif.fromAvatar ? <img src={notif.fromAvatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : (notif.fromName || 'U').charAt(0).toUpperCase()}
+                          </div>
+                          <strong>{notif.fromName}</strong>
+                        </div>
                         <button onClick={() => handleDismissNotification(notif)} className="notif-dismiss-btn" title="Dismiss">✕</button>
                       </div>
                       <p className="notif-card-body">
@@ -1068,7 +1131,7 @@ const Navbar = () => {
                           onClick={() => handleNotificationAction(notif, 'watched')}
                           disabled={!!notifState.watched}
                         >
-                          Watched
+                          {notifState.watched ? 'Watched' : 'Watched'}
                         </button>
                       </div>
                     </div>

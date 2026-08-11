@@ -199,7 +199,8 @@ const FriendsPage = ({ initialTab = 'list' }) => {
       } else {
         const myData = await getFriendData(currentUser.uid).catch(() => null);
         const myName = myData?.username || currentUser.displayName || (currentUser.email ? currentUser.email.split('@')[0] : 'Friend');
-        await recommendMovie(currentUser.uid, myName, selectedFriend.uid, movieData);
+        const myAvatar = myData?.avatar || currentUser.photoURL || null;
+        await recommendMovie(currentUser.uid, myName, selectedFriend.uid, movieData, myAvatar);
         setSentRecs(prev => ({ ...prev, [movieId]: true }));
         setRecFeedback(`Successfully recommended "${movieData.title || movieData.name}"!`);
       }
@@ -432,17 +433,14 @@ const FriendsPage = ({ initialTab = 'list' }) => {
           <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '500px' }}>
             <button className="modal-close" onClick={() => { setShowRecommendModal(false); setRecSearchQuery(''); setRecSearchResults([]); setRecFeedback(''); }}>✕</button>
             <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '1rem' }}>Recommend to {selectedFriend.username}</h2>
-            <form onSubmit={handleRecommendSearch} style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+            <form onSubmit={handleRecommendSearch} style={{ marginBottom: '1rem' }}>
               <input 
                 type="text" 
                 placeholder="Search for a movie or TV show..." 
                 value={recSearchQuery}
                 onChange={(e) => setRecSearchQuery(e.target.value)}
-                style={{ flex: 1, padding: '0.75rem 1rem', borderRadius: '12px', background: 'rgba(255,255,255,0.06)', color: '#fff', border: '1px solid rgba(255,255,255,0.12)', outline: 'none' }}
+                style={{ width: '100%', padding: '0.85rem 1rem', borderRadius: '12px', background: 'rgba(255,255,255,0.06)', color: '#fff', border: '1px solid rgba(255,255,255,0.12)', outline: 'none', boxSizing: 'border-box', fontSize: '0.95rem' }}
               />
-              <button type="submit" className="btn-primary" disabled={recSearchLoading} style={{ borderRadius: '12px', padding: '0.75rem 1.25rem' }}>
-                {recSearchLoading ? '...' : 'Search'}
-              </button>
             </form>
 
             {recFeedback && (

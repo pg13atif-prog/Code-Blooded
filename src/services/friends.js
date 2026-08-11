@@ -221,7 +221,7 @@ export const updateUserProfile = async (userId, data) => {
 
 // ── Notifications & Recommendations ──────────────────────────────────────────
 
-export const recommendMovie = async (fromId, fromName, toId, movieData) => {
+export const recommendMovie = async (fromId, fromName, toId, movieData, fromAvatar = null) => {
   if (!fromId || !toId || !movieData) return;
 
   // Check if target user already has it
@@ -259,6 +259,7 @@ export const recommendMovie = async (fromId, fromName, toId, movieData) => {
     type: 'recommendation',
     fromId,
     fromName,
+    fromAvatar: fromAvatar || null,
     movie: {
       id: movieData.id,
       title: movieData.title || movieData.name,
