@@ -829,7 +829,7 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
                     </svg>
                     <span className="mobile-btn-text">{isSaved ? 'Saved' : 'Watchlist'}</span>
                   </button>
-                  <span className="action-label desktop-only-label">{isSaved ? 'Saved' : 'Watchlist'}</span>
+                  <span className={`action-label desktop-only-label ${isSaved ? 'saved-label' : ''}`}>{isSaved ? 'Saved' : 'Watchlist'}</span>
                 </div>
 
                 {/* Like */}
@@ -844,7 +844,7 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
                     </svg>
                     <span className="mobile-btn-text">{isLikedItem ? 'Liked' : 'Like'}</span>
                   </button>
-                  <span className="action-label desktop-only-label">{isLikedItem ? 'Liked' : 'Like'}</span>
+                  <span className={`action-label desktop-only-label ${isLikedItem ? 'liked-label' : ''}`}>{isLikedItem ? 'Liked' : 'Like'}</span>
                 </div>
 
                 {/* Watched */}
@@ -866,7 +866,7 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
                     </svg>
                     <span className="mobile-btn-text">{isWatchedItem ? 'Watched' : 'Watched'}</span>
                   </button>
-                  <span className="action-label desktop-only-label">Watched</span>
+                  <span className={`action-label desktop-only-label ${isWatchedItem ? 'watched-label' : ''}`}>Watched</span>
                 </div>
 
                 {/* Recommend */}
