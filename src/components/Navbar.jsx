@@ -320,17 +320,9 @@ const Navbar = () => {
   };
 
   const toggleSearch = () => {
-    const nextState = !isSearchActive;
-    setIsSearchActive(nextState);
-    setShowSuggestions(nextState);
-    if (!nextState) {
-      setSearchQuery('');
-    } else {
-      setIsMobileMenuOpen(false);
-      setTimeout(() => {
-        searchInputRef.current?.focus();
-      }, 350);
-    }
+    setIsSearchModalOpen(prev => !prev);
+    setSearchQuery('');
+    setFocusedIndex(-1);
   };
 
   const handleNotificationAction = async (notif, actionType) => {
@@ -657,7 +649,7 @@ const Navbar = () => {
 
       {/* Mobile Bottom Navigation Bar */}
       {(() => {
-        const isSearchingActive = isMobileSearchModalOpen || isSearchActive || currentPath.startsWith('#search');
+        const isSearchingActive = isSearchModalOpen || currentPath.startsWith('#search');
         return (
           <nav className={`mobile-bottom-nav ${isMobileMenuOpen ? 'mobile-bottom-nav--hidden' : ''}`} aria-label="Mobile Navigation">
             <a 
