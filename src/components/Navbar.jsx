@@ -82,8 +82,7 @@ const Navbar = () => {
 
   // Prevent background scrolling when mobile menu or modals are open
   useEffect(() => {
-    const isMobileSearch = isSearchActive && window.matchMedia("(max-width: 768px)").matches;
-    if (isMobileMenuOpen || isLogoutModalOpen || isNotificationsOpen || isAuthModalOpen || isMobileSearch) {
+    if (isMobileMenuOpen || isLogoutModalOpen || isNotificationsOpen || isAuthModalOpen || isMobileSearchModalOpen) {
       document.body.style.overflow = 'hidden';
       document.body.style.touchAction = 'none';
     } else {
@@ -94,7 +93,7 @@ const Navbar = () => {
       document.body.style.overflow = '';
       document.body.style.touchAction = '';
     };
-  }, [isMobileMenuOpen, isLogoutModalOpen, isNotificationsOpen, isAuthModalOpen, isSearchActive]);
+  }, [isMobileMenuOpen, isLogoutModalOpen, isNotificationsOpen, isAuthModalOpen, isMobileSearchModalOpen]);
 
   useEffect(() => {
     if (currentUser) {
@@ -296,7 +295,7 @@ const Navbar = () => {
       setIsMobileMenuOpen(false);
       setTimeout(() => {
         searchInputRef.current?.focus();
-      }, 50);
+      }, 350);
     }
   };
 

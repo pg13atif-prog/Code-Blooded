@@ -176,7 +176,7 @@ const ProfilePage = () => {
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
-    if (isLogoutModalOpen || isStatsModalOpen) {
+    if (isLogoutModalOpen || isStatsModalOpen || isPwdModalOpen) {
       document.body.style.overflow = 'hidden';
       document.body.style.touchAction = 'none';
     } else {
@@ -187,7 +187,7 @@ const ProfilePage = () => {
       document.body.style.overflow = '';
       document.body.style.touchAction = '';
     };
-  }, [isLogoutModalOpen, isStatsModalOpen]);
+  }, [isLogoutModalOpen, isStatsModalOpen, isPwdModalOpen]);
 
   useEffect(() => {
     if (!currentUser) { setLoading(false); return; }

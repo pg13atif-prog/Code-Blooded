@@ -495,9 +495,8 @@
 }
 
 .autocomplete-footer {
-  padding: 0.8rem 1rem;
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin-top: 0.25rem;
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--color-accent, #e50914);
@@ -506,12 +505,15 @@
   transition: all 0.2s ease;
   background: transparent;
   border: none;
-  align-self: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 0 0 12px 12px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .autocomplete-footer:hover {
   color: #ff4d4d;
-  transform: translateY(-2px);
+  background: rgba(229, 9, 20, 0.08);
   text-shadow: 0 0 10px rgba(229, 9, 20, 0.4);
 }
 
@@ -561,6 +563,15 @@
   flex-shrink: 0;
 }
 
+.autocomplete-no-img {
+  width: 40px;
+  height: 60px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
 .autocomplete-info {
   display: flex;
   flex-direction: column;
@@ -584,6 +595,20 @@
   font-size: 0.78rem;
   color: rgba(255, 255, 255, 0.40);
   line-height: 1.2;
+}
+
+.autocomplete-item.no-results {
+  cursor: default;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.88rem;
+  padding: 1rem 0.8rem;
+}
+
+.autocomplete-item.no-results:hover {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  transform: none;
 }
 
 .navbar__profile-avatar-img {
