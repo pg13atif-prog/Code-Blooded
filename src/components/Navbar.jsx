@@ -77,6 +77,7 @@ const Navbar = () => {
   const dropdownRef = useRef(null);
   const dropupRef = useRef(null);
   const searchContainerRef = useRef(null);
+  const searchInputRef = useRef(null);
   const { currentUser, logout } = useAuth();
 
   // Prevent background scrolling when mobile menu or modals are open
@@ -282,11 +283,17 @@ const Navbar = () => {
   };
 
   const toggleSearch = () => {
-    setIsSearchActive(!isSearchActive);
-    setShowSuggestions(!isSearchActive);
-    if (isSearchActive) setSearchQuery('');
-    // Close mobile menu when activating search
-    if (!isSearchActive) setIsMobileMenuOpen(false);
+    const nextState = !isSearchActive;
+    setIsSearchActive(nextState);
+    setShowSuggestions(nextState);
+    if (!nextState) {
+      setSearchQuery('');
+    } else {
+      setIsMobileMenuOpen(false);
+      setTimeout(() => {
+        searchInputRef.current?.focus();
+      }, 50);
+    }
   };
 
   const handleNotificationAction = async (notif, actionType) => {
@@ -553,6 +560,7 @@ const Navbar = () => {
                 </svg>
               </button>
               <input
+                ref={searchInputRef}
                 type="text"
                 className="navbar__search-input"
                 placeholder="Type here to search..."

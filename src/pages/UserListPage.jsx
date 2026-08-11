@@ -108,7 +108,7 @@ const UserListPage = ({ initialType = 'liked' }) => {
     <div className="user-list-page page-container">
       {/* Header */}
       <div className="user-list-header">
-        <h1>My Collection</h1>
+        <h1>My Library</h1>
       </div>
 
       {/* Tabs */}
@@ -238,8 +238,17 @@ const UserListPage = ({ initialType = 'liked' }) => {
                 {filteredAndSortedList.map(movie => (
                   <div key={movie.id} className="user-list-item-wrapper">
                     {viewMode === 'grid' ? (
-                      <div className="user-list-card-wrapper">
+                      <div className="user-list-card-wrapper" style={{ position: 'relative' }}>
                         <MovieCard {...movie} disableHover={true} />
+                        <button
+                          type="button"
+                          className="user-list-remove-btn"
+                          onClick={(e) => handleRemove(e, movie)}
+                          title="Remove from My Library"
+                          aria-label="Remove from My Library"
+                        >
+                          ✕
+                        </button>
                       </div>
                     ) : (
                       <div className="user-list-row-item" onClick={() => window.location.hash = `${movie.mediaType || 'movie'}/${movie.id}`}>
@@ -251,6 +260,14 @@ const UserListPage = ({ initialType = 'liked' }) => {
                           <p>{movie.year} • {movie.category} • {movie.mediaType === 'tv' ? 'TV Show' : 'Movie'}</p>
                           <div className="ul-rating">★ {(movie.rating && movie.rating !== '—' && movie.rating !== '-') ? movie.rating : 'N/A'}</div>
                         </div>
+                        <button
+                          type="button"
+                          className="ul-row-remove-btn"
+                          onClick={(e) => handleRemove(e, movie)}
+                          title="Remove from My Library"
+                        >
+                          Remove
+                        </button>
                       </div>
                     )}
                   </div>
