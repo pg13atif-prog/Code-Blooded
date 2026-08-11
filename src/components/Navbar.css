@@ -1442,14 +1442,16 @@
 }
 
 /* ==========================================================================
-   Unified Spotlight Search Modal (Desktop & Mobile)
+   Unified Spotlight Search Modal (Liquid Glass + Signature Maroon / Dark Red)
    ========================================================================== */
 .search-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(5, 7, 14, 0.88);
-  backdrop-filter: blur(36px) saturate(220%);
-  -webkit-backdrop-filter: blur(36px) saturate(220%);
+  background: 
+    radial-gradient(circle at 50% 15%, rgba(185, 9, 11, 0.22) 0%, transparent 60%),
+    rgba(4, 6, 12, 0.84);
+  backdrop-filter: blur(40px) saturate(220%);
+  -webkit-backdrop-filter: blur(40px) saturate(220%);
   z-index: 2500;
   display: flex;
   align-items: flex-start;
@@ -1469,10 +1471,19 @@
   width: 100%;
   max-width: 620px;
   max-height: 82vh;
-  background: rgba(12, 16, 28, 0.94);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 24px;
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.85), 0 0 45px rgba(229, 9, 20, 0.14);
+  background: 
+    radial-gradient(ellipse at top left, rgba(255, 255, 255, 0.18) 0%, transparent 45%),
+    radial-gradient(ellipse at bottom right, rgba(185, 9, 11, 0.22) 0%, transparent 55%),
+    linear-gradient(145deg, rgba(22, 28, 44, 0.72) 0%, rgba(8, 11, 20, 0.88) 100%);
+  backdrop-filter: blur(48px) saturate(220%) brightness(1.1);
+  -webkit-backdrop-filter: blur(48px) saturate(220%) brightness(1.1);
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  border-radius: 26px;
+  box-shadow: 
+    0 32px 80px rgba(0, 0, 0, 0.85),
+    0 0 50px rgba(185, 9, 11, 0.25),
+    inset 0 1.5px 0 0 rgba(255, 255, 255, 0.4),
+    inset 0 -1.5px 0 0 rgba(0, 0, 0, 0.6);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -1484,17 +1495,20 @@
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* ── Fixed Top Header ── */
+/* ── Fixed Top Header (Liquid Glass) ── */
 .search-modal-fixed-header {
   flex-shrink: 0;
   padding: 1.25rem 1.4rem 1rem;
-  background: rgba(15, 20, 35, 0.92);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  background: 
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(14, 18, 32, 0.75) 100%);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   display: flex;
   flex-direction: column;
   gap: 0.95rem;
   z-index: 20;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
 }
 
 .search-modal-header-top {
@@ -1519,29 +1533,36 @@
   gap: 0.65rem;
 }
 
+/* ── Signature Maroon / Liquid Glass Type Filter Dropdown ── */
 .search-modal-type-select .custom-select-trigger {
   padding: 0.45rem 0.9rem;
   font-size: 0.84rem;
   font-weight: 600;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(185, 9, 11, 0.18) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 14px;
   color: #ffffff;
   cursor: pointer;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.25), 0 4px 16px rgba(0, 0, 0, 0.35);
+  transition: all 0.22s ease;
 }
 
 .search-modal-type-select .custom-select-trigger:hover,
 .search-modal-type-select .custom-select-trigger.open {
-  border-color: rgba(229, 9, 20, 0.5);
-  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(229, 9, 20, 0.8);
+  background: linear-gradient(135deg, rgba(185, 9, 11, 0.35) 0%, rgba(70, 0, 3, 0.55) 100%);
+  box-shadow: 0 0 20px rgba(185, 9, 11, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.35);
 }
 
+/* ── Signature Maroon / Liquid Glass Close Button ── */
 .search-modal-close-btn {
   width: 36px;
   height: 36px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: linear-gradient(135deg, rgba(185, 9, 11, 0.4) 0%, rgba(80, 2, 5, 0.6) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   color: #ffffff;
   display: flex;
   align-items: center;
@@ -1549,35 +1570,41 @@
   cursor: pointer;
   padding: 0;
   flex-shrink: 0;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.35);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .search-modal-close-btn:hover,
 .search-modal-close-btn:active {
-  background: #e50914;
-  border-color: #e50914;
-  transform: scale(1.05);
+  background: linear-gradient(135deg, #b9090b 0%, #680003 100%);
+  border-color: #ff3b47;
+  box-shadow: 0 0 20px rgba(185, 9, 11, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.45);
+  transform: scale(1.06);
 }
 
-/* ── Fixed Search Input Bar ── */
+/* ── Fixed Search Input Bar (Liquid Glass Capsule) ── */
 .search-modal-input-wrapper {
   width: 100%;
   display: flex;
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem 1.1rem;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1.5px solid rgba(255, 255, 255, 0.14);
-  border-radius: 14px;
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 4px 18px rgba(0, 0, 0, 0.35);
-  transition: border-color 0.22s ease, box-shadow 0.22s ease;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(15, 20, 35, 0.6) 100%);
+  border: 1.5px solid rgba(255, 255, 255, 0.16);
+  border-radius: 16px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: inset 0 1.5px 1px rgba(255, 255, 255, 0.15), inset 0 -1px 1px rgba(0, 0, 0, 0.4), 0 6px 22px rgba(0, 0, 0, 0.35);
+  transition: border-color 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
   box-sizing: border-box;
 }
 
 .search-modal-input-wrapper:focus-within {
-  border-color: rgba(229, 9, 20, 0.75);
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 20px rgba(229, 9, 20, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+  border-color: #b9090b;
+  background: linear-gradient(135deg, rgba(185, 9, 11, 0.18) 0%, rgba(12, 16, 28, 0.75) 100%);
+  box-shadow: 0 0 25px rgba(185, 9, 11, 0.45), inset 0 1.5px 1px rgba(255, 255, 255, 0.25);
 }
 
 .search-modal-icon {
@@ -1602,9 +1629,10 @@
   color: rgba(255, 255, 255, 0.4);
 }
 
+/* ── Clear Button (Signature Maroon Pill) ── */
 .search-modal-clear-btn {
-  background: rgba(255, 255, 255, 0.15);
-  border: none;
+  background: linear-gradient(135deg, #8b0000 0%, #b9090b 100%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   color: #ffffff;
   width: 22px;
   height: 22px;
@@ -1615,19 +1643,21 @@
   font-size: 0.7rem;
   cursor: pointer;
   flex-shrink: 0;
+  box-shadow: 0 2px 10px rgba(185, 9, 11, 0.5);
   transition: all 0.18s ease;
 }
 
 .search-modal-clear-btn:hover {
-  background: #e50914;
+  background: linear-gradient(135deg, #b9090b 0%, #ff3b47 100%);
+  transform: scale(1.1);
 }
 
 .search-modal-esc-badge {
   font-size: 0.68rem;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.45);
   background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   padding: 0.15rem 0.45rem;
   border-radius: 6px;
   letter-spacing: 0.5px;
@@ -1659,17 +1689,18 @@
   gap: 0.85rem;
 }
 
+/* ── Suggestion Card (Liquid Glass Physical Refraction) ── */
 .search-modal-item-card {
   display: flex;
   flex-direction: column;
   align-items: stretch;
   padding: 0.85rem 1.1rem;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.2);
   cursor: pointer;
   transition: background 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease, transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
   box-sizing: border-box;
@@ -1677,16 +1708,16 @@
 
 .search-modal-item-card:hover,
 .search-modal-item-card.focused {
-  background: linear-gradient(135deg, rgba(229, 9, 20, 0.18) 0%, rgba(180, 10, 15, 0.08) 100%);
-  border-color: rgba(229, 9, 20, 0.45);
+  background: linear-gradient(135deg, rgba(185, 9, 11, 0.25) 0%, rgba(70, 0, 3, 0.18) 100%);
+  border-color: rgba(185, 9, 11, 0.65);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(229, 9, 20, 0.3);
+  box-shadow: 0 10px 30px rgba(185, 9, 11, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.35);
 }
 
 .search-modal-item-card.expanded {
-  border-color: rgba(229, 9, 20, 0.55);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.09) 0%, rgba(18, 22, 36, 0.95) 100%);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55), 0 0 20px rgba(229, 9, 20, 0.2);
+  border-color: rgba(185, 9, 11, 0.75);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.09) 0%, rgba(45, 5, 10, 0.5) 45%, rgba(10, 14, 25, 0.95) 100%);
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.65), 0 0 30px rgba(185, 9, 11, 0.3), inset 0 1.5px 1px rgba(255, 255, 255, 0.3);
 }
 
 .search-item-main-row {
@@ -1703,7 +1734,7 @@
   overflow: hidden;
   flex-shrink: 0;
   background: rgba(255, 255, 255, 0.05);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.2);
 }
 
 .search-item-poster img {
@@ -1781,26 +1812,29 @@
   color: rgba(255, 255, 255, 0.55);
 }
 
+/* ── Signature Maroon / Dark Red Expand Button ── */
 .search-item-expand-btn {
   width: 34px;
   height: 34px;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  color: rgba(255, 255, 255, 0.65);
+  background: linear-gradient(135deg, rgba(185, 9, 11, 0.35) 0%, rgba(70, 0, 3, 0.5) 100%);
+  border: 1px solid rgba(185, 9, 11, 0.55);
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   padding: 0;
   flex-shrink: 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.25);
   transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .search-item-expand-btn:hover {
-  background: rgba(229, 9, 20, 0.2);
-  border-color: rgba(229, 9, 20, 0.5);
+  background: linear-gradient(135deg, #b9090b 0%, #680003 100%);
+  border-color: #ff3b47;
   color: #ffffff;
+  box-shadow: 0 0 18px rgba(185, 9, 11, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.45);
   transform: scale(1.08);
 }
 
@@ -1809,9 +1843,10 @@
 }
 
 .search-item-expand-btn.expanded {
-  background: rgba(229, 9, 20, 0.25);
-  border-color: rgba(229, 9, 20, 0.65);
-  color: #ff4d4d;
+  background: linear-gradient(135deg, #8b0000 0%, #b9090b 50%, #500002 100%);
+  border-color: #ff4d58;
+  color: #ffffff;
+  box-shadow: 0 0 20px rgba(185, 9, 11, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.45);
 }
 
 .search-item-expand-btn.expanded .search-item-chevron {
@@ -1830,7 +1865,7 @@
 .search-item-overview-divider {
   height: 1px;
   width: 100%;
-  background: linear-gradient(90deg, rgba(229, 9, 20, 0.45) 0%, rgba(255, 255, 255, 0.12) 50%, transparent 100%);
+  background: linear-gradient(90deg, rgba(185, 9, 11, 0.7) 0%, rgba(255, 255, 255, 0.15) 50%, transparent 100%);
   margin-bottom: 0.25rem;
 }
 
@@ -1845,17 +1880,18 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  color: #e50914;
-  background: rgba(229, 9, 20, 0.12);
-  border: 1px solid rgba(229, 9, 20, 0.25);
+  color: #ff4d58;
+  background: linear-gradient(135deg, rgba(185, 9, 11, 0.25) 0%, rgba(80, 0, 3, 0.35) 100%);
+  border: 1px solid rgba(185, 9, 11, 0.5);
   padding: 0.2rem 0.6rem;
   border-radius: 6px;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2);
 }
 
 .search-item-overview-text {
   font-size: 0.88rem;
   line-height: 1.55;
-  color: rgba(255, 255, 255, 0.78);
+  color: rgba(255, 255, 255, 0.82);
   margin: 0;
   text-align: left;
   display: -webkit-box;
@@ -1870,70 +1906,76 @@
   margin-top: 0.35rem;
 }
 
+/* ── Signature Maroon / Dark Red View Details Button ── */
 .search-item-view-details-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  padding: 0.45rem 0.9rem;
+  padding: 0.45rem 0.95rem;
   font-size: 0.82rem;
   font-weight: 600;
   color: #ffffff;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 9px;
+  background: linear-gradient(135deg, #8b0000 0%, #b9090b 55%, #580002 100%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 10px;
   cursor: pointer;
+  box-shadow: 0 4px 18px rgba(185, 9, 11, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.4);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .search-item-view-details-btn:hover {
-  background: #e50914;
-  border-color: #e50914;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(229, 9, 20, 0.4);
+  background: linear-gradient(135deg, #a50002 0%, #d10a0d 55%, #6f0003 100%);
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 6px 25px rgba(185, 9, 11, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.55);
+  transform: translateY(-2px);
 }
 
+/* ── Signature Maroon / Liquid Glass See All Button ── */
 .search-modal-see-all-btn {
   padding: 0.95rem 1rem;
   margin-top: 0.4rem;
   font-size: 0.92rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.75);
+  font-weight: 700;
+  color: #ffffff !important;
   text-align: center;
   cursor: pointer;
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  transition: color 0.2s ease, text-shadow 0.2s ease, transform 0.2s ease;
+  background: linear-gradient(135deg, rgba(185, 9, 11, 0.35) 0%, rgba(70, 0, 3, 0.55) 100%) !important;
+  border: 1.5px solid rgba(185, 9, 11, 0.6) !important;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.25) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transition: all 0.22s ease;
   width: 100%;
   box-sizing: border-box;
 }
 
 .search-modal-see-all-btn:hover,
 .search-modal-see-all-btn:active {
-  color: #e50914 !important;
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  text-shadow: 0 0 12px rgba(229, 9, 20, 0.5);
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, #8b0000 0%, #b9090b 55%, #500002 100%) !important;
+  border-color: #ff3b47 !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 30px rgba(185, 9, 11, 0.65), inset 0 1px 1px rgba(255, 255, 255, 0.4) !important;
+  transform: translateY(-2px);
 }
 
 .search-modal-empty-state {
   text-align: center;
   padding: 3.5rem 1.5rem;
-  background: rgba(255, 255, 255, 0.03);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(20, 25, 40, 0.4) 100%);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 20px;
   color: rgba(255, 255, 255, 0.5);
   font-size: 0.95rem;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15);
 }
 
 .search-modal-empty-state strong {
   display: block;
   margin-top: 0.35rem;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.95);
   font-size: 1.15rem;
 }
 
@@ -1944,15 +1986,17 @@
   display: block;
 }
 
-/* ── Recent Searches Card ── */
+/* ── Recent Searches Card (Liquid Glass Refraction) ── */
 .search-modal-recent-card {
-  background: rgba(14, 19, 32, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: 
+    radial-gradient(ellipse at top right, rgba(185, 9, 11, 0.18) 0%, transparent 60%),
+    linear-gradient(145deg, rgba(20, 26, 42, 0.7) 0%, rgba(10, 14, 25, 0.85) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 20px;
   padding: 1.15rem 1.25rem;
-  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
@@ -1968,7 +2012,7 @@
 .search-recent-label {
   font-size: 0.76rem;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.5);
   letter-spacing: 1.2px;
   text-transform: uppercase;
 }
@@ -1976,16 +2020,18 @@
 .search-clear-recent-btn {
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.55);
   font-size: 0.82rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: color 0.18s ease;
-  padding: 0;
+  transition: all 0.18s ease;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
 }
 
 .search-clear-recent-btn:hover {
-  color: #e50914;
+  color: #ff3b47;
+  text-shadow: 0 0 10px rgba(185, 9, 11, 0.6);
 }
 
 .search-recent-list {
@@ -1998,7 +2044,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.75rem 0.6rem;
+  padding: 0.75rem 0.75rem;
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.18s ease;
@@ -2020,7 +2066,7 @@
 }
 
 .search-clock-icon {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.45);
   flex-shrink: 0;
 }
 
@@ -2035,18 +2081,20 @@
 .search-recent-delete-btn {
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.35);
   font-size: 0.82rem;
   padding: 0.3rem 0.5rem;
+  border-radius: 6px;
   cursor: pointer;
-  transition: color 0.18s ease;
+  transition: all 0.18s ease;
 }
 
 .search-recent-delete-btn:hover {
-  color: #ff4d4d;
+  color: #ffffff;
+  background: #b9090b;
 }
 
-/* ── Welcome Hint & Quick Tags ── */
+/* ── Welcome Hint & Quick Discovery Tags ── */
 .search-modal-welcome-hint {
   text-align: center;
   padding: 2.5rem 1.5rem;
@@ -2070,7 +2118,7 @@
 
 .search-hint-subtitle {
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.55);
   margin: 0 0 1rem;
   max-width: 380px;
   line-height: 1.45;
@@ -2086,20 +2134,24 @@
 .search-quick-tags span {
   padding: 0.45rem 0.9rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: rgba(255, 255, 255, 0.8);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: rgba(255, 255, 255, 0.85);
   font-size: 0.82rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .search-quick-tags span:hover {
-  background: rgba(229, 9, 20, 0.15);
-  border-color: rgba(229, 9, 20, 0.4);
+  background: linear-gradient(135deg, #8b0000 0%, #b9090b 100%);
+  border-color: #ff3b47;
   color: #ffffff;
-  transform: translateY(-1px);
+  box-shadow: 0 0 16px rgba(185, 9, 11, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.35);
+  transform: translateY(-2px);
 }
 
 /* ── Mobile Viewport Adaptations ── */
