@@ -210,6 +210,23 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
       <div className="discover-header">
         <div className="discover-header-top">
           <h1><span className="title-accent-2">Br</span>owse</h1>
+
+          {/* Filter button - Mobile (beside Browse on right edge, slightly smaller) */}
+          {filterMediaType !== 'trending' && (
+            <button 
+              className={`discover-icon-filter-btn filter-btn--mobile ${showFilters ? 'active' : ''}`}
+              onClick={toggleFilterPanel}
+              title="Advanced Filters"
+              aria-label="Advanced Filters"
+            >
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+              </svg>
+              {(selectedGenres.length > 0 || selectedDecade || selectedYears.length > 0 || minRating > 0) && (
+                <span className="filter-badge" />
+              )}
+            </button>
+          )}
         </div>
 
         <div className="discover-header-row new-discover-header">
@@ -268,11 +285,13 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
             </button>
           </div>
 
+          {/* Filter button - Desktop (right edge) */}
           {filterMediaType !== 'trending' && (
             <button 
-              className={`discover-icon-filter-btn ${showFilters ? 'active' : ''}`}
+              className={`discover-icon-filter-btn filter-btn--desktop ${showFilters ? 'active' : ''}`}
               onClick={toggleFilterPanel}
               title="Advanced Filters"
+              aria-label="Advanced Filters"
             >
               <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>

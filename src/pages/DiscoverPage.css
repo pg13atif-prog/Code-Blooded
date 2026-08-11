@@ -150,6 +150,14 @@
   box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.5), 0 0 20px rgba(229, 9, 20, 0.45);
 }
 
+.filter-btn--desktop {
+  display: flex;
+}
+
+.filter-btn--mobile {
+  display: none;
+}
+
 /* ═══════════════════════════════════════════════════════════════════════
    Filter Card (Liquid Glass Panel)
    ═══════════════════════════════════════════════════════════════════════ */
@@ -434,6 +442,23 @@
    ═══════════════════════════════════════════════════════════════════════ */
 
 @media (max-width: 768px) {
+  .filter-btn--desktop {
+    display: none !important;
+  }
+
+  .filter-btn--mobile {
+    display: flex !important;
+    width: 38px !important;
+    height: 38px !important;
+  }
+
+  .discover-header-top {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+  }
+
   .discover-header h1 {
     font-size: 2rem;
   }
