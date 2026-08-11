@@ -218,72 +218,46 @@
   color: #fff;
 }
 
-/* ── Remove Buttons ── */
+/* ── Corner Remove Button ── */
 .user-list-card-wrapper {
   position: relative;
+  display: inline-block;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+  cursor: pointer;
 }
 
 .user-list-remove-btn {
   position: absolute;
   top: -8px;
   right: -8px;
-  z-index: 10;
-  width: 28px;
-  height: 28px;
+  z-index: 30;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(14, 18, 28, 0.92);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
   color: #ffffff;
-  font-size: 0.82rem;
+  font-size: 0.88rem;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  transition: all 0.2s ease;
-  opacity: 0;
-}
-
-.user-list-watched-btn {
-  position: absolute;
-  top: -8px;
-  left: -8px;
-  z-index: 10;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  color: #ffffff;
-  font-size: 0.9rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  transition: all 0.2s ease;
-  opacity: 0;
-}
-
-.user-list-card-wrapper:hover .user-list-remove-btn,
-.user-list-card-wrapper:hover .user-list-watched-btn {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   opacity: 1;
 }
 
 .user-list-remove-btn:hover {
-  background: rgba(229, 9, 20, 0.9);
+  background: rgba(229, 9, 20, 0.95);
   border-color: #ff4d4d;
-  transform: scale(1.1);
-  box-shadow: 0 4px 12px rgba(229, 9, 20, 0.5);
-}
-
-.user-list-watched-btn:hover {
-  background: rgba(46, 204, 113, 0.9);
-  border-color: #2ecc71;
-  transform: scale(1.1);
-  box-shadow: 0 4px 12px rgba(46, 204, 113, 0.5);
+  color: #ffffff;
+  transform: scale(1.15);
+  box-shadow: 0 4px 18px rgba(229, 9, 20, 0.65);
 }
 
 .ul-row-remove-btn,
@@ -537,12 +511,19 @@
     box-sizing: border-box;
   }
 
-  .user-list-item-wrapper,
-  .user-list-card-wrapper {
+  .user-list-item-wrapper {
     width: 100%;
     display: flex;
     justify-content: center;
     box-sizing: border-box;
+  }
+
+  .user-list-card-wrapper {
+    width: fit-content;
+    max-width: 100%;
+    position: relative;
+    margin: 0 auto;
+    display: block;
   }
 
   /* Movie card matching Discover page aspect ratio and sizing */

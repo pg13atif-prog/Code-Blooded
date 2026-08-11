@@ -67,16 +67,25 @@ export const AlertProvider = ({ children }) => {
 
   /**
    * showToast:
-   * Displays a non-blocking liquid glass toast notification.
+   * Displays a non-blocking liquid glass toast notification with optional action (e.g. Undo).
    */
-  const showToast = useCallback((message, type = 'info', duration = 3000) => {
+  const showToast = useCallback((message, type = 'info', action = null, duration = 4000) => {
     if (toastTimeoutRef.current) {
       clearTimeout(toastTimeoutRef.current);
     }
-    setToastState({ message, type });
+    let toastAction = null;
+    let toastDuration = 4000;
+    if (typeof action === 'number') {
+      toastDuration = action;
+    } else {
+      toastAction = action;
+      if (typeof duration === 'number') toastDuration = duration;
+    }
+
+    setToastState({ message, type, action: toastAction });
     toastTimeoutRef.current = setTimeout(() => {
       setToastState(null);
-    }, duration);
+    }, toastDuration);
   }, []);
 
   return (
@@ -162,6 +171,19 @@ export const AlertProvider = ({ children }) => {
           >
             <span className="toast-dot" />
             <span className="toast-message">{toastState.message}</span>
+            {toastState.action && (
+              <button 
+                type="button" 
+                className="toast-action-btn"
+                onClick={() => {
+                  if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+                  setToastState(null);
+                  if (toastState.action.onClick) toastState.action.onClick();
+                }}
+              >
+                {toastState.action.label || 'Undo'}
+              </button>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

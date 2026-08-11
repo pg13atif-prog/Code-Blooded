@@ -741,3 +741,85 @@ export const getTMDBContextForPrompt = async (prompt) => {
   }
   return null;
 };
+
+export const getMediaStills = async (id, mediaType = 'movie') => {
+  try {
+    const type = mediaType === 'tv' ? 'tv' : 'movie';
+    const res = await fetchWithTimeout(`${API_BASE_URL}/${type}/${id}/images`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    
+    // Combine backdrops and posters to get a rich variety of stills/scenes
+    const rawImages = [
+      ...(data.backdrops || []),
+      ...(data.posters || [])
+    ];
+
+    if (rawImages.length === 0) return [];
+
+    // Deduplicate by file_path
+    const uniqueMap = new Map();
+    rawImages.forEach(img => {
+      if (img.file_path && !uniqueMap.has(img.file_path)) {
+        uniqueMap.set(img.file_path, img);
+      }
+    });
+
+    return Array.from(uniqueMap.values()).map(img => ({
+      filePath: img.file_path,
+      url: `https://image.tmdb.org/t/p/w1280${img.file_path}`,
+      thumb: `https://image.tmdb.org/t/p/w780${img.file_path}`,
+      aspectRatio: img.aspect_ratio || 1.77
+    }));
+  } catch (err) {
+    console.error("Error fetching media stills:", err);
+    return [];
+  }
+};
+
+export const getPersonDetails = async (personId, signal) => {
+  try {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/person/${personId}?language=en-US`, { signal });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return {
+      id: data.id,
+      name: data.name,
+      biography: data.biography || null,
+      birthday: data.birthday || null,
+      deathday: data.deathday || null,
+      placeOfBirth: data.place_of_birth || null,
+      profilePath: data.profile_path ? `${PROFILE_BASE_URL}${data.profile_path}` : null,
+      highResProfile: data.profile_path ? `https://image.tmdb.org/t/p/w600_and_h900_bestv2${data.profile_path}` : null,
+      department: data.known_for_department || 'Acting',
+      popularity: data.popularity ? Number(data.popularity).toFixed(1) : null,
+      imdbId: data.imdb_id || null
+    };
+  } catch (err) {
+    if (err.name !== 'AbortError') console.error("Error fetching person details:", err);
+    return null;
+  }
+};
+
+export const getPersonCredits = async (personId, signal) => {
+  try {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/person/${personId}/combined_credits?language=en-US`, { signal });
+    if (!res.ok) return [];
+    const data = await res.json();
+    const allCast = data.cast || [];
+    const allCrew = data.crew || [];
+
+    const uniqueMap = new Map();
+    [...allCast, ...allCrew].forEach(m => {
+      if (m && m.id && m.poster_path && (m.title || m.name) && !uniqueMap.has(m.id)) {
+        uniqueMap.set(m.id, mapMovie(m));
+      }
+    });
+
+    const uniqueMedia = Array.from(uniqueMap.values());
+    return uniqueMedia.sort((a, b) => (b.year || '0').localeCompare(a.year || '0'));
+  } catch (err) {
+    if (err.name !== 'AbortError') console.error("Error fetching person credits:", err);
+    return [];
+  }
+};

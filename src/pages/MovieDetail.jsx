@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import {
   getMovieDetails,
   getFullCast,
@@ -8,7 +8,8 @@ import {
   getRecommendations,
   getReviews,
   getTvSeason,
-  getExternalRatings
+  getExternalRatings,
+  getMediaStills
 } from '../services/tmdb';
 import { 
   addToWatchlist, removeFromWatchlist, isInWatchlist, addRecentlyViewed,
@@ -24,115 +25,8 @@ import { useAlert } from '../context/AlertContext';
 import MovieRow from '../components/MovieRow';
 import { MovieDetailSkeleton } from '../components/SkeletonLoader';
 import { checkAndUnlockAchievements, trackDetailView, incrementStat } from '../services/achievements';
+import { getProviderUrl } from '../utils/providerUrls';
 import './MovieDetail.css';
-
-const PROVIDER_URL_MAP = {
-  'Netflix': (title) => `https://www.netflix.com/search?q=${encodeURIComponent(title)}`,
-  'Amazon Prime Video': (title) => `https://www.amazon.com/s?k=${encodeURIComponent(title)}&i=instant-video`,
-  'Amazon Video': (title) => `https://www.amazon.com/s?k=${encodeURIComponent(title)}&i=instant-video`,
-  'Apple TV Plus': (title) => `https://tv.apple.com/search?term=${encodeURIComponent(title)}`,
-  'Apple TV': (title) => `https://tv.apple.com/search?term=${encodeURIComponent(title)}`,
-  'Apple iTunes': (title) => `https://tv.apple.com/search?term=${encodeURIComponent(title)}`,
-  'Disney Plus': (title) => `https://www.disneyplus.com/search/${encodeURIComponent(title)}`,
-  'Hulu': (title) => `https://www.hulu.com/search?q=${encodeURIComponent(title)}`,
-  'HBO Max': (title) => `https://play.max.com/search?q=${encodeURIComponent(title)}`,
-  'Max': (title) => `https://play.max.com/search?q=${encodeURIComponent(title)}`,
-  'Paramount Plus': (title) => `https://www.paramountplus.com/search/?q=${encodeURIComponent(title)}`,
-  'Paramount+ Amazon Channel': (title) => `https://www.paramountplus.com/search/?q=${encodeURIComponent(title)}`,
-  'Paramount Plus Apple TV Channel': (title) => `https://www.paramountplus.com/search/?q=${encodeURIComponent(title)}`,
-  'Peacock': (title) => `https://www.peacocktv.com/search?q=${encodeURIComponent(title)}`,
-  'Peacock Premium': (title) => `https://www.peacocktv.com/search?q=${encodeURIComponent(title)}`,
-  'Crunchyroll': (title) => `https://www.crunchyroll.com/search?q=${encodeURIComponent(title)}`,
-  'YouTube': (title) => `https://www.youtube.com/results?search_query=${encodeURIComponent(title + ' full movie')}`,
-  'YouTube Premium': (title) => `https://www.youtube.com/results?search_query=${encodeURIComponent(title + ' full movie')}`,
-  'Google Play Movies': (title) => `https://play.google.com/store/search?q=${encodeURIComponent(title)}&c=movies`,
-  'Vudu': (title) => `https://www.vudu.com/content/movies/search?searchString=${encodeURIComponent(title)}`,
-  'Fandango At Home': (title) => `https://www.vudu.com/content/movies/search?searchString=${encodeURIComponent(title)}`,
-  'Microsoft Store': (title) => `https://www.microsoft.com/en-us/search/shop/movies-tv?q=${encodeURIComponent(title)}`,
-  'Mubi': (title) => `https://mubi.com/en/search?query=${encodeURIComponent(title)}`,
-  'Tubi TV': (title) => `https://tubitv.com/search/${encodeURIComponent(title)}`,
-  'Tubi': (title) => `https://tubitv.com/search/${encodeURIComponent(title)}`,
-  'Zee5': (title) => `https://www.zee5.com/search?q=${encodeURIComponent(title)}`,
-  'JioCinema': (title) => `https://www.jiocinema.com/search/${encodeURIComponent(title)}`,
-  'Hotstar': (title) => `https://www.hotstar.com/in/search?q=${encodeURIComponent(title)}`,
-  'Disney+ Hotstar': (title) => `https://www.hotstar.com/in/search?q=${encodeURIComponent(title)}`,
-  'Stan': (title) => `https://www.stan.com.au/search?q=${encodeURIComponent(title)}`,
-  'Starz': (title) => `https://www.starz.com/search?q=${encodeURIComponent(title)}`,
-  'Showtime': (title) => `https://www.sho.com/search?q=${encodeURIComponent(title)}`,
-  'Curiosity Stream': (title) => `https://curiositystream.com/search?q=${encodeURIComponent(title)}`,
-  'Shudder': (title) => `https://www.shudder.com/search?q=${encodeURIComponent(title)}`,
-  'AMC Plus': (title) => `https://www.amcplus.com/search?q=${encodeURIComponent(title)}`,
-  'BritBox': (title) => `https://www.britbox.com/search?q=${encodeURIComponent(title)}`,
-  'Kanopy': (title) => `https://www.kanopy.com/en/search?query=${encodeURIComponent(title)}`,
-  'Plex': (title) => `https://watch.plex.tv/search?q=${encodeURIComponent(title)}`,
-  'Pluto TV': (title) => `https://pluto.tv/search/details/${encodeURIComponent(title)}`,
-  'SonyLIV': (title) => `https://www.sonyliv.com/search?searchTerm=${encodeURIComponent(title)}`,
-  'Voot': (title) => `https://www.voot.com/search/${encodeURIComponent(title)}`,
-  'MX Player': (title) => `https://www.mxplayer.in/search?q=${encodeURIComponent(title)}`,
-};
-
-const getProviderUrl = (providerName, movieTitle) => {
-  if (!providerName) return `https://www.google.com/search?q=${encodeURIComponent(`watch ${movieTitle}`)}`;
-  
-  if (PROVIDER_URL_MAP[providerName]) {
-    return PROVIDER_URL_MAP[providerName](movieTitle);
-  }
-
-  const p = providerName.toLowerCase();
-  const title = encodeURIComponent(movieTitle || '');
-
-  if (p.includes('apple') || p.includes('itunes')) return `https://tv.apple.com/search?term=${title}`;
-  if (p.includes('netflix')) return `https://www.netflix.com/search?q=${title}`;
-  if (p.includes('amazon') || p.includes('prime')) return `https://www.amazon.com/s?k=${title}&i=instant-video`;
-  if (p.includes('disney')) return `https://www.disneyplus.com/search/${title}`;
-  if (p.includes('hulu')) return `https://www.hulu.com/search?q=${title}`;
-  if (p.includes('max') || p.includes('hbo')) return `https://play.max.com/search?q=${title}`;
-  if (p.includes('paramount')) return `https://www.paramountplus.com/search/?q=${title}`;
-  if (p.includes('peacock')) return `https://www.peacocktv.com/search?q=${title}`;
-  if (p.includes('crunchyroll')) return `https://www.crunchyroll.com/search?q=${title}`;
-  if (p.includes('youtube')) return `https://www.youtube.com/results?search_query=${title}+full+movie`;
-  if (p.includes('google') || p.includes('play')) return `https://play.google.com/store/search?q=${title}&c=movies`;
-  if (p.includes('vudu') || p.includes('fandango')) return `https://www.vudu.com/content/movies/search?searchString=${title}`;
-  if (p.includes('microsoft') || p.includes('xbox')) return `https://www.microsoft.com/en-us/search/shop/movies-tv?q=${title}`;
-  if (p.includes('mubi')) return `https://mubi.com/en/search?query=${title}`;
-  if (p.includes('tubi')) return `https://tubitv.com/search/${title}`;
-  if (p.includes('zee')) return `https://www.zee5.com/search?q=${title}`;
-  if (p.includes('jio')) return `https://www.jiocinema.com/search/${title}`;
-  if (p.includes('hotstar')) return `https://www.hotstar.com/in/search?q=${title}`;
-  if (p.includes('sony') || p.includes('liv')) return `https://www.sonyliv.com/search?searchTerm=${title}`;
-  if (p.includes('aha')) return `https://www.aha.video/search?q=${title}`;
-  if (p.includes('hoichoi')) return `https://www.hoichoi.tv/search?q=${title}`;
-  if (p.includes('sun')) return `https://www.sunnxt.com/search?q=${title}`;
-  if (p.includes('lionsgate')) return `https://www.lionsgateplay.com/search?q=${title}`;
-  if (p.includes('pluto')) return `https://pluto.tv/search/details/${title}`;
-  if (p.includes('roku')) return `https://therokuchannel.roku.com/search/${title}`;
-  if (p.includes('freevee')) return `https://www.amazon.com/s?k=${title}&i=instant-video`;
-  if (p.includes('popcornflix')) return `https://www.popcornflix.com/search/${title}`;
-  if (p.includes('rakuten')) return `https://www.rakuten.tv/search?q=${title}`;
-  if (p.includes('canal') || p.includes('mycanal')) return `https://www.canalplus.com/recherche?q=${title}`;
-  if (p.includes('sky')) return `https://www.sky.com/watch/search?q=${title}`;
-  if (p.includes('now')) return `https://www.nowtv.com/search?q=${title}`;
-  if (p.includes('bbc') || p.includes('iplayer')) return `https://www.bbc.co.uk/iplayer/search?q=${title}`;
-  if (p.includes('itv')) return `https://www.itv.com/watch/search?q=${title}`;
-  if (p.includes('channel 4') || p.includes('all 4') || p.includes('all4')) return `https://www.channel4.com/search?q=${title}`;
-  if (p.includes('bfi')) return `https://player.bfi.org.uk/search?q=${title}`;
-  if (p.includes('criterion')) return `https://www.criterionchannel.com/search?q=${title}`;
-  if (p.includes('shudder')) return `https://www.shudder.com/search?q=${title}`;
-  if (p.includes('amc')) return `https://www.amcplus.com/search?q=${title}`;
-  if (p.includes('britbox')) return `https://www.britbox.com/search?q=${title}`;
-  if (p.includes('kanopy')) return `https://www.kanopy.com/en/search?query=${title}`;
-  if (p.includes('plex')) return `https://watch.plex.tv/search?q=${title}`;
-  if (p.includes('stan')) return `https://www.stan.com.au/search?q=${title}`;
-  if (p.includes('starz')) return `https://www.starz.com/search?q=${title}`;
-  if (p.includes('showtime') || p.includes('sho')) return `https://www.sho.com/search?q=${title}`;
-  if (p.includes('curiosity')) return `https://curiositystream.com/search?q=${title}`;
-  if (p.includes('crave')) return `https://www.crave.ca/en/search?q=${title}`;
-  if (p.includes('viaplay')) return `https://viaplay.com/search?q=${title}`;
-  if (p.includes('voot')) return `https://www.voot.com/search/${title}`;
-  if (p.includes('mx')) return `https://www.mxplayer.in/search?q=${title}`;
-
-  return `https://www.google.com/search?q=${encodeURIComponent(`watch ${movieTitle} on ${providerName} official site`)}&btnI=1`;
-};
 const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
   const [movie, setMovie] = useState(null);
   const [cast, setCast] = useState([]);
@@ -141,6 +35,10 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
   const [recommendations, setRecommendations] = useState([]);
   const [watchProviders, setWatchProviders] = useState(null);
   const [reviews, setReviews] = useState([]);
+  const [customReviews, setCustomReviews] = useState([]);
+  const [stills, setStills] = useState([]);
+  const [selectedStill, setSelectedStill] = useState(null);
+  const [showAllCast, setShowAllCast] = useState(false);
   const [status, setStatus] = useState('loading');
   const [showTrailerModal, setShowTrailerModal] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
@@ -159,20 +57,29 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
   const { showConfirm, showAlert, showToast } = useAlert();
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
-  const [customReviews, setCustomReviews] = useState([]);
   const [newReviewContent, setNewReviewContent] = useState('');
   const [newReviewRating, setNewReviewRating] = useState('5.0');
   const [postAnonymously, setPostAnonymously] = useState(false);
   const [isEditingReview, setIsEditingReview] = useState(false);
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [showAllCast, setShowAllCast] = useState(false);
 
   // Recommend State
   const [showRecModal, setShowRecModal] = useState(false);
   const [friendsList, setFriendsList] = useState([]);
   const [recLoading, setRecLoading] = useState(false);
   const [recFeedback, setRecFeedback] = useState('');
+
+  const stillsRowRef = useRef(null);
+
+  const scrollStills = (direction) => {
+    if (!stillsRowRef.current) return;
+    const { scrollLeft, clientWidth } = stillsRowRef.current;
+    const scrollTo = direction === 'left'
+      ? scrollLeft - clientWidth * 0.75
+      : scrollLeft + clientWidth * 0.75;
+    stillsRowRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
+  };
   const [friendSearch, setFriendSearch] = useState('');
   const [sentFriends, setSentFriends] = useState({});
 
@@ -181,6 +88,18 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // Lock body scrolling when an image still or modal is opened
+  useEffect(() => {
+    if (selectedStill || showTrailerModal || showRecModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [selectedStill, showTrailerModal, showRecModal]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -203,13 +122,15 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
       safeCall(getWatchProviders(movieId, mediaType, controller.signal), null),
       safeCall(getRecommendations(movieId, mediaType, controller.signal), []),
       safeCall(getReviews(movieId, mediaType, controller.signal), []),
-      safeCall(getCustomReviews(movieId), [])
+      safeCall(getCustomReviews(movieId), []),
+      safeCall(getMediaStills(movieId, mediaType), [])
     ])
-      .then(([detailsData, castData, videosData, similarData, providersData, recsData, reviewsData, customReviewsData]) => {
+      .then(([detailsData, castData, videosData, similarData, providersData, recsData, reviewsData, customReviewsData, stillsData]) => {
         setMovie(detailsData);
         setCast(castData);
         setTrailerKey(videosData[0]?.key || null);
         setSimilarMovies(similarData);
+        setStills(stillsData);
         
         // Fetch IMDb and Rotten Tomatoes ratings safely
         if (detailsData) {
@@ -556,7 +477,7 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
                 <span className="provider-label">Stream</span>
                 <div className="provider-logos">
                   {watchProviders.flatrate.map(p => {
-                    const targetUrl = getProviderUrl(p.provider_name, movie.title || movie.name);
+                    const targetUrl = getProviderUrl(p.provider_name, movie.title || movie.name, watchProviders.link);
                     return (
                       <a 
                         key={p.provider_id} 
@@ -564,7 +485,7 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="provider-logo-link"
-                        title={`Watch ${movie.title} on ${p.provider_name}`}
+                        title={`Watch ${movie.title || movie.name} on ${p.provider_name}`}
                       >
                         <img src={`https://image.tmdb.org/t/p/w200${p.logo_path}`} alt={p.provider_name} className="provider-logo" />
                       </a>
@@ -578,7 +499,7 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
                 <span className="provider-label">Rent</span>
                 <div className="provider-logos">
                   {watchProviders.rent.map(p => {
-                    const targetUrl = getProviderUrl(p.provider_name, movie.title || movie.name);
+                    const targetUrl = getProviderUrl(p.provider_name, movie.title || movie.name, watchProviders.link);
                     return (
                       <a 
                         key={p.provider_id} 
@@ -586,7 +507,7 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="provider-logo-link"
-                        title={`Rent ${movie.title} on ${p.provider_name}`}
+                        title={`Rent ${movie.title || movie.name} on ${p.provider_name}`}
                       >
                         <img src={`https://image.tmdb.org/t/p/w200${p.logo_path}`} alt={p.provider_name} className="provider-logo" />
                       </a>
@@ -600,7 +521,7 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
                 <span className="provider-label">Buy</span>
                 <div className="provider-logos">
                   {watchProviders.buy.map(p => {
-                    const targetUrl = getProviderUrl(p.provider_name, movie.title || movie.name);
+                    const targetUrl = getProviderUrl(p.provider_name, movie.title || movie.name, watchProviders.link);
                     return (
                       <a 
                         key={p.provider_id} 
@@ -608,7 +529,7 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="provider-logo-link"
-                        title={`Buy ${movie.title} on ${p.provider_name}`}
+                        title={`Buy ${movie.title || movie.name} on ${p.provider_name}`}
                       >
                         <img src={`https://image.tmdb.org/t/p/w200${p.logo_path}`} alt={p.provider_name} className="provider-logo" />
                       </a>
@@ -913,14 +834,12 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
                 </div>
                 <div className="cast-grid">
                   {(showAllCast ? cast : cast.slice(0, 6)).map((person) => (
-                    <a
+                    <div
                       key={person.id}
                       className="cast-card"
-                      href={person.imdbId ? `https://www.imdb.com/name/${person.imdbId}/` : `https://www.imdb.com/find/?q=${encodeURIComponent(person.name)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title={`View ${person.name} on IMDb`}
-                      style={{ textDecoration: 'none' }}
+                      onClick={() => window.location.hash = `person/${person.id}`}
+                      title={`View ${person.name}'s profile & movies`}
+                      style={{ cursor: 'pointer' }}
                     >
                       <div className="cast-avatar">
                         {person.profilePath ? (
@@ -933,8 +852,53 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
                         <p className="cast-name">{person.name}</p>
                         <p className="cast-character">{person.character}</p>
                       </div>
-                    </a>
+                    </div>
                   ))}
+                </div>
+              </div>
+            )}
+
+            {/* Some Visuals Section */}
+            {stills && stills.length > 0 && (
+              <div className="detail-section movie-stills-section">
+                <h3 className="section-title">Some Visuals from {movie.title}</h3>
+                <div className="stills-row-wrapper">
+                  <button 
+                    type="button"
+                    className="stills-overlay-scroll-btn left" 
+                    onClick={() => scrollStills('left')} 
+                    aria-label="Scroll visuals left"
+                    title="Scroll left"
+                  >
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="15 18 9 12 15 6" />
+                    </svg>
+                  </button>
+
+                  <div className="stills-row-container" ref={stillsRowRef}>
+                    {stills.map((still, index) => (
+                      <div 
+                        key={still.filePath || index} 
+                        className="still-card"
+                        onClick={() => setSelectedStill(still)}
+                        title={`View scene from ${movie.title}`}
+                      >
+                        <img src={still.thumb} alt={`Scene from ${movie.title}`} loading="lazy" />
+                      </div>
+                    ))}
+                  </div>
+
+                  <button 
+                    type="button"
+                    className="stills-overlay-scroll-btn right" 
+                    onClick={() => scrollStills('right')} 
+                    aria-label="Scroll visuals right"
+                    title="Scroll right"
+                  >
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                  </button>
                 </div>
               </div>
             )}
@@ -1428,6 +1392,18 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
           </div>
         </div>
       )}
+
+      {/* Still Lightbox Modal */}
+      {selectedStill && (
+        <div className="still-modal-overlay" onClick={() => setSelectedStill(null)}>
+          <div className="still-modal-content" onClick={e => e.stopPropagation()}>
+            <button className="still-modal-close" onClick={() => setSelectedStill(null)} title="Close preview">✕</button>
+            <img src={selectedStill.url} alt={`Scene from ${movie?.title}`} className="still-modal-img" />
+            <p className="still-modal-caption">Scene from {movie?.title}</p>
+          </div>
+        </div>
+      )}
+
       <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
     </div>
   );

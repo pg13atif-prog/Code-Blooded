@@ -24,6 +24,7 @@ import WatchlistPage from "./pages/WatchlistPage";
 import FriendsPage from "./pages/FriendsPage";
 import UserListPage from "./pages/UserListPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import PersonDetailPage from "./pages/PersonDetailPage";
 
 // CineAI Tools
 import MoviePlanner from "./pages/cineai/MoviePlanner";
@@ -92,6 +93,13 @@ function App() {
       if (detailMatch) {
         setCurrentRoute('movie-detail');
         setCurrentParams({ type: detailMatch[1], id: detailMatch[2] });
+        return;
+      }
+
+      const personMatch = hash.match(/^#person\/(\d+)/);
+      if (personMatch) {
+        setCurrentRoute('person-detail');
+        setCurrentParams({ id: personMatch[1] });
         return;
       }
 
@@ -282,6 +290,15 @@ function App() {
 
       case 'movie-detail':
         return <MovieDetail movieId={currentParams?.id} mediaType={currentParams?.type || 'movie'} onBack={() => {
+          if (window.history.length > 2) {
+            window.history.back();
+          } else {
+            window.location.hash = "";
+          }
+        }} />;
+
+      case 'person-detail':
+        return <PersonDetailPage personId={currentParams?.id} onBack={() => {
           if (window.history.length > 2) {
             window.history.back();
           } else {

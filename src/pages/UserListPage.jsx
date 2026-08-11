@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
-import { getWatchlist, getLiked, getWatched, removeFromWatchlist, removeFromLiked, removeFromWatched, addToWatched } from '../services/firestore';
+import { useAlert } from '../context/AlertContext';
+import { getWatchlist, getLiked, getWatched, removeFromWatchlist, removeFromLiked, removeFromWatched, addToWatched, addToWatchlist, addToLiked } from '../services/firestore';
 import MovieCard from '../components/MovieCard';
 import CustomSelect from '../components/CustomSelect';
 import { UserListSkeleton } from '../components/SkeletonLoader';
@@ -9,6 +10,7 @@ import './UserListPage.css';
 
 const UserListPage = ({ initialType = 'liked' }) => {
   const { currentUser } = useAuth();
+  const { showConfirm, showToast, showAlert } = useAlert();
   const [listType, setListType] = useState(initialType); // 'liked' | 'watchlist' | 'watched'
   const [canAnimatePill, setCanAnimatePill] = useState(false);
 
@@ -73,15 +75,45 @@ const UserListPage = ({ initialType = 'liked' }) => {
     e.preventDefault();
     if (!currentUser) return;
 
-    if (listType === 'watchlist') {
-      await removeFromWatchlist(currentUser.uid, movie.id);
-      setWatchlist(prev => prev.filter(m => m.id !== movie.id));
-    } else if (listType === 'liked') {
-      await removeFromLiked(currentUser.uid, movie.id);
-      setLiked(prev => prev.filter(m => m.id !== movie.id));
-    } else if (listType === 'watched') {
-      await removeFromWatched(currentUser.uid, movie.id);
-      setWatched(prev => prev.filter(m => m.id !== movie.id));
+    const currentListType = listType;
+    const titleName = movie.title || movie.name || 'Title';
+
+    try {
+      if (currentListType === 'watchlist') {
+        await removeFromWatchlist(currentUser.uid, movie.id);
+        setWatchlist(prev => prev.filter(m => m.id !== movie.id));
+      } else if (currentListType === 'liked') {
+        await removeFromLiked(currentUser.uid, movie.id);
+        setLiked(prev => prev.filter(m => m.id !== movie.id));
+      } else if (currentListType === 'watched') {
+        await removeFromWatched(currentUser.uid, movie.id);
+        setWatched(prev => prev.filter(m => m.id !== movie.id));
+      }
+
+      // Show toast with UNDO option
+      showToast(`Removed "${titleName}"`, 'info', {
+        label: 'Undo',
+        onClick: async () => {
+          try {
+            if (currentListType === 'watchlist') {
+              await addToWatchlist(currentUser.uid, movie);
+              setWatchlist(prev => [movie, ...prev]);
+            } else if (currentListType === 'liked') {
+              await addToLiked(currentUser.uid, movie);
+              setLiked(prev => [movie, ...prev]);
+            } else if (currentListType === 'watched') {
+              await addToWatched(currentUser.uid, movie, 120);
+              setWatched(prev => [movie, ...prev]);
+            }
+            showToast(`Restored "${titleName}"`, 'success');
+          } catch (err) {
+            console.error("Failed to restore item:", err);
+            showToast("Failed to restore item", "error");
+          }
+        }
+      }, 5000);
+    } catch (err) {
+      console.error("Failed to remove title:", err);
     }
   };
 
@@ -89,13 +121,43 @@ const UserListPage = ({ initialType = 'liked' }) => {
     e.stopPropagation();
     e.preventDefault();
     if (!currentUser) return;
+
+    const titleName = movie.title || movie.name || 'this title';
+
+    const confirmed = await showConfirm({
+      title: "Move to Watched?",
+      message: `Are you sure you want to mark "${titleName}" as watched and move it to your Watched list?`,
+      confirmText: "Mark Watched",
+      cancelText: "Cancel",
+      danger: false,
+      type: "question"
+    });
+
+    if (!confirmed) return;
+
     try {
       await addToWatched(currentUser.uid, movie, 120);
       await removeFromWatchlist(currentUser.uid, movie.id);
       setWatchlist(prev => prev.filter(m => m.id !== movie.id));
-      setWatched(prev => [...prev, movie]);
+      setWatched(prev => [movie, ...prev]);
+
+      showToast(`Marked "${titleName}" as watched!`, 'success', {
+        label: 'Undo',
+        onClick: async () => {
+          try {
+            await removeFromWatched(currentUser.uid, movie.id);
+            await addToWatchlist(currentUser.uid, movie);
+            setWatched(prev => prev.filter(m => m.id !== movie.id));
+            setWatchlist(prev => [movie, ...prev]);
+            showToast(`Moved "${titleName}" back to Watchlist`, 'info');
+          } catch (err) {
+            console.error("Failed to undo mark watched:", err);
+          }
+        }
+      }, 5000);
     } catch (err) {
       console.error('Failed to mark as watched:', err);
+      showAlert({ title: "Error", message: `Could not mark as watched: ${err.message || 'Unknown error'}`, type: "error" });
     }
   };
 
@@ -266,19 +328,8 @@ const UserListPage = ({ initialType = 'liked' }) => {
                 {filteredAndSortedList.map(movie => (
                   <div key={movie.id} className="user-list-item-wrapper">
                     {viewMode === 'grid' ? (
-                      <div className="user-list-card-wrapper" style={{ position: 'relative' }}>
+                      <div className="user-list-card-wrapper" onClick={() => window.location.hash = `${movie.mediaType || 'movie'}/${movie.id}`}>
                         <MovieCard {...movie} disableHover={true} />
-                        {listType === 'watchlist' && (
-                          <button
-                            type="button"
-                            className="user-list-watched-btn"
-                            onClick={(e) => handleMarkWatched(e, movie)}
-                            title="Mark as Watched"
-                            aria-label="Mark as Watched"
-                          >
-                            ✓
-                          </button>
-                        )}
                         <button
                           type="button"
                           className="user-list-remove-btn"
@@ -299,16 +350,6 @@ const UserListPage = ({ initialType = 'liked' }) => {
                           <p>{movie.year} • {movie.category} • {movie.mediaType === 'tv' ? 'TV Show' : 'Movie'}</p>
                           <div className="ul-rating">★ {(movie.rating && movie.rating !== '—' && movie.rating !== '-') ? movie.rating : 'N/A'}</div>
                         </div>
-                        {listType === 'watchlist' && (
-                          <button
-                            type="button"
-                            className="ul-row-watched-btn"
-                            onClick={(e) => handleMarkWatched(e, movie)}
-                            title="Mark as Watched"
-                          >
-                            Mark Watched
-                          </button>
-                        )}
                         <button
                           type="button"
                           className="ul-row-remove-btn"

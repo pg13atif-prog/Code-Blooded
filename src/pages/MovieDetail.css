@@ -194,6 +194,11 @@
   gap: 3rem;
 }
 
+.detail-info-col {
+  min-width: 0;
+  max-width: 100%;
+}
+
 @media (max-width: 868px) {
   .detail-main-grid {
     grid-template-columns: 1fr;
@@ -647,6 +652,31 @@
   opacity: 0.5;
   cursor: not-allowed;
   box-shadow: none;
+}
+
+.detail-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.65rem 1.4rem;
+  border-radius: 30px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+.detail-btn svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.detail-btn:hover svg {
+  transform: scale(1.1);
 }
 
 .btn-secondary {
@@ -1358,4 +1388,224 @@
 }
 .modern-rating-input[type=number] {
   -moz-appearance: textfield;
+}
+
+/* ── Some Visuals Section (Scrollable Row with Overlay Arrow Bars) ── */
+.movie-stills-section {
+  margin-top: 0.5rem;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+}
+
+.stills-row-wrapper {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.stills-row-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.25rem 0;
+  margin: 0;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Hide scrollbar Firefox */
+  -ms-overflow-style: none; /* Hide scrollbar IE/Edge */
+}
+
+.stills-row-container::-webkit-scrollbar {
+  display: none; /* Hide scrollbar Chrome/Safari/Blink */
+}
+
+/* Dark Vertical Gradient Overlay Scroll Bars */
+.stills-overlay-scroll-btn {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 20;
+  width: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  color: #ff1a27; /* Vibrant Red Arrow */
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.25s ease;
+  user-select: none;
+}
+
+.stills-row-wrapper:hover .stills-overlay-scroll-btn,
+.stills-overlay-scroll-btn:focus-visible {
+  opacity: 1;
+}
+
+.stills-overlay-scroll-btn.left {
+  left: 0;
+  border-top-left-radius: 14px;
+  border-bottom-left-radius: 14px;
+  background: linear-gradient(90deg, rgba(6, 8, 14, 0.95) 0%, rgba(6, 8, 14, 0.65) 60%, transparent 100%);
+}
+
+.stills-overlay-scroll-btn.right {
+  right: 0;
+  border-top-right-radius: 14px;
+  border-bottom-right-radius: 14px;
+  background: linear-gradient(270deg, rgba(6, 8, 14, 0.95) 0%, rgba(6, 8, 14, 0.65) 60%, transparent 100%);
+}
+
+.stills-overlay-scroll-btn.left:hover {
+  background: linear-gradient(90deg, rgba(6, 8, 14, 0.98) 0%, rgba(6, 8, 14, 0.85) 80%, rgba(6, 8, 14, 0.2) 100%);
+}
+
+.stills-overlay-scroll-btn.right:hover {
+  background: linear-gradient(270deg, rgba(6, 8, 14, 0.98) 0%, rgba(6, 8, 14, 0.85) 80%, rgba(6, 8, 14, 0.2) 100%);
+}
+
+.stills-overlay-scroll-btn svg {
+  stroke: #ff2a37;
+  filter: drop-shadow(0 2px 8px rgba(255, 26, 39, 0.7));
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), stroke 0.2s ease;
+}
+
+.stills-overlay-scroll-btn:hover svg {
+  stroke: #ff4d5a;
+  transform: scale(1.22);
+}
+
+.stills-row-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.25rem 0;
+  margin: 0;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Hide scrollbar Firefox */
+  -ms-overflow-style: none; /* Hide scrollbar IE/Edge */
+}
+
+.stills-row-container::-webkit-scrollbar {
+  display: none; /* Hide scrollbar Chrome/Safari/Blink */
+}
+
+/* Pure image card with NO BORDER & NO BACKGROUND */
+.still-card {
+  position: relative;
+  flex: 0 0 280px;
+  width: 280px;
+  border-radius: 14px;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  cursor: pointer;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.still-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 14px;
+  border: none !important;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), filter 0.35s ease;
+}
+
+.still-card:hover {
+  transform: translateY(-3px) scale(1.03);
+}
+
+.still-card:hover img {
+  filter: brightness(1.1);
+  transform: scale(1.05);
+}
+
+/* Still Lightbox Modal */
+.still-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 6, 12, 0.92);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  box-sizing: border-box;
+}
+
+.still-modal-content {
+  position: relative;
+  max-width: 1100px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.still-modal-close {
+  position: absolute;
+  top: -45px;
+  right: 0;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #fff;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.still-modal-close:hover {
+  background: rgba(229, 9, 20, 0.8);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: scale(1.1);
+}
+
+.still-modal-img {
+  width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.9);
+}
+
+.still-modal-caption {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+@media (max-width: 768px) {
+  .still-card {
+    flex: 0 0 210px;
+    width: 210px;
+  }
 }

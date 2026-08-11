@@ -162,15 +162,26 @@ const MovieDebate = () => {
         {result && !loading && (
           <div className="debate-results animated-entrance">
             <div className="debate-winner-banner">
-              <h2>Winner: {result.overallWinner}</h2>
+              <div className="winner-trophy">🏆</div>
+              <span className="winner-label">Overall Winner</span>
+              <h2>{result.overallWinner}</h2>
               <p>"{result.verdict}"</p>
+            </div>
+
+            <div className="debate-breakdown-header">
+              <h3>Category Comparison Breakdown</h3>
+              <p>Detailed score reasoning across {result.categories?.length || 0} key filmmaking parameters</p>
             </div>
 
             <div className="debate-categories">
               {result.categories?.map((cat, idx) => (
-                <div key={idx} className="debate-category-row">
-                  <div className="cat-name">{cat.name}</div>
-                  <div className="cat-winner">{cat.winner}</div>
+                <div key={idx} className="debate-category-card">
+                  <div className="cat-card-header">
+                    <span className="cat-name">{cat.name}</span>
+                    <span className="cat-winner-badge">
+                      <span className="cat-winner-label">Winner:</span> {cat.winner}
+                    </span>
+                  </div>
                   <div className="cat-reason">{cat.reason}</div>
                 </div>
               ))}

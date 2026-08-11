@@ -25,8 +25,8 @@ const discoverItems = [
 const cineaiItems = [
   { icon: '🎬', label: 'What Should I Watch?', desc: 'AI-powered movie recommendations based on mood.', hash: '#cineai-tool/what-to-watch' },
   { icon: '🎯', label: 'Pick For Me', desc: 'Can’t decide? Let AI spin the wheel for you.', hash: '#cineai-tool/pick-for-me' },
+  { icon: '📅', label: 'Movie Night Planner', desc: 'Answer quick questions to find your perfect movie.', hash: '#cineai-tool/planner' },
   { icon: '🎭', label: 'Movie Debate', desc: 'Pick two movies and let AI declare the winner.', hash: '#cineai-tool/debate' },
-  { icon: '📅', label: 'Weekend Watch Planner', desc: 'Get a custom watch schedule for your weekend.', hash: '#cineai-tool/planner' },
 ];
 
 const friendsItems = [

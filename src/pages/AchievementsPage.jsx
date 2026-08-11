@@ -113,7 +113,7 @@ const AchievementsPage = () => {
                 transition={{ type: "spring", stiffness: 450, damping: 32 }}
               />
             )}
-            <span className="filter-btn-label">All ({totalCount})</span>
+            <span className="filter-btn-label">All</span>
           </button>
           <button className={`filter-btn ${filter === 'unlocked' ? 'active' : ''}`} onClick={() => setFilter('unlocked')}>
             {filter === 'unlocked' && (
@@ -124,7 +124,7 @@ const AchievementsPage = () => {
                 transition={{ type: "spring", stiffness: 450, damping: 32 }}
               />
             )}
-            <span className="filter-btn-label">Unlocked ({unlockedCount})</span>
+            <span className="filter-btn-label">Unlocked</span>
           </button>
           <button className={`filter-btn ${filter === 'locked' ? 'active' : ''}`} onClick={() => setFilter('locked')}>
             {filter === 'locked' && (
@@ -135,7 +135,7 @@ const AchievementsPage = () => {
                 transition={{ type: "spring", stiffness: 450, damping: 32 }}
               />
             )}
-            <span className="filter-btn-label">Locked ({totalCount - unlockedCount})</span>
+            <span className="filter-btn-label">Locked</span>
           </button>
         </div>
       </LayoutGroup>

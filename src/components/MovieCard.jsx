@@ -9,6 +9,7 @@ import {
 } from '../services/firestore';
 import { getWatchProviders, getMovieDetails, getMovieVideos } from '../services/tmdb';
 import { checkAndUnlockAchievements } from '../services/achievements';
+import { getProviderUrl } from '../utils/providerUrls';
 import './MovieCard.css';
 
 const MovieCard = memo((props) => {
@@ -253,9 +254,22 @@ const MovieCard = memo((props) => {
               <h3 className="hover-title">{title}</h3>
               {isExpanded && topProviders && (
                 <div className="hover-providers-corner">
-                  {topProviders.map(p => (
-                    <img key={p.provider_id} src={`https://image.tmdb.org/t/p/w45${p.logo_path}`} alt={p.provider_name} className="hover-provider-logo" title={p.provider_name} />
-                  ))}
+                  {topProviders.map(p => {
+                    const providerUrl = getProviderUrl(p.provider_name, title, watchProviders?.link);
+                    return (
+                      <a
+                        key={p.provider_id}
+                        href={providerUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="hover-provider-link"
+                        title={`Watch ${title} on ${p.provider_name}`}
+                      >
+                        <img src={`https://image.tmdb.org/t/p/w45${p.logo_path}`} alt={p.provider_name} className="hover-provider-logo" />
+                      </a>
+                    );
+                  })}
                 </div>
               )}
             </div>

@@ -288,13 +288,37 @@
   width: 100%;
   margin: 0 auto;
   padding: 3.5rem 3rem;
-  background: rgba(15, 23, 42, 0.55);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: linear-gradient(135deg, rgba(18, 12, 16, 0.82) 0%, rgba(30, 15, 22, 0.78) 50%, rgba(15, 20, 35, 0.85) 100%);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-top: 1px solid rgba(255, 200, 210, 0.22);
   border-radius: 32px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+  box-shadow:
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.18),
+    0 25px 60px rgba(0, 0, 0, 0.65),
+    0 0 40px rgba(120, 10, 20, 0.12);
   box-sizing: border-box;
+  position: relative;
+  overflow: visible;
+}
+
+.debate-form::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at 30% 20%, rgba(120, 10, 25, 0.08) 0%, transparent 55%);
+  pointer-events: none;
+  z-index: 0;
+  border-radius: inherit;
+}
+
+.debate-form > * {
+  position: relative;
+  z-index: 1;
 }
 
 .versus-inputs {
@@ -302,78 +326,99 @@
   align-items: center;
   gap: 1.5rem;
   width: 100%;
+  position: relative;
+  z-index: 10;
 }
 
 .versus-inputs input {
   flex: 1;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-top: 1px solid rgba(255, 255, 255, 0.22);
   padding: 1.25rem 1.75rem;
   border-radius: 16px;
   color: #fff;
   font-size: 1.15rem;
   font-weight: 500;
   text-align: center;
-  transition: all 0.25s ease;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .versus-inputs input::placeholder {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.35);
   font-weight: 400;
 }
 
 .versus-inputs input:focus {
   outline: none;
-  border-color: var(--color-accent, #e50914);
-  background: rgba(255, 255, 255, 0.09);
-  box-shadow: 0 0 0 4px rgba(229, 9, 20, 0.2), inset 0 2px 4px rgba(0, 0, 0, 0.2);
+  border-color: rgba(140, 15, 30, 0.7);
+  border-top-color: rgba(255, 180, 190, 0.5);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0.04) 100%);
+  box-shadow: 0 0 0 4px rgba(120, 10, 25, 0.2), inset 0 2px 6px rgba(0, 0, 0, 0.35), 0 0 18px rgba(120, 10, 25, 0.12);
 }
 
 .vs-badge {
-  background: linear-gradient(135deg, #e50914, #ff3b47);
+  background: linear-gradient(135deg, rgba(140, 15, 30, 0.95) 0%, rgba(90, 8, 18, 0.98) 100%);
   color: #fff;
   font-weight: 800;
   font-size: 1.05rem;
-  width: 50px;
-  height: 50px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 6px 20px rgba(229, 9, 20, 0.5);
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 6px 22px rgba(120, 10, 25, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.35);
+  border: 1px solid rgba(255, 90, 100, 0.5);
+  border-top: 1px solid rgba(255, 180, 190, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
 }
 
 .debate-submit {
-  padding: 0.9rem 3.5rem;
+  padding: 0.95rem 3.5rem;
   font-size: 1.1rem;
   font-weight: 700;
-  border-radius: 36px;
-  background: linear-gradient(135deg, rgba(160, 20, 30, 0.85) 0%, rgba(100, 10, 18, 0.9) 100%);
-  border: 1px solid rgba(229, 9, 20, 0.45);
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(140, 15, 30, 0.92) 0%, rgba(90, 8, 18, 0.95) 50%, rgba(65, 5, 14, 0.98) 100%);
+  border: 1px solid rgba(255, 90, 100, 0.5);
+  border-top: 1px solid rgba(255, 180, 190, 0.75);
   color: #fff;
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), 0 6px 20px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(18px) saturate(190%);
+  -webkit-backdrop-filter: blur(18px) saturate(190%);
+  box-shadow:
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.4),
+    0 8px 25px rgba(120, 10, 25, 0.5),
+    0 4px 18px rgba(0, 0, 0, 0.45);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
   position: relative;
+  z-index: 1;
   overflow: hidden;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .debate-submit:hover:not(:disabled) {
-  transform: translateY(-2px) scale(1.02);
-  background: linear-gradient(135deg, rgba(190, 25, 35, 0.95) 0%, rgba(120, 12, 22, 0.95) 100%);
-  border-color: rgba(255, 255, 255, 0.35);
-  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.35), 0 8px 24px rgba(0, 0, 0, 0.5);
+  transform: translateY(-3px) scale(1.03);
+  background: linear-gradient(135deg, rgba(160, 20, 35, 0.98) 0%, rgba(110, 12, 24, 0.98) 50%, rgba(80, 8, 18, 1) 100%);
+  border-color: rgba(255, 120, 130, 0.65);
+  border-top-color: rgba(255, 200, 210, 0.85);
+  box-shadow:
+    inset 0 1px 2px 0 rgba(255, 255, 255, 0.5),
+    0 12px 35px rgba(120, 10, 25, 0.65),
+    0 6px 25px rgba(0, 0, 0, 0.55);
 }
 
 .debate-submit:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
+  filter: grayscale(0.3);
 }
 
 .btn-secondary,
@@ -433,6 +478,7 @@
   position: relative;
   flex: 1;
   width: 100%;
+  z-index: 9999;
 }
 
 .suggestions-dropdown {
@@ -440,16 +486,24 @@
   top: calc(100% + 8px);
   left: 0;
   width: 100%;
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.92) 0%, rgba(11, 13, 20, 0.95) 100%);
-  backdrop-filter: blur(24px) saturate(190%);
-  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.96) 0%, rgba(11, 13, 20, 0.98) 100%);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 18px;
-  max-height: 360px;
+  max-height: 320px;
   overflow-y: auto;
-  z-index: 1000;
-  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.22), 0 20px 45px rgba(0, 0, 0, 0.65), 0 0 25px rgba(229, 9, 20, 0.12);
+  z-index: 9999;
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.22), 0 20px 45px rgba(0, 0, 0, 0.65), 0 0 25px rgba(120, 10, 25, 0.12);
   padding: 6px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.suggestions-dropdown::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 .suggestion-item {
@@ -529,76 +583,162 @@
 
 .debate-winner-banner {
   text-align: center;
-  background: linear-gradient(135deg, rgba(229, 9, 20, 0.12) 0%, rgba(139, 92, 246, 0.12) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 24px;
-  padding: 2.5rem 2rem;
-  margin-bottom: 2rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  background: linear-gradient(135deg, rgba(120, 10, 25, 0.2) 0%, rgba(18, 12, 20, 0.72) 50%, rgba(90, 8, 45, 0.14) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-top: 1px solid rgba(255, 200, 210, 0.22);
+  border-radius: 28px;
+  padding: 3rem 2.5rem 2.75rem;
+  margin-bottom: 2.5rem;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.18), 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 40px rgba(120, 10, 25, 0.12);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  position: relative;
+  overflow: hidden;
+}
+
+.debate-winner-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 200, 210, 0.4) 50%, transparent 100%);
+}
+
+.winner-trophy {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  filter: drop-shadow(0 4px 12px rgba(255, 180, 0, 0.3));
+}
+
+.winner-label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 0.75rem;
 }
 
 .debate-winner-banner h2 {
-  color: var(--color-accent, #e50914);
-  font-size: 2.2rem;
-  margin-bottom: 1rem;
+  color: #ffffff;
+  font-size: 2.4rem;
+  font-weight: 800;
+  margin-bottom: 1.25rem;
+  text-shadow: 0 0 25px rgba(120, 10, 25, 0.45);
+  background: linear-gradient(135deg, #ffffff 0%, #ff9da2 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .debate-winner-banner p {
-  font-size: 1.15rem;
-  line-height: 1.65;
+  font-size: 1.05rem;
+  line-height: 1.7;
   font-style: italic;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.75);
+  max-width: 600px;
+  margin: 0 auto;
 }
 
+/* Breakdown Section Header */
+.debate-breakdown-header {
+  margin-bottom: 1.5rem;
+}
+
+.debate-breakdown-header h3 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 0.35rem 0;
+}
+
+.debate-breakdown-header p {
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin: 0;
+}
+
+/* Category Cards Grid */
 .debate-categories {
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 24px;
-  padding: 1.5rem 2rem;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
 }
 
-.debate-category-row {
+.debate-category-card {
+  background: linear-gradient(135deg, rgba(18, 12, 16, 0.7) 0%, rgba(20, 15, 25, 0.65) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 200, 210, 0.12);
+  border-radius: 20px;
+  padding: 1.35rem 1.75rem;
+  backdrop-filter: blur(20px) saturate(170%);
+  -webkit-backdrop-filter: blur(20px) saturate(170%);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 8px 25px rgba(0, 0, 0, 0.4);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.debate-category-card:hover {
+  border-color: rgba(120, 10, 25, 0.35);
+  background: linear-gradient(135deg, rgba(25, 14, 20, 0.8) 0%, rgba(25, 18, 30, 0.75) 100%);
+  transform: translateY(-2px);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 12px 35px rgba(0, 0, 0, 0.5), 0 0 20px rgba(120, 10, 25, 0.08);
+}
+
+.cat-card-header {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 2rem;
-  padding: 1.35rem 1.25rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  text-align: center;
-}
-
-.debate-category-row:last-child {
-  border-bottom: none;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  gap: 1rem;
 }
 
 .cat-name {
-  width: 160px;
-  flex-shrink: 0;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.5);
-  text-transform: uppercase;
-  font-size: 0.85rem;
-  letter-spacing: 1px;
-  text-align: center;
+  color: #ffffff;
+  font-size: 1rem;
+  text-transform: none;
+  letter-spacing: 0;
+  width: auto;
+  flex-shrink: 0;
 }
 
-.cat-winner {
-  width: 180px;
-  flex-shrink: 0;
+.cat-winner-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 1.15rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(140, 15, 30, 0.45) 0%, rgba(90, 8, 18, 0.38) 100%);
+  border: 1px solid rgba(255, 90, 100, 0.38);
+  color: #ff9da2;
+  font-size: 0.84rem;
+  font-weight: 700;
+  white-space: nowrap;
+  text-shadow: 0 0 10px rgba(120, 10, 25, 0.3);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.cat-winner-label {
+  color: rgba(255, 255, 255, 0.65);
   font-weight: 600;
-  color: #fff;
-  text-align: center;
+  margin-right: 0.15rem;
 }
 
 .cat-reason {
-  flex: 1;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.95rem;
-  line-height: 1.5;
-  text-align: center;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.92rem;
+  line-height: 1.6;
+  text-align: left;
 }
 
 /* Planner Styles */
@@ -937,23 +1077,38 @@
     width: 100%;
   }
 
-  .debate-category-row {
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    gap: 0.4rem;
-    padding: 1rem 0.5rem;
+  .debate-category-card {
+    padding: 1.15rem 1.25rem;
+    border-radius: 16px;
   }
 
-  .cat-name, .cat-winner, .cat-reason {
-    width: 100%;
-    text-align: center;
+  .cat-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .cat-name {
+    font-size: 0.95rem;
+  }
+
+  .cat-reason {
+    font-size: 0.88rem;
+  }
+
+  .debate-breakdown-header h3 {
+    font-size: 1.15rem;
+  }
+
+  .winner-trophy {
+    font-size: 2rem;
+  }
+
+  .debate-winner-banner h2 {
+    font-size: 1.8rem;
   }
 }
 
 .debate-results {
   margin-top: 2.5rem;
 }
-
-
