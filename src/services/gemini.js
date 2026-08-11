@@ -75,8 +75,6 @@ const callOpenRouter = async (systemInstruction, userPrompt, temperature = 0.7) 
   if (openRouterApiKey) {
     const qwenModels = [
       "qwen/qwen-2.5-72b-instruct",
-      "qwen/qwen-2.5-coder-32b-instruct",
-      "qwen/qwen-2.5-32b-instruct",
       "qwen/qwen-2.5-72b-instruct:free"
     ];
     for (const model of qwenModels) {
@@ -91,8 +89,6 @@ const callOpenRouter = async (systemInstruction, userPrompt, temperature = 0.7) 
   // 2. Try Groq Cloud API (Qwen & LLaMA Models)
   if (groqApiKey) {
     const groqModels = [
-      "qwen-2.5-32b",
-      "qwen-2.5-coder-32b",
       "llama-3.3-70b-versatile",
       "llama-3.1-8b-instant"
     ];
