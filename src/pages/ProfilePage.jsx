@@ -53,14 +53,17 @@ const MediaListItem = ({ movie, onRemove, onNavigate }) => {
 
 // ── Main Profile Page ─────────────────────────────────────────────────────────
 const ProfilePage = () => {
-  const { currentUser, logout, linkGuestAccount, linkGuestWithGoogle, changePassword, sendResetEmailToCurrent } = useAuth();
+  const { currentUser, logout, linkGuestAccount, linkGuestWithGoogle, changePassword, sendResetEmailToCurrent, setAccountPassword } = useAuth();
 
   const [linkEmail, setLinkEmail] = useState('');
   const [linkPassword, setLinkPassword] = useState('');
   const [linkError, setLinkError] = useState('');
   const [isLinking, setIsLinking] = useState(false);
 
-  // Change Password States
+  // Check if user registered via email/password or OAuth (Google)
+  const hasPasswordProvider = currentUser?.providerData?.some(p => p.providerId === 'password');
+
+  // Change / Set Password States
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -85,17 +88,22 @@ const ProfilePage = () => {
 
     setPwdLoading(true);
     try {
-      await changePassword(currentPassword, newPassword);
-      setPwdSuccess('Password updated successfully!');
+      if (hasPasswordProvider) {
+        await changePassword(currentPassword, newPassword);
+        setPwdSuccess('Password updated successfully!');
+      } else {
+        await setAccountPassword(newPassword);
+        setPwdSuccess('Password created successfully! You can now sign in with either Google or Email & Password.');
+      }
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } catch (err) {
-      console.error('Change password error:', err);
+      console.error('Change/Set password error:', err);
       if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
         setPwdError('Incorrect current password.');
       } else if (err.code === 'auth/requires-recent-login') {
-        setPwdError('Security timeout. Please log out and log back in to change your password.');
+        setPwdError('Security timeout. Please re-sign in to update your password.');
       } else {
         setPwdError(err.message || 'Failed to update password.');
       }
@@ -831,14 +839,18 @@ const ProfilePage = () => {
         </div>
       )}
 
-      {/* ── Change Password Modal ── */}
+      {/* ── Change / Set Password Modal ── */}
       {isPwdModalOpen && (
         <div className="modal-overlay" onClick={() => setIsPwdModalOpen(false)}>
           <div className="modal-content glass-panel" onClick={e => e.stopPropagation()} style={{ maxWidth: '460px' }}>
             <button className="modal-close" onClick={() => setIsPwdModalOpen(false)}>✕</button>
-            <h2 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '0.35rem', color: '#fff' }}>Change Password</h2>
+            <h2 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '0.35rem', color: '#fff' }}>
+              {hasPasswordProvider ? 'Change Password' : 'Set Account Password'}
+            </h2>
             <p style={{ fontSize: '0.88rem', color: 'rgba(255,255,255,0.6)', marginBottom: '1.25rem' }}>
-              Update your account password or request a reset email link sent to <strong>{currentUser?.email}</strong>.
+              {hasPasswordProvider 
+                ? <>Update your account password or request a reset link sent to <strong>{currentUser?.email}</strong>.</>
+                : <>You currently log in using Google. Create a password to also log in using <strong>{currentUser?.email}</strong>.</>}
             </p>
 
             {pwdError && (
@@ -872,20 +884,24 @@ const ProfilePage = () => {
             )}
 
             <form onSubmit={handleChangePassword} style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: 'rgba(255,255,255,0.6)', marginBottom: '0.35rem', letterSpacing: '0.05em' }}>CURRENT PASSWORD</label>
-                <input 
-                  type="password"
-                  required
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  placeholder="Enter current password"
-                  style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '12px', background: 'rgba(255,255,255,0.06)', color: '#fff', border: '1px solid rgba(255,255,255,0.12)', outline: 'none', boxSizing: 'border-box' }}
-                />
-              </div>
+              {hasPasswordProvider && (
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: 'rgba(255,255,255,0.6)', marginBottom: '0.35rem', letterSpacing: '0.05em' }}>CURRENT PASSWORD</label>
+                  <input 
+                    type="password"
+                    required
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    placeholder="Enter current password"
+                    style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '12px', background: 'rgba(255,255,255,0.06)', color: '#fff', border: '1px solid rgba(255,255,255,0.12)', outline: 'none', boxSizing: 'border-box' }}
+                  />
+                </div>
+              )}
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: 'rgba(255,255,255,0.6)', marginBottom: '0.35rem', letterSpacing: '0.05em' }}>NEW PASSWORD</label>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: 'rgba(255,255,255,0.6)', marginBottom: '0.35rem', letterSpacing: '0.05em' }}>
+                  {hasPasswordProvider ? 'NEW PASSWORD' : 'CREATE PASSWORD'}
+                </label>
                 <input 
                   type="password"
                   required
@@ -897,47 +913,51 @@ const ProfilePage = () => {
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: 'rgba(255,255,255,0.6)', marginBottom: '0.35rem', letterSpacing: '0.05em' }}>CONFIRM NEW PASSWORD</label>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: 'rgba(255,255,255,0.6)', marginBottom: '0.35rem', letterSpacing: '0.05em' }}>CONFIRM PASSWORD</label>
                 <input 
                   type="password"
                   required
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Re-enter new password"
+                  placeholder="Re-enter password"
                   style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '12px', background: 'rgba(255,255,255,0.06)', color: '#fff', border: '1px solid rgba(255,255,255,0.12)', outline: 'none', boxSizing: 'border-box' }}
                 />
               </div>
 
               <button type="submit" className="btn-primary" disabled={pwdLoading} style={{ borderRadius: '30px', padding: '0.8rem', marginTop: '0.5rem', fontWeight: 700 }}>
-                {pwdLoading ? 'Updating...' : 'Update Password'}
+                {pwdLoading ? 'Saving...' : (hasPasswordProvider ? 'Update Password' : 'Set Account Password')}
               </button>
             </form>
 
-            <div style={{ margin: '1.25rem 0', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }} />
-              <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', fontWeight: 600 }}>OR</span>
-              <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }} />
-            </div>
+            {hasPasswordProvider && (
+              <>
+                <div style={{ margin: '1.25rem 0', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }} />
+                  <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', fontWeight: 600 }}>OR</span>
+                  <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }} />
+                </div>
 
-            <button 
-              type="button" 
-              onClick={handleSendResetEmail} 
-              disabled={pwdLoading}
-              style={{
-                width: '100%',
-                background: 'rgba(255, 255, 255, 0.06)',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                color: '#fff',
-                padding: '0.75rem',
-                borderRadius: '30px',
-                fontSize: '0.88rem',
-                fontWeight: 600,
-                cursor: 'pointer',
-                transition: 'all 0.2s ease'
-              }}
-            >
-              Forgot Current Password? Send Reset Email Link
-            </button>
+                <button 
+                  type="button" 
+                  onClick={handleSendResetEmail} 
+                  disabled={pwdLoading}
+                  style={{
+                    width: '100%',
+                    background: 'rgba(255, 255, 255, 0.06)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    color: '#fff',
+                    padding: '0.75rem',
+                    borderRadius: '30px',
+                    fontSize: '0.88rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  Forgot Current Password? Send Reset Email Link
+                </button>
+              </>
+            )}
           </div>
         </div>
       )}

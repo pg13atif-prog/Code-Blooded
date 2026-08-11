@@ -95,6 +95,12 @@ export const AuthProvider = ({ children }) => {
     return sendPasswordResetEmail(auth, auth.currentUser.email, actionCodeSettings);
   };
 
+  // Set Account Password directly (for Google/OAuth users setting a password)
+  const setAccountPassword = (newPassword) => {
+    if (!auth.currentUser) throw new Error("No authenticated user found.");
+    return updatePassword(auth.currentUser, newPassword);
+  };
+
   useEffect(() => {
     try {
       const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -123,7 +129,8 @@ export const AuthProvider = ({ children }) => {
     linkGuestWithGoogle,
     resetPassword,
     changePassword,
-    sendResetEmailToCurrent
+    sendResetEmailToCurrent,
+    setAccountPassword
   };
 
   return (
