@@ -23,6 +23,7 @@ import AchievementsPage from "./pages/AchievementsPage";
 import WatchlistPage from "./pages/WatchlistPage";
 import FriendsPage from "./pages/FriendsPage";
 import UserListPage from "./pages/UserListPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 // CineAI Tools
 import MoviePlanner from "./pages/cineai/MoviePlanner";
@@ -59,7 +60,26 @@ function App() {
 
   useEffect(() => {
     const parseHash = () => {
+      const search = window.location.search;
       const hash = window.location.hash;
+
+      // Handle Firebase Password Reset Action URL or #reset-password
+      const searchParams = new URLSearchParams(search);
+      const modeParam = searchParams.get('mode');
+      const codeParam = searchParams.get('oobCode');
+
+      if (modeParam === 'resetPassword' || codeParam || hash.startsWith('#reset-password')) {
+        let oobCode = codeParam;
+        if (!oobCode && hash.includes('oobCode=')) {
+          const queryPart = hash.split('?')[1] || hash.split('#')[1];
+          if (queryPart) {
+            oobCode = new URLSearchParams(queryPart).get('oobCode');
+          }
+        }
+        setCurrentRoute('reset-password');
+        setCurrentParams({ oobCode });
+        return;
+      }
 
       const episodeMatch = hash.match(/^#episode\/tv\/(\d+)\/season\/(\d+)\/episode\/(\d+)/);
       if (episodeMatch) {
@@ -294,6 +314,9 @@ function App() {
 
       case 'achievements':
         return <AchievementsPage />;
+
+      case 'reset-password':
+        return <ResetPasswordPage oobCode={currentParams?.oobCode} onComplete={() => window.location.hash = '#profile'} />;
 
       case 'home':
       default:

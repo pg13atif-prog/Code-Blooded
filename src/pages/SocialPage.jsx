@@ -84,11 +84,15 @@ const SocialPage = () => {
       let targetCode = null;
 
       if (hash.includes('?match=')) {
-        targetCode = hash.split('?match=')[1]?.trim()?.toUpperCase();
+        const rawCode = hash.split('?match=')[1]?.trim()?.toUpperCase();
+        if (rawCode && rawCode !== 'UNDEFINED' && rawCode !== 'NULL') {
+          targetCode = rawCode;
+        }
       }
 
       // 1. Try local memory / localStorage first
-      const savedCode = (window.__cinescope_last_match_code || localStorage.getItem(`cinescope_last_match_code_${currentUser.uid}`))?.trim()?.toUpperCase();
+      const rawSavedCode = (window.__cinescope_last_match_code || localStorage.getItem(`cinescope_last_match_code_${currentUser.uid}`))?.trim()?.toUpperCase();
+      const savedCode = (rawSavedCode && rawSavedCode !== 'UNDEFINED' && rawSavedCode !== 'NULL') ? rawSavedCode : null;
       const rawSavedResult = window.__cinescope_last_match_result || localStorage.getItem(`cinescope_last_match_result_${currentUser.uid}`);
       let savedResult = null;
 
@@ -123,14 +127,16 @@ const SocialPage = () => {
           const data = matchSnap.val();
           if (data && data.result && data.friendCode) {
             const dbCode = data.friendCode.trim().toUpperCase();
-            if (!targetCode || targetCode === dbCode) {
-              setMatchResult(data.result);
-              setSearchCode(dbCode);
-              window.__cinescope_last_match_result = data.result;
-              window.__cinescope_last_match_code = dbCode;
-              localStorage.setItem(`cinescope_last_match_result_${currentUser.uid}`, JSON.stringify(data.result));
-              localStorage.setItem(`cinescope_last_match_code_${currentUser.uid}`, dbCode);
-              return;
+            if (dbCode && dbCode !== 'UNDEFINED' && dbCode !== 'NULL') {
+              if (!targetCode || targetCode === dbCode) {
+                setMatchResult(data.result);
+                setSearchCode(dbCode);
+                window.__cinescope_last_match_result = data.result;
+                window.__cinescope_last_match_code = dbCode;
+                localStorage.setItem(`cinescope_last_match_result_${currentUser.uid}`, JSON.stringify(data.result));
+                localStorage.setItem(`cinescope_last_match_code_${currentUser.uid}`, dbCode);
+                return;
+              }
             }
           }
         }
@@ -148,12 +154,16 @@ const SocialPage = () => {
   const executeMatch = async (codeToUse) => {
     if (!codeToUse || !currentUser) return;
     
+    const codeToSearch = codeToUse.trim().toUpperCase();
+    if (!codeToSearch || codeToSearch === 'UNDEFINED' || codeToSearch === 'NULL') {
+      return;
+    }
+
     setMatchLoading(true);
     setMatchError(null);
     setMatchResult(null);
 
     try {
-      const codeToSearch = codeToUse.trim().toUpperCase();
       const codeUser = friendCode || await ensureFriendCode(currentUser.uid, currentUser.email);
       if (codeToSearch === codeUser) {
         throw new Error("You can't match with yourself!");
@@ -189,6 +199,16 @@ const SocialPage = () => {
       const myData = await getFriendData(currentUser.uid).catch(() => null);
       const myName = myData?.username || currentUser.displayName || (currentUser.email ? currentUser.email.split('@')[0] : 'You');
       const friendName = friendData.username || (friendData.email ? friendData.email.split('@')[0] : 'Friend');
+
+      if (myProfile.length === 0 && friendProfile.length === 0) {
+        throw new Error(`Neither you nor ${friendName} have saved any movies yet! Add movies to your Watchlist, Liked, or Watched lists on your Profile page to compare tastes.`);
+      }
+      if (myProfile.length === 0) {
+        throw new Error(`You haven't saved any movies in your Liked, Watchlist, or Watched lists yet. Add some movies on your Profile page to calculate taste compatibility with ${friendName}.`);
+      }
+      if (friendProfile.length === 0) {
+        throw new Error(`${friendName} hasn't saved any movies in their Liked, Watchlist, or Watched lists yet. Ask them to add movies to their profile first.`);
+      }
 
       const compatibilityData = await getFriendCompatibilityRecs(myProfile, friendProfile, myName, friendName);
 

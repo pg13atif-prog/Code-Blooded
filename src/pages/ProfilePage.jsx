@@ -53,12 +53,92 @@ const MediaListItem = ({ movie, onRemove, onNavigate }) => {
 
 // ── Main Profile Page ─────────────────────────────────────────────────────────
 const ProfilePage = () => {
-  const { currentUser, logout, linkGuestAccount } = useAuth();
+  const { currentUser, logout, linkGuestAccount, linkGuestWithGoogle, changePassword, sendResetEmailToCurrent } = useAuth();
 
   const [linkEmail, setLinkEmail] = useState('');
   const [linkPassword, setLinkPassword] = useState('');
   const [linkError, setLinkError] = useState('');
   const [isLinking, setIsLinking] = useState(false);
+
+  // Change Password States
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [pwdError, setPwdError] = useState('');
+  const [pwdSuccess, setPwdSuccess] = useState('');
+  const [pwdLoading, setPwdLoading] = useState(false);
+  const [isPwdModalOpen, setIsPwdModalOpen] = useState(false);
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    setPwdError('');
+    setPwdSuccess('');
+
+    if (newPassword.length < 6) {
+      setPwdError('New password must be at least 6 characters.');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setPwdError('New passwords do not match.');
+      return;
+    }
+
+    setPwdLoading(true);
+    try {
+      await changePassword(currentPassword, newPassword);
+      setPwdSuccess('Password updated successfully!');
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (err) {
+      console.error('Change password error:', err);
+      if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+        setPwdError('Incorrect current password.');
+      } else if (err.code === 'auth/requires-recent-login') {
+        setPwdError('Security timeout. Please log out and log back in to change your password.');
+      } else {
+        setPwdError(err.message || 'Failed to update password.');
+      }
+    } finally {
+      setPwdLoading(false);
+    }
+  };
+
+  const handleSendResetEmail = async () => {
+    setPwdError('');
+    setPwdSuccess('');
+    setPwdLoading(true);
+    try {
+      await sendResetEmailToCurrent();
+      setPwdSuccess(`Password reset email sent to ${currentUser.email}! Please check your inbox.`);
+    } catch (err) {
+      console.error('Reset email error:', err);
+      setPwdError(err.message || 'Failed to send password reset email.');
+    } finally {
+      setPwdLoading(false);
+    }
+  };
+
+  const handleLinkGoogle = async () => {
+    setLinkError('');
+    setIsLinking(true);
+    try {
+      await linkGuestWithGoogle();
+    } catch (err) {
+      console.error('Google linking error:', err);
+      if (err.code === 'auth/credential-already-in-use' || err.code === 'auth/email-already-in-use') {
+        setLinkError('This Google account is already linked to another user.');
+      } else if (err.code === 'auth/popup-closed-by-user') {
+        // User closed popup
+      } else if (err.code === 'auth/operation-not-allowed') {
+        setLinkError('Google Sign-In is disabled in Firebase Console.');
+      } else {
+        setLinkError(`Google linking failed: ${err.message}`);
+      }
+    } finally {
+      setIsLinking(false);
+    }
+  };
 
   const [watchlist, setWatchlist]   = useState([]);
   const [liked,     setLiked]       = useState([]);
@@ -405,128 +485,182 @@ const ProfilePage = () => {
       <div className="profile-v2-body">
 
         {currentUser.isAnonymous && (
-          <div className="guest-link-banner glass-panel">
+          <div className="guest-link-banner glass-panel" id="guest-link-banner">
             <div className="guest-link-info">
+              <span className="guest-link-badge">🛡️ Guest Account Security</span>
               <h3>Secure Your Guest Account</h3>
-              <p>Link your account to an email and password to permanently save your watch history, lists, and achievements.</p>
+              <p>Link your guest account to Google or an Email so you never lose your watch history, saved lists, and achievements.</p>
             </div>
-            <form className="guest-link-form" onSubmit={handleLinkAccount}>
-              {linkError && <p className="link-error">{linkError}</p>}
-              <div className="link-inputs">
-                <input 
-                  type="email" 
-                  placeholder="Email Address" 
-                  value={linkEmail}
-                  onChange={e => setLinkEmail(e.target.value)}
-                  required
-                />
-                <input 
-                  type="password" 
-                  placeholder="Password (Min 6)" 
-                  value={linkPassword}
-                  onChange={e => setLinkPassword(e.target.value)}
-                  required
-                />
-                <button type="submit" className="btn-primary" disabled={isLinking}>
-                  {isLinking ? 'Linking...' : 'Link Account'}
-                </button>
-              </div>
-            </form>
+            
+            {linkError && <p className="link-error-alert">{linkError}</p>}
+
+            <div className="guest-link-options">
+              <button 
+                type="button" 
+                className="guest-link-google-btn" 
+                onClick={handleLinkGoogle}
+                disabled={isLinking}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                </svg>
+                <span>{isLinking ? 'Linking Google Account...' : 'Link Account with Google'}</span>
+              </button>
+
+              <div className="guest-link-divider"><span>OR LINK WITH EMAIL</span></div>
+
+              <form className="guest-link-form" onSubmit={handleLinkAccount}>
+                <div className="link-inputs">
+                  <input 
+                    type="email" 
+                    placeholder="Email Address" 
+                    value={linkEmail}
+                    onChange={e => setLinkEmail(e.target.value)}
+                    required
+                  />
+                  <input 
+                    type="password" 
+                    placeholder="Password (Min 6)" 
+                    value={linkPassword}
+                    onChange={e => setLinkPassword(e.target.value)}
+                    required
+                  />
+                  <button type="submit" className="btn-primary" disabled={isLinking}>
+                    {isLinking ? 'Linking...' : 'Link Email'}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         )}
 
-        {/* ── CineScope Stats Banner ─────────────────────────────── */}
-        <div className="cinescope-stats-banner glass-panel" onClick={() => setIsStatsModalOpen(true)}>
-          <div className="cs-stats-left">
-            <h2 className="cs-stats-title">CineScope Stats</h2>
+        {/* ── CineScope Stats Glass Card ─────────────────────────────── */}
+        <div className="profile-glass-card cinescope-stats-card" onClick={() => setIsStatsModalOpen(true)}>
+          <div className="pgc-icon-badge stats-badge">
+            📊
           </div>
-          <div className="cs-stats-right">
-            <button className="cs-stats-btn" onClick={(e) => { e.stopPropagation(); setIsStatsModalOpen(true); }}>
-              View Stats
-            </button>
+          <div className="pgc-content">
+            <h2 className="pgc-title">CineScope Stats</h2>
+            <p className="pgc-desc">Track your total watch time, top genres, and viewing analytics</p>
           </div>
+          <button className="pgc-action-btn" onClick={(e) => { e.stopPropagation(); setIsStatsModalOpen(true); }}>
+            View Stats →
+          </button>
         </div>
 
-        {/* ── Achievements Banner (Links to #achievements) ───────── */}
-        <div className="cinescope-stats-banner glass-panel" onClick={() => window.location.hash = 'achievements'}>
-          <div className="cs-stats-left">
-            <h2 className="cs-stats-title">Achievements</h2>
+        {/* ── Achievements Glass Card ───────────────────────── */}
+        <div className="profile-glass-card achievements-card" onClick={() => window.location.hash = 'achievements'}>
+          <div className="pgc-icon-badge achievements-badge">
+            🏆
           </div>
-          <div className="cs-stats-right">
-            <button className="cs-stats-btn" onClick={(e) => { e.stopPropagation(); window.location.hash = 'achievements'; }}>
-              View
-            </button>
+          <div className="pgc-content">
+            <h2 className="pgc-title">Achievements</h2>
+            <p className="pgc-desc">{unlockedCount} of {totalAchievements} badges unlocked</p>
           </div>
+          <button className="pgc-action-btn" onClick={(e) => { e.stopPropagation(); window.location.hash = 'achievements'; }}>
+            View →
+          </button>
         </div>
 
-        {/* ── My Media Lists (3 Clean Minimal List Cards) ────────────── */}
+        {/* ── Password & Security Glass Card ───────────────────────── */}
+        {!currentUser.isAnonymous && currentUser.email && (
+          <div className="profile-glass-card security-card" onClick={() => { setIsPwdModalOpen(true); setPwdError(''); setPwdSuccess(''); }}>
+            <div className="pgc-icon-badge security-badge">
+              🔑
+            </div>
+            <div className="pgc-content">
+              <h2 className="pgc-title">Password & Security</h2>
+              <p className="pgc-desc">Update your account password or send a reset email link</p>
+            </div>
+            <button className="pgc-action-btn" onClick={(e) => { e.stopPropagation(); setIsPwdModalOpen(true); setPwdError(''); setPwdSuccess(''); }}>
+              Change Password →
+            </button>
+          </div>
+        )}
+
+        {/* ── My Library Unified Glass Box ────────────── */}
         <div className="profile-lists-section">
-          <h2 className="profile-section-title">My Media Lists</h2>
-          <div className="profile-lists-cards">
-            {/* 1. Liked Titles */}
-            <div 
-              className="profile-list-card glass-panel"
-              onClick={() => window.location.hash = 'user-list?type=liked&from=profile'}
-            >
-              <div className="plc-left">
-                <span className="plc-icon">❤️</span>
-                <div className="plc-text">
-                  <h3>Liked Titles</h3>
-                  <p>{liked.length} {liked.length === 1 ? 'title' : 'titles'} saved in favorites</p>
-                </div>
+          <div className="my-library-unified-box">
+            <div className="my-library-header">
+              <div className="pgc-content">
+                <h2 className="pgc-title">My Library</h2>
+                <p className="pgc-desc">Your saved collections, watch history, and favorites</p>
               </div>
-              <button 
-                className="plc-btn"
-                onClick={(e) => { e.stopPropagation(); window.location.hash = 'user-list?type=liked&from=profile'; }}
-              >
-                View List →
-              </button>
             </div>
 
-            {/* 2. Watchlist */}
-            <div 
-              className="profile-list-card glass-panel"
-              onClick={() => window.location.hash = 'user-list?type=watchlist&from=profile'}
-            >
-              <div className="plc-left">
-                <span className="plc-icon">🔖</span>
-                <div className="plc-text">
-                  <h3>My Watchlist</h3>
-                  <p>{watchlist.length} {watchlist.length === 1 ? 'title' : 'titles'} planned to watch</p>
-                </div>
-              </div>
-              <button 
-                className="plc-btn"
-                onClick={(e) => { e.stopPropagation(); window.location.hash = 'user-list?type=watchlist&from=profile'; }}
+            <div className="my-library-items-list">
+              {/* 1. Liked Titles */}
+              <div 
+                className="my-library-item"
+                onClick={() => window.location.hash = 'user-list?type=liked&from=profile'}
               >
-                View List →
-              </button>
-            </div>
+                <div className="plc-left">
+                  <span className="plc-icon liked-icon">❤️</span>
+                  <div className="plc-text">
+                    <h3>Liked Titles</h3>
+                    <p>{liked.length} {liked.length === 1 ? 'title' : 'titles'} saved in favorites</p>
+                  </div>
+                </div>
+                <button 
+                  className="plc-btn"
+                  onClick={(e) => { e.stopPropagation(); window.location.hash = 'user-list?type=liked&from=profile'; }}
+                >
+                  View List →
+                </button>
+              </div>
 
-            {/* 3. Already Watched */}
-            <div 
-              className="profile-list-card glass-panel"
-              onClick={() => window.location.hash = 'user-list?type=watched&from=profile'}
-            >
-              <div className="plc-left">
-                <span className="plc-icon">✅</span>
-                <div className="plc-text">
-                  <h3>Already Watched</h3>
-                  <p>{watched.length} {watched.length === 1 ? 'title' : 'titles'} completed</p>
-                </div>
-              </div>
-              <button 
-                className="plc-btn"
-                onClick={(e) => { e.stopPropagation(); window.location.hash = 'user-list?type=watched&from=profile'; }}
+              <div className="my-library-divider" />
+
+              {/* 2. Watchlist */}
+              <div 
+                className="my-library-item"
+                onClick={() => window.location.hash = 'user-list?type=watchlist&from=profile'}
               >
-                View List →
-              </button>
+                <div className="plc-left">
+                  <span className="plc-icon watchlist-icon">🔖</span>
+                  <div className="plc-text">
+                    <h3>My Watchlist</h3>
+                    <p>{watchlist.length} {watchlist.length === 1 ? 'title' : 'titles'} planned to watch</p>
+                  </div>
+                </div>
+                <button 
+                  className="plc-btn"
+                  onClick={(e) => { e.stopPropagation(); window.location.hash = 'user-list?type=watchlist&from=profile'; }}
+                >
+                  View List →
+                </button>
+              </div>
+
+              <div className="my-library-divider" />
+
+              {/* 3. Already Watched */}
+              <div 
+                className="my-library-item"
+                onClick={() => window.location.hash = 'user-list?type=watched&from=profile'}
+              >
+                <div className="plc-left">
+                  <span className="plc-icon watched-icon">✅</span>
+                  <div className="plc-text">
+                    <h3>Already Watched</h3>
+                    <p>{watched.length} {watched.length === 1 ? 'title' : 'titles'} completed</p>
+                  </div>
+                </div>
+                <button 
+                  className="plc-btn"
+                  onClick={(e) => { e.stopPropagation(); window.location.hash = 'user-list?type=watched&from=profile'; }}
+                >
+                  View List →
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
         {/* ── Log Out Button Section ── */}
-        {currentUser && !currentUser.isAnonymous && (
+        {currentUser && (
           <div className="profile-logout-section">
             <button 
               type="button" 
@@ -540,7 +674,7 @@ const ProfilePage = () => {
                   <line x1="21" y1="12" x2="9" y2="12"></line>
                 </svg>
               </span>
-              <span>Log Out</span>
+              <span>{currentUser.isAnonymous ? 'Log Out Guest Account' : 'Log Out'}</span>
             </button>
           </div>
         )}
@@ -551,25 +685,63 @@ const ProfilePage = () => {
           <div className="modal-content logout-confirm-modal" onClick={e => e.stopPropagation()}>
             <button className="modal-close" onClick={() => setIsLogoutModalOpen(false)} aria-label="Close modal">✕</button>
             <div className="logout-modal-header">
-              <span className="logout-modal-icon">
-                <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                  <polyline points="16 17 21 12 16 7"></polyline>
-                  <line x1="21" y1="12" x2="9" y2="12"></line>
-                </svg>
+              <span className={`logout-modal-icon ${currentUser?.isAnonymous ? 'guest-warning-icon' : ''}`}>
+                {currentUser?.isAnonymous ? (
+                  <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#ef4444" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                  </svg>
+                ) : (
+                  <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                  </svg>
+                )}
               </span>
-              <h2>Log Out of CineScope?</h2>
+              <h2>{currentUser?.isAnonymous ? 'Log Out of Guest Account?' : 'Log Out of CineScope?'}</h2>
             </div>
-            <p className="logout-modal-desc">
-              Are you sure you want to log out? You will need to sign in again to access your watchlist, recommendations, and friends.
-            </p>
-            <div className="logout-modal-actions">
-              <button className="logout-cancel-btn" onClick={() => setIsLogoutModalOpen(false)}>
-                Cancel
-              </button>
-              <button className="logout-confirm-btn" onClick={async () => { await logout(); setIsLogoutModalOpen(false); window.location.hash = '#'; }}>
-                Log Out
-              </button>
+
+            {currentUser?.isAnonymous ? (
+              <div className="guest-logout-warning-box">
+                <p className="glw-title">
+                  <strong>⚠️ Warning: Your Data Will Be Lost!</strong>
+                </p>
+                <p className="glw-desc">
+                  You are logged in as a Guest. If you log out without linking your account to Google or an Email, all your saved watchlist, favorites, watched history, and achievements will be <strong>permanently deleted</strong>.
+                </p>
+              </div>
+            ) : (
+              <p className="logout-modal-desc">
+                Are you sure you want to log out? You will need to sign in again to access your watchlist, recommendations, and friends.
+              </p>
+            )}
+
+            <div className="logout-modal-actions vertical-if-guest">
+              {currentUser?.isAnonymous && (
+                <button 
+                  className="logout-link-first-btn" 
+                  onClick={() => {
+                    setIsLogoutModalOpen(false);
+                    const banner = document.getElementById('guest-link-banner');
+                    if (banner) banner.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                >
+                  🛡️ Link Account First (Keep Data)
+                </button>
+              )}
+              <div className="logout-modal-btn-row">
+                <button className="logout-cancel-btn" onClick={() => setIsLogoutModalOpen(false)}>
+                  Cancel
+                </button>
+                <button 
+                  className={`logout-confirm-btn ${currentUser?.isAnonymous ? 'danger-guest-logout' : ''}`} 
+                  onClick={async () => { await logout(); setIsLogoutModalOpen(false); window.location.hash = '#'; }}
+                >
+                  {currentUser?.isAnonymous ? 'Log Out & Lose Data' : 'Log Out'}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -654,6 +826,117 @@ const ProfilePage = () => {
 
             <button className="btn-primary w-full stats-modal-close-btn" onClick={() => setIsStatsModalOpen(false)}>
               Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Change Password Modal ── */}
+      {isPwdModalOpen && (
+        <div className="modal-overlay" onClick={() => setIsPwdModalOpen(false)}>
+          <div className="modal-content glass-panel" onClick={e => e.stopPropagation()} style={{ maxWidth: '460px' }}>
+            <button className="modal-close" onClick={() => setIsPwdModalOpen(false)}>✕</button>
+            <h2 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '0.35rem', color: '#fff' }}>Change Password</h2>
+            <p style={{ fontSize: '0.88rem', color: 'rgba(255,255,255,0.6)', marginBottom: '1.25rem' }}>
+              Update your account password or request a reset email link sent to <strong>{currentUser?.email}</strong>.
+            </p>
+
+            {pwdError && (
+              <div style={{
+                background: 'rgba(239, 68, 68, 0.15)',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                color: '#f87171',
+                padding: '0.75rem 1rem',
+                borderRadius: '12px',
+                fontSize: '0.88rem',
+                marginBottom: '1rem',
+                fontWeight: 600
+              }}>
+                {pwdError}
+              </div>
+            )}
+
+            {pwdSuccess && (
+              <div style={{
+                background: 'rgba(34, 197, 94, 0.15)',
+                border: '1px solid rgba(34, 197, 94, 0.3)',
+                color: '#4ade80',
+                padding: '0.75rem 1rem',
+                borderRadius: '12px',
+                fontSize: '0.88rem',
+                marginBottom: '1rem',
+                fontWeight: 600
+              }}>
+                {pwdSuccess}
+              </div>
+            )}
+
+            <form onSubmit={handleChangePassword} style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: 'rgba(255,255,255,0.6)', marginBottom: '0.35rem', letterSpacing: '0.05em' }}>CURRENT PASSWORD</label>
+                <input 
+                  type="password"
+                  required
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  placeholder="Enter current password"
+                  style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '12px', background: 'rgba(255,255,255,0.06)', color: '#fff', border: '1px solid rgba(255,255,255,0.12)', outline: 'none', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: 'rgba(255,255,255,0.6)', marginBottom: '0.35rem', letterSpacing: '0.05em' }}>NEW PASSWORD</label>
+                <input 
+                  type="password"
+                  required
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Min. 6 characters"
+                  style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '12px', background: 'rgba(255,255,255,0.06)', color: '#fff', border: '1px solid rgba(255,255,255,0.12)', outline: 'none', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: 'rgba(255,255,255,0.6)', marginBottom: '0.35rem', letterSpacing: '0.05em' }}>CONFIRM NEW PASSWORD</label>
+                <input 
+                  type="password"
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Re-enter new password"
+                  style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '12px', background: 'rgba(255,255,255,0.06)', color: '#fff', border: '1px solid rgba(255,255,255,0.12)', outline: 'none', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              <button type="submit" className="btn-primary" disabled={pwdLoading} style={{ borderRadius: '30px', padding: '0.8rem', marginTop: '0.5rem', fontWeight: 700 }}>
+                {pwdLoading ? 'Updating...' : 'Update Password'}
+              </button>
+            </form>
+
+            <div style={{ margin: '1.25rem 0', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }} />
+              <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', fontWeight: 600 }}>OR</span>
+              <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }} />
+            </div>
+
+            <button 
+              type="button" 
+              onClick={handleSendResetEmail} 
+              disabled={pwdLoading}
+              style={{
+                width: '100%',
+                background: 'rgba(255, 255, 255, 0.06)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                color: '#fff',
+                padding: '0.75rem',
+                borderRadius: '30px',
+                fontSize: '0.88rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              Forgot Current Password? Send Reset Email Link
             </button>
           </div>
         </div>

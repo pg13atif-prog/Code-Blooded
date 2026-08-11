@@ -240,11 +240,19 @@ const FriendsPage = () => {
                             <div className="friend-avatar">{f.avatar ? <img src={f.avatar} style={{width:'100%', height:'100%', borderRadius:'50%', objectFit:'cover'}} alt=""/> : f.username.charAt(0).toUpperCase()}</div>
                             <div className="friend-info">
                               <h4>{f.username}</h4>
-                              <p>Fav Genre: {f.favoriteGenre || 'Unknown'}</p>
                             </div>
                           </div>
                           <div className="friend-card-actions">
-                            <button className="btn-primary btn-sm btn-match" onClick={() => window.location.hash = `#social?match=${f.friendCode}`}>
+                            <button 
+                              className="btn-primary btn-sm btn-match" 
+                              onClick={() => {
+                                if (f.friendCode) {
+                                  window.location.hash = `#social?match=${f.friendCode}`;
+                                } else {
+                                  window.location.hash = '#social';
+                                }
+                              }}
+                            >
                               Movie Match
                             </button>
                             <button className="btn-secondary btn-sm btn-recommend" onClick={() => { setSelectedFriend(f); setShowRecommendModal(true); }}>
@@ -335,7 +343,6 @@ const FriendsPage = () => {
                       <div className="friend-avatar-lg">{searchResult.avatar ? <img src={searchResult.avatar} style={{width:'100%', height:'100%', borderRadius:'50%', objectFit:'cover'}} alt=""/> : searchResult.username.charAt(0).toUpperCase()}</div>
                       <div className="search-result-info">
                         <h2>{searchResult.username}</h2>
-                        <p>Favorite Genre: {searchResult.favoriteGenre}</p>
                       </div>
                     </div>
                     {friends.find(f => f.uid === searchResult.uid) ? (

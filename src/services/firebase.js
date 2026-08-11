@@ -4,16 +4,16 @@ import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
 import { getDatabase } from "firebase/database";
 
-// Your web app's Firebase configuration
+// Your web app's Firebase configuration read from environment variables
 const firebaseConfig = {
-  apiKey: "AIzaSyBbZdfq2rYGjh2_98KlM9vBXHvDOzaBL8c",
-  authDomain: "cinescope-app.firebaseapp.com",
-  databaseURL: "https://cinescope-app-default-rtdb.firebaseio.com",
-  projectId: "cinescope-app",
-  storageBucket: "cinescope-app.firebasestorage.app",
-  messagingSenderId: "335969845291",
-  appId: "1:335969845291:web:e7302e848ef978cf026a6e",
-  measurementId: "G-JFGS8505YT"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase

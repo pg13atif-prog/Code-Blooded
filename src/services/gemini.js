@@ -526,7 +526,11 @@ export const getAiMovieDebate = async (movieA, movieB) => {
   }
 };
 
-export const getFriendCompatibilityRecs = async (myProfile, friendProfile, myName = 'User A', friendName = 'User B') => {
+export const getFriendCompatibilityRecs = async (myProfile = [], friendProfile = [], myName = 'User A', friendName = 'User B') => {
+  if (!myProfile || !friendProfile || myProfile.length === 0 || friendProfile.length === 0) {
+    throw new Error("Cannot calculate movie compatibility because one or both users have no saved movies in their lists.");
+  }
+
   // 1. Sort profiles deterministically so identical inputs produce identical prompt strings
   const sortedMyProfile = [...myProfile].sort();
   const sortedFriendProfile = [...friendProfile].sort();
@@ -550,11 +554,13 @@ export const getFriendCompatibilityRecs = async (myProfile, friendProfile, myNam
   const friendGenres = new Set(friendParsed.map(p => p.genre).filter(g => g !== 'Unknown'));
   const genreIntersection = [...myGenres].filter(g => friendGenres.has(g)).length;
   const genreUnion = new Set([...myGenres, ...friendGenres]).size;
-  const mathGenreScore = genreUnion > 0 ? Math.round((genreIntersection / genreUnion) * 100) : 50;
+  const mathGenreScore = genreUnion > 0 ? Math.round((genreIntersection / genreUnion) * 100) : 0;
 
   // Rating standards delta
-  const myAvgRating = myParsed.reduce((s, p) => s + p.rating, 0) / (myParsed.length || 1);
-  const friendAvgRating = friendParsed.reduce((s, p) => s + p.rating, 0) / (friendParsed.length || 1);
+  const myRatingCount = myParsed.filter(p => p.rating > 0).length;
+  const friendRatingCount = friendParsed.filter(p => p.rating > 0).length;
+  const myAvgRating = myRatingCount > 0 ? myParsed.reduce((s, p) => s + p.rating, 0) / myRatingCount : 7.0;
+  const friendAvgRating = friendRatingCount > 0 ? friendParsed.reduce((s, p) => s + p.rating, 0) / friendRatingCount : 7.0;
   const ratingDelta = Math.abs(myAvgRating - friendAvgRating);
   const mathRatingScore = Math.max(20, Math.round(100 - ratingDelta * 25));
 
@@ -563,7 +569,7 @@ export const getFriendCompatibilityRecs = async (myProfile, friendProfile, myNam
   const friendDecades = new Set(friendParsed.map(p => p.year ? Math.floor(p.year / 10) * 10 : null).filter(Boolean));
   const eraIntersection = [...myDecades].filter(d => friendDecades.has(d)).length;
   const eraUnion = new Set([...myDecades, ...friendDecades]).size;
-  const mathEraScore = eraUnion > 0 ? Math.round((eraIntersection / eraUnion) * 100) : 60;
+  const mathEraScore = eraUnion > 0 ? Math.round((eraIntersection / eraUnion) * 100) : 0;
 
   const systemInstruction = `
     You are CineAI, the world's leading movie taste analyst. Perform a deterministic, accurate compatibility analysis between two users: "${myName}" and "${friendName}".

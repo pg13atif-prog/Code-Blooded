@@ -241,18 +241,20 @@
 }
 
 .auth-divider {
-  position: relative;
+  display: flex;
+  align-items: center;
   text-align: center;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .auth-divider span {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(28, 10, 12, 1);
-  padding: 0 12px;
+  padding: 0 0.75rem;
   color: rgba(255, 255, 255, 0.4);
   font-size: 0.78rem;
   font-weight: 600;

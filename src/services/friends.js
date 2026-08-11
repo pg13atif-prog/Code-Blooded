@@ -120,9 +120,17 @@ export const getFriendData = async (userId) => {
   const userSnap = await get(ref(db, `users/${userId}`));
   if (!userSnap.exists()) return null;
   const data = userSnap.val();
+  let friendCode = data.friendCode;
+  if (!friendCode) {
+    try {
+      friendCode = await ensureFriendCode(userId, data.email);
+    } catch (e) {
+      console.error('Error ensuring friend code in getFriendData:', e);
+    }
+  }
   return {
     uid: userId,
-    friendCode: data.friendCode,
+    friendCode: friendCode || null,
     email: data.email,
     username: data.displayName || (data.email ? data.email.split('@')[0] : 'Guest'),
     favoriteGenre: data.favoriteGenre || 'Unknown',

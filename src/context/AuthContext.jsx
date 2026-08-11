@@ -8,7 +8,11 @@ import {
   GoogleAuthProvider,
   signOut,
   EmailAuthProvider,
-  linkWithCredential
+  linkWithCredential,
+  linkWithPopup,
+  sendPasswordResetEmail,
+  updatePassword,
+  reauthenticateWithCredential
 } from 'firebase/auth';
 import { auth } from '../services/firebase';
 
@@ -54,6 +58,35 @@ export const AuthProvider = ({ children }) => {
     return linkWithCredential(auth.currentUser, credential);
   };
 
+  // Link Guest to Google
+  const linkGuestWithGoogle = () => {
+    const provider = new GoogleAuthProvider();
+    return linkWithPopup(auth.currentUser, provider);
+  };
+
+  // Reset Password via Email
+  const resetPassword = (email) => {
+    return sendPasswordResetEmail(auth, email);
+  };
+
+  // Change Password for Logged-In User
+  const changePassword = async (currentPassword, newPassword) => {
+    if (!auth.currentUser || !auth.currentUser.email) {
+      throw new Error("No authenticated email user found.");
+    }
+    const credential = EmailAuthProvider.credential(auth.currentUser.email, currentPassword);
+    await reauthenticateWithCredential(auth.currentUser, credential);
+    return updatePassword(auth.currentUser, newPassword);
+  };
+
+  // Send Reset Email to Currently Logged-In User
+  const sendResetEmailToCurrent = () => {
+    if (!auth.currentUser || !auth.currentUser.email) {
+      throw new Error("No authenticated email address available.");
+    }
+    return sendPasswordResetEmail(auth, auth.currentUser.email);
+  };
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
@@ -70,7 +103,11 @@ export const AuthProvider = ({ children }) => {
     loginWithGoogle,
     loginAsGuest,
     logout,
-    linkGuestAccount
+    linkGuestAccount,
+    linkGuestWithGoogle,
+    resetPassword,
+    changePassword,
+    sendResetEmailToCurrent
   };
 
   return (

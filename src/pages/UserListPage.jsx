@@ -118,7 +118,6 @@ const UserListPage = ({ initialType = 'liked' }) => {
       {/* Header */}
       <div className="user-list-header">
         <h1>My Collection</h1>
-        <p>Manage your saved, liked, and completed movies & TV shows</p>
       </div>
 
       {/* Tabs */}

@@ -503,7 +503,7 @@ const Navbar = () => {
               <span>Notifications {notifications.length > 0 ? `(${notifications.length})` : ''}</span>
             </button>
           </li>
-          {currentUser && !currentUser.isAnonymous ? (
+          {currentUser ? (
             <li className="mobile-drawer-item logout">
               <button type="button" className="mobile-drawer-logout-btn" onClick={() => {
                 setIsLogoutModalOpen(true);
@@ -959,25 +959,66 @@ const Navbar = () => {
           <div className="modal-content logout-confirm-modal" onClick={e => e.stopPropagation()}>
             <button className="modal-close" onClick={() => setIsLogoutModalOpen(false)} aria-label="Close modal">✕</button>
             <div className="logout-modal-header">
-              <span className="logout-modal-icon">
-                <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                  <polyline points="16 17 21 12 16 7"></polyline>
-                  <line x1="21" y1="12" x2="9" y2="12"></line>
-                </svg>
+              <span className={`logout-modal-icon ${currentUser?.isAnonymous ? 'guest-warning-icon' : ''}`}>
+                {currentUser?.isAnonymous ? (
+                  <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#ef4444" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                  </svg>
+                ) : (
+                  <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                  </svg>
+                )}
               </span>
-              <h2>Log Out of CineScope?</h2>
+              <h2>{currentUser?.isAnonymous ? 'Log Out of Guest Account?' : 'Log Out of CineScope?'}</h2>
             </div>
-            <p className="logout-modal-desc">
-              Are you sure you want to log out? You will need to sign in again to access your watchlist, recommendations, and friends.
-            </p>
-            <div className="logout-modal-actions">
-              <button className="logout-cancel-btn" onClick={() => setIsLogoutModalOpen(false)}>
-                Cancel
-              </button>
-              <button className="logout-confirm-btn" onClick={handleConfirmLogout}>
-                Log Out
-              </button>
+
+            {currentUser?.isAnonymous ? (
+              <div className="guest-logout-warning-box">
+                <p className="glw-title">
+                  <strong>⚠️ Warning: Your Data Will Be Lost!</strong>
+                </p>
+                <p className="glw-desc">
+                  You are logged in as a Guest. If you log out without linking your account to Google or an Email, all your saved watchlist, favorites, watched history, and achievements will be <strong>permanently deleted</strong>.
+                </p>
+              </div>
+            ) : (
+              <p className="logout-modal-desc">
+                Are you sure you want to log out? You will need to sign in again to access your watchlist, recommendations, and friends.
+              </p>
+            )}
+
+            <div className="logout-modal-actions vertical-if-guest">
+              {currentUser?.isAnonymous && (
+                <button 
+                  className="logout-link-first-btn" 
+                  onClick={() => {
+                    setIsLogoutModalOpen(false);
+                    window.location.hash = '#profile';
+                    setTimeout(() => {
+                      const banner = document.getElementById('guest-link-banner');
+                      if (banner) banner.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                  }}
+                >
+                  🛡️ Link Account First (Keep Data)
+                </button>
+              )}
+              <div className="logout-modal-btn-row">
+                <button className="logout-cancel-btn" onClick={() => setIsLogoutModalOpen(false)}>
+                  Cancel
+                </button>
+                <button 
+                  className={`logout-confirm-btn ${currentUser?.isAnonymous ? 'danger-guest-logout' : ''}`} 
+                  onClick={handleConfirmLogout}
+                >
+                  {currentUser?.isAnonymous ? 'Log Out & Lose Data' : 'Log Out'}
+                </button>
+              </div>
             </div>
           </div>
         </div>
