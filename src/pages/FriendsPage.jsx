@@ -213,7 +213,7 @@ const FriendsPage = () => {
             <motion.div
               layoutId="friendsActiveTabPill"
               className="friends-active-pill-bg"
-              transition={{ type: "spring", stiffness: 450, damping: 35 }}
+              transition={{ type: "spring", stiffness: 450, damping: 32 }}
             />
           )}
           <span className="friends-tab-text">My Friends</span>
@@ -228,7 +228,7 @@ const FriendsPage = () => {
             <motion.div
               layoutId="friendsActiveTabPill"
               className="friends-active-pill-bg"
-              transition={{ type: "spring", stiffness: 450, damping: 35 }}
+              transition={{ type: "spring", stiffness: 450, damping: 32 }}
             />
           )}
           <span className="friends-tab-text">
@@ -245,7 +245,7 @@ const FriendsPage = () => {
             <motion.div
               layoutId="friendsActiveTabPill"
               className="friends-active-pill-bg"
-              transition={{ type: "spring", stiffness: 450, damping: 35 }}
+              transition={{ type: "spring", stiffness: 450, damping: 32 }}
             />
           )}
           <span className="friends-tab-text">Add Friend</span>
