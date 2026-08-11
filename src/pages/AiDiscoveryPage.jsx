@@ -357,7 +357,7 @@ const AiDiscoveryPage = () => {
                         });
                       }}
                     >
-                      ✨ See Why AI
+                      See Why
                     </button>
                   </div>
                 </motion.div>
