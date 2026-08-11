@@ -66,7 +66,11 @@ export const AuthProvider = ({ children }) => {
 
   // Reset Password via Email
   const resetPassword = (email) => {
-    return sendPasswordResetEmail(auth, email);
+    const actionCodeSettings = {
+      url: `${window.location.origin}/#reset-password`,
+      handleCodeInApp: true,
+    };
+    return sendPasswordResetEmail(auth, email, actionCodeSettings);
   };
 
   // Change Password for Logged-In User
@@ -84,7 +88,11 @@ export const AuthProvider = ({ children }) => {
     if (!auth.currentUser || !auth.currentUser.email) {
       throw new Error("No authenticated email address available.");
     }
-    return sendPasswordResetEmail(auth, auth.currentUser.email);
+    const actionCodeSettings = {
+      url: `${window.location.origin}/#reset-password`,
+      handleCodeInApp: true,
+    };
+    return sendPasswordResetEmail(auth, auth.currentUser.email, actionCodeSettings);
   };
 
   useEffect(() => {
