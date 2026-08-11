@@ -17,9 +17,22 @@ import { searchMedia } from '../services/tmdb';
 import { FriendsSkeleton } from '../components/SkeletonLoader';
 import './FriendsPage.css';
 
-const FriendsPage = () => {
+const FriendsPage = ({ initialTab = 'list' }) => {
   const { currentUser } = useAuth();
-  const [activeTab, setActiveTab] = useState('list'); // 'list', 'requests', 'search'
+
+  const getTabFromHash = () => {
+    const hash = window.location.hash;
+    const match = hash.match(/^#friends\/(list|requests|search)/) || hash.match(/^#friends\?tab=(list|requests|search)/);
+    if (match) return match[1];
+    return initialTab || 'list';
+  };
+
+  const [activeTab, setActiveTab] = useState(getTabFromHash);
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    window.history.replaceState(null, '', `#friends/${tab}`);
+  };
   
   // State
   const [friends, setFriends] = useState([]);
@@ -208,7 +221,7 @@ const FriendsPage = () => {
         <button
           type="button"
           className={`friends-tab-btn ${activeTab === 'list' ? 'active' : ''}`}
-          onClick={() => setActiveTab('list')}
+          onClick={() => handleTabChange('list')}
         >
           {activeTab === 'list' && (
             <motion.div
@@ -223,7 +236,7 @@ const FriendsPage = () => {
         <button
           type="button"
           className={`friends-tab-btn ${activeTab === 'requests' ? 'active' : ''}`}
-          onClick={() => setActiveTab('requests')}
+          onClick={() => handleTabChange('requests')}
         >
           {activeTab === 'requests' && (
             <motion.div
@@ -240,7 +253,7 @@ const FriendsPage = () => {
         <button
           type="button"
           className={`friends-tab-btn ${activeTab === 'search' ? 'active' : ''}`}
-          onClick={() => setActiveTab('search')}
+          onClick={() => handleTabChange('search')}
         >
           {activeTab === 'search' && (
             <motion.div

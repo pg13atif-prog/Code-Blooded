@@ -129,6 +129,19 @@ function App() {
         return;
       }
 
+      // Handle #friends with optional tab parameter (#friends/requests, #friends/search, #friends/list, #friends?tab=...)
+      const friendsMatch = hash.match(/^#friends\/(list|requests|search)/) || hash.match(/^#friends\?tab=(list|requests|search)/);
+      if (friendsMatch) {
+        setCurrentRoute('friends');
+        setCurrentParams({ tab: friendsMatch[1] });
+        return;
+      }
+      if (hash.startsWith('#friends')) {
+        setCurrentRoute('friends');
+        setCurrentParams({ tab: 'list' });
+        return;
+      }
+
       // Handle #social with optional ?match= parameter
       if (hash.startsWith('#social')) {
         setCurrentRoute('social');
@@ -151,7 +164,7 @@ function App() {
           break;
         case '#friends':
           setCurrentRoute('friends');
-          setCurrentParams(null);
+          setCurrentParams({ tab: 'list' });
           break;
         case '#watchlist':
           setCurrentRoute('user-list');
@@ -297,7 +310,7 @@ function App() {
         return <SocialPage />;
 
       case 'friends':
-        return <FriendsPage />;
+        return <FriendsPage initialTab={currentParams?.tab || 'list'} key={currentParams?.tab || 'list'} />;
 
       case 'watchlist':
       case 'user-list':
