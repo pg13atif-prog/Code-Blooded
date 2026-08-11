@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { motion, LayoutGroup } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useAlert } from '../context/AlertContext';
 import { 
@@ -229,54 +229,59 @@ const FriendsPage = ({ initialTab = 'list' }) => {
         <p>Connect with others, compare watchlists, and find your perfect movie match.</p>
       </div>
 
-      <div className="friends-tabs">
-        <button
-          type="button"
-          className={`friends-tab-btn ${activeTab === 'list' ? 'active' : ''}`}
-          onClick={() => handleTabChange('list')}
-        >
-          {activeTab === 'list' && (
-            <motion.div
-              layoutId="friendsActiveTabPill"
-              className="friends-active-pill-bg"
-              transition={{ type: "spring", stiffness: 450, damping: 32 }}
-            />
-          )}
-          <span className="friends-tab-text">My Friends</span>
-        </button>
+      <LayoutGroup id="friendsTabsGroup" inherit={false}>
+        <div className="friends-tabs">
+          <button
+            type="button"
+            className={`friends-tab-btn ${activeTab === 'list' ? 'active' : ''}`}
+            onClick={() => handleTabChange('list')}
+          >
+            {activeTab === 'list' && (
+              <motion.div
+                layoutId="friendsActiveTabPill"
+                initial={false}
+                className="friends-active-pill-bg"
+                transition={{ type: "spring", stiffness: 450, damping: 32 }}
+              />
+            )}
+            <span className="friends-tab-text">My Friends</span>
+          </button>
 
-        <button
-          type="button"
-          className={`friends-tab-btn ${activeTab === 'requests' ? 'active' : ''}`}
-          onClick={() => handleTabChange('requests')}
-        >
-          {activeTab === 'requests' && (
-            <motion.div
-              layoutId="friendsActiveTabPill"
-              className="friends-active-pill-bg"
-              transition={{ type: "spring", stiffness: 450, damping: 32 }}
-            />
-          )}
-          <span className="friends-tab-text">
-            Requests {incoming.length > 0 && <span className="req-badge">{incoming.length}</span>}
-          </span>
-        </button>
+          <button
+            type="button"
+            className={`friends-tab-btn ${activeTab === 'requests' ? 'active' : ''}`}
+            onClick={() => handleTabChange('requests')}
+          >
+            {activeTab === 'requests' && (
+              <motion.div
+                layoutId="friendsActiveTabPill"
+                initial={false}
+                className="friends-active-pill-bg"
+                transition={{ type: "spring", stiffness: 450, damping: 32 }}
+              />
+            )}
+            <span className="friends-tab-text">
+              Requests {incoming.length > 0 && <span className="req-badge">{incoming.length}</span>}
+            </span>
+          </button>
 
-        <button
-          type="button"
-          className={`friends-tab-btn ${activeTab === 'search' ? 'active' : ''}`}
-          onClick={() => handleTabChange('search')}
-        >
-          {activeTab === 'search' && (
-            <motion.div
-              layoutId="friendsActiveTabPill"
-              className="friends-active-pill-bg"
-              transition={{ type: "spring", stiffness: 450, damping: 32 }}
-            />
-          )}
-          <span className="friends-tab-text">Add Friend</span>
-        </button>
-      </div>
+          <button
+            type="button"
+            className={`friends-tab-btn ${activeTab === 'search' ? 'active' : ''}`}
+            onClick={() => handleTabChange('search')}
+          >
+            {activeTab === 'search' && (
+              <motion.div
+                layoutId="friendsActiveTabPill"
+                initial={false}
+                className="friends-active-pill-bg"
+                transition={{ type: "spring", stiffness: 450, damping: 32 }}
+              />
+            )}
+            <span className="friends-tab-text">Add Friend</span>
+          </button>
+        </div>
+      </LayoutGroup>
 
       <div className="friends-content">
         {loading ? (

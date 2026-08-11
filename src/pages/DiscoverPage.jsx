@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { discoverMedia, getTrending } from '../services/tmdb';
 import MovieCard from '../components/MovieCard';
 import { CardSkeleton } from '../components/SkeletonLoader';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import CustomSelect from '../components/CustomSelect';
 import './DiscoverPage.css';
 
@@ -229,60 +229,65 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
         </div>
 
         <div className="discover-header-row new-discover-header">
-          <div className="discover-pill-toggle">
-            <button 
-              type="button" 
-              className={`pill-btn ${filterMediaType === 'tv' ? 'active' : ''}`}
-              onClick={() => {
-                setFilterMediaType('tv');
-                window.history.replaceState(null, '', '#discover/tv');
-              }}
-            >
-              {filterMediaType === 'tv' && (
-                <motion.div
-                  layoutId="discoverTabPill"
-                  className="discover-tab-pill-active"
-                  transition={{ type: "spring", stiffness: 450, damping: 32 }}
-                />
-              )}
-              <span className="pill-btn-label">TV Shows</span>
-            </button>
-            <button 
-              type="button" 
-              className={`pill-btn ${filterMediaType === 'movie' ? 'active' : ''}`}
-              onClick={() => {
-                setFilterMediaType('movie');
-                window.history.replaceState(null, '', '#discover/movies');
-              }}
-            >
-              {filterMediaType === 'movie' && (
-                <motion.div
-                  layoutId="discoverTabPill"
-                  className="discover-tab-pill-active"
-                  transition={{ type: "spring", stiffness: 450, damping: 32 }}
-                />
-              )}
-              <span className="pill-btn-label">Movies</span>
-            </button>
-            <button 
-              type="button" 
-              className={`pill-btn ${filterMediaType === 'trending' ? 'active' : ''}`}
-              onClick={() => {
-                setFilterMediaType('trending');
-                setShowFilters(false);
-                window.history.replaceState(null, '', '#discover/trending');
-              }}
-            >
-              {filterMediaType === 'trending' && (
-                <motion.div
-                  layoutId="discoverTabPill"
-                  className="discover-tab-pill-active"
-                  transition={{ type: "spring", stiffness: 450, damping: 32 }}
-                />
-              )}
-              <span className="pill-btn-label">Trending</span>
-            </button>
-          </div>
+          <LayoutGroup id="discoverPageMediaTypeToggle" inherit={false}>
+            <div className="discover-pill-toggle">
+              <button 
+                type="button" 
+                className={`pill-btn ${filterMediaType === 'tv' ? 'active' : ''}`}
+                onClick={() => {
+                  setFilterMediaType('tv');
+                  window.history.replaceState(null, '', '#discover/tv');
+                }}
+              >
+                {filterMediaType === 'tv' && (
+                  <motion.div
+                    layoutId="discoverTabPill"
+                    initial={false}
+                    className="discover-tab-pill-active"
+                    transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                  />
+                )}
+                <span className="pill-btn-label">TV Shows</span>
+              </button>
+              <button 
+                type="button" 
+                className={`pill-btn ${filterMediaType === 'movie' ? 'active' : ''}`}
+                onClick={() => {
+                  setFilterMediaType('movie');
+                  window.history.replaceState(null, '', '#discover/movies');
+                }}
+              >
+                {filterMediaType === 'movie' && (
+                  <motion.div
+                    layoutId="discoverTabPill"
+                    initial={false}
+                    className="discover-tab-pill-active"
+                    transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                  />
+                )}
+                <span className="pill-btn-label">Movies</span>
+              </button>
+              <button 
+                type="button" 
+                className={`pill-btn ${filterMediaType === 'trending' ? 'active' : ''}`}
+                onClick={() => {
+                  setFilterMediaType('trending');
+                  setShowFilters(false);
+                  window.history.replaceState(null, '', '#discover/trending');
+                }}
+              >
+                {filterMediaType === 'trending' && (
+                  <motion.div
+                    layoutId="discoverTabPill"
+                    initial={false}
+                    className="discover-tab-pill-active"
+                    transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                  />
+                )}
+                <span className="pill-btn-label">Trending</span>
+              </button>
+            </div>
+          </LayoutGroup>
 
           {/* Filter button - Desktop (right edge) */}
           {filterMediaType !== 'trending' && (
@@ -312,36 +317,40 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
               </h2>
               <p style={{ margin: '0.2rem 0 0', fontSize: '0.82rem', color: 'rgba(255,255,255,0.6)' }}>Most popular movies and TV shows across the globe right now</p>
             </div>
-            <div className="discover-pill-toggle">
-              <button 
-                type="button" 
-                className={`pill-btn ${trendingTimeWindow === 'day' ? 'active' : ''}`}
-                onClick={() => setTrendingTimeWindow('day')}
-              >
-                {trendingTimeWindow === 'day' && (
-                  <motion.div
-                    layoutId="trendingTimePill"
-                    className="discover-tab-pill-active"
-                    transition={{ type: "spring", stiffness: 450, damping: 32 }}
-                  />
-                )}
-                <span className="pill-btn-label">Today</span>
-              </button>
-              <button 
-                type="button" 
-                className={`pill-btn ${trendingTimeWindow === 'week' ? 'active' : ''}`}
-                onClick={() => setTrendingTimeWindow('week')}
-              >
-                {trendingTimeWindow === 'week' && (
-                  <motion.div
-                    layoutId="trendingTimePill"
-                    className="discover-tab-pill-active"
-                    transition={{ type: "spring", stiffness: 450, damping: 32 }}
-                  />
-                )}
-                <span className="pill-btn-label">This Week</span>
-              </button>
-            </div>
+            <LayoutGroup id="discoverTrendingTimeToggle" inherit={false}>
+              <div className="discover-pill-toggle">
+                <button 
+                  type="button" 
+                  className={`pill-btn ${trendingTimeWindow === 'day' ? 'active' : ''}`}
+                  onClick={() => setTrendingTimeWindow('day')}
+                >
+                  {trendingTimeWindow === 'day' && (
+                    <motion.div
+                      layoutId="trendingTimePill"
+                      initial={false}
+                      className="discover-tab-pill-active"
+                      transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                    />
+                  )}
+                  <span className="pill-btn-label">Today</span>
+                </button>
+                <button 
+                  type="button" 
+                  className={`pill-btn ${trendingTimeWindow === 'week' ? 'active' : ''}`}
+                  onClick={() => setTrendingTimeWindow('week')}
+                >
+                  {trendingTimeWindow === 'week' && (
+                    <motion.div
+                      layoutId="trendingTimePill"
+                      initial={false}
+                      className="discover-tab-pill-active"
+                      transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                    />
+                  )}
+                  <span className="pill-btn-label">This Week</span>
+                </button>
+              </div>
+            </LayoutGroup>
           </div>
         </div>
       )}

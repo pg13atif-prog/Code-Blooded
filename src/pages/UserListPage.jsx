@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { getWatchlist, getLiked, getWatched, removeFromWatchlist, removeFromLiked, removeFromWatched, addToWatched } from '../services/firestore';
 import MovieCard from '../components/MovieCard';
@@ -127,47 +127,52 @@ const UserListPage = ({ initialType = 'liked' }) => {
 
       {/* Tabs */}
       <div className="user-list-tabs-container">
-        <div className="user-list-tabs">
-          <button 
-            className={`list-tab-btn ${listType === 'liked' ? 'active' : ''}`}
-            onClick={() => { setListType('liked'); window.history.replaceState(null, '', '#user-list?type=liked'); }}
-          >
-            {listType === 'liked' && (
-              <motion.div
-                layoutId="userListTabPill"
-                className="list-tab-pill-active"
-                transition={{ type: "spring", stiffness: 450, damping: 32 }}
-              />
-            )}
-            <span className="list-tab-btn-label">Liked <span>({liked.length})</span></span>
-          </button>
-          <button 
-            className={`list-tab-btn ${listType === 'watchlist' ? 'active' : ''}`}
-            onClick={() => { setListType('watchlist'); window.history.replaceState(null, '', '#user-list?type=watchlist'); }}
-          >
-            {listType === 'watchlist' && (
-              <motion.div
-                layoutId="userListTabPill"
-                className="list-tab-pill-active"
-                transition={{ type: "spring", stiffness: 450, damping: 32 }}
-              />
-            )}
-            <span className="list-tab-btn-label">Watchlist <span>({watchlist.length})</span></span>
-          </button>
-          <button 
-            className={`list-tab-btn ${listType === 'watched' ? 'active' : ''}`}
-            onClick={() => { setListType('watched'); window.history.replaceState(null, '', '#user-list?type=watched'); }}
-          >
-            {listType === 'watched' && (
-              <motion.div
-                layoutId="userListTabPill"
-                className="list-tab-pill-active"
-                transition={{ type: "spring", stiffness: 450, damping: 32 }}
-              />
-            )}
-            <span className="list-tab-btn-label">Watched <span>({watched.length})</span></span>
-          </button>
-        </div>
+        <LayoutGroup id="userListTabsGroup" inherit={false}>
+          <div className="user-list-tabs">
+            <button 
+              className={`list-tab-btn ${listType === 'liked' ? 'active' : ''}`}
+              onClick={() => { setListType('liked'); window.history.replaceState(null, '', '#user-list?type=liked'); }}
+            >
+              {listType === 'liked' && (
+                <motion.div
+                  layoutId="userListTabPill"
+                  initial={false}
+                  className="list-tab-pill-active"
+                  transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                />
+              )}
+              <span className="list-tab-btn-label">Liked <span>({liked.length})</span></span>
+            </button>
+            <button 
+              className={`list-tab-btn ${listType === 'watchlist' ? 'active' : ''}`}
+              onClick={() => { setListType('watchlist'); window.history.replaceState(null, '', '#user-list?type=watchlist'); }}
+            >
+              {listType === 'watchlist' && (
+                <motion.div
+                  layoutId="userListTabPill"
+                  initial={false}
+                  className="list-tab-pill-active"
+                  transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                />
+              )}
+              <span className="list-tab-btn-label">Watchlist <span>({watchlist.length})</span></span>
+            </button>
+            <button 
+              className={`list-tab-btn ${listType === 'watched' ? 'active' : ''}`}
+              onClick={() => { setListType('watched'); window.history.replaceState(null, '', '#user-list?type=watched'); }}
+            >
+              {listType === 'watched' && (
+                <motion.div
+                  layoutId="userListTabPill"
+                  initial={false}
+                  className="list-tab-pill-active"
+                  transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                />
+              )}
+              <span className="list-tab-btn-label">Watched <span>({watched.length})</span></span>
+            </button>
+          </div>
+        </LayoutGroup>
       </div>
 
       {/* Controls Bar */}
