@@ -420,6 +420,10 @@
   font-weight: 400;
 }
 
+.see-why-btn {
+  display: none;
+}
+
 @media (max-width: 1250px) {
   .ai-results-list {
     grid-template-columns: 1fr;

@@ -346,6 +346,19 @@ const AiDiscoveryPage = () => {
                     <p className="ai-result-rationale">
                       {movie.rationale || movie.overview}
                     </p>
+                    <button 
+                      type="button"
+                      className="see-why-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedRationaleModal({
+                          title: movie.title,
+                          rationale: movie.rationale || movie.overview
+                        });
+                      }}
+                    >
+                      ✨ See Why AI
+                    </button>
                   </div>
                 </motion.div>
               ))}
