@@ -485,11 +485,12 @@ const FriendsPage = ({ initialTab = 'list' }) => {
                       className={`btn-primary btn-sm ${isSent ? 'btn-unsend' : ''}`} 
                       onClick={() => handleToggleRecommendation(res)}
                       style={{ 
-                        padding: '0.6rem 1.25rem', 
+                        padding: '0.45rem 0.5rem', 
                         borderRadius: '30px', 
-                        minWidth: '88px',
-                        height: '38px',
-                        fontSize: '0.88rem',
+                        width: '84px',
+                        minWidth: '84px',
+                        height: '36px',
+                        fontSize: '0.85rem',
                         fontWeight: 700,
                         display: 'inline-flex',
                         alignItems: 'center',
