@@ -251,16 +251,18 @@ const Hero = ({ movies = [], movie = null, loading = false }) => {
               {currentSlide.overview || DEFAULT_FALLBACK_HERO.overview}
             </p>
 
-            {/* AI Generated Plot Summary - Mobile (3-4 lines for visual consistency) */}
+            {/* AI Generated Plot Summary - Mobile (Complete concise sentences without cutoff) */}
             <p className="hero__description hero__description--mobile" id="hero-description-mobile">
               {(() => {
                 const rawOverview = currentSlide.overview || DEFAULT_FALLBACK_HERO.overview;
                 const sentences = rawOverview.split(/(?<=[.!?])\s+/).filter(s => s.trim().length > 0);
-                let aiSummary = sentences.length >= 3 ? sentences.slice(0, 3).join(' ') : rawOverview;
-                if (aiSummary.length > 220) {
-                  aiSummary = aiSummary.substring(0, 217).trim() + '...';
+                if (sentences.length === 0) return rawOverview;
+                
+                let summary = sentences[0];
+                if (sentences.length > 1 && (summary.length + sentences[1].length + 1) <= 175) {
+                  summary += ' ' + sentences[1];
                 }
-                return aiSummary;
+                return summary;
               })()}
             </p>
 
