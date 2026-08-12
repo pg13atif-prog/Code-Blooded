@@ -344,56 +344,87 @@ const SocialPage = () => {
 
       {!matchResult && !matchLoading && (
         <div className="social-content" style={{ display: 'flex', justifyContent: 'center' }}>
-          <div className="match-card" style={{ maxWidth: '600px', width: '100%' }}>
-            <h2>Match with a Friend</h2>
-            <form onSubmit={handleMatch} className="match-form">
-              <input 
-                type="text" 
-                placeholder="Enter Friend Code (e.g. CS-123456)" 
-                value={searchCode}
-                onChange={(e) => setSearchCode(e.target.value)}
-                required
-              />
-              <button type="submit" className="match-btn" disabled={matchLoading}>
-                {matchLoading ? 'Comparing...' : 'Compare Watchlists'}
-              </button>
-            </form>
-            {matchError && <p className="error-text">{matchError}</p>}
+          <div className="match-card glass-panel" style={{ maxWidth: '650px', width: '100%', padding: '2.5rem', textAlign: 'center' }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>🤝</div>
+            <h2 style={{ fontSize: '1.6rem', fontWeight: 800, marginBottom: '0.5rem', color: '#fff' }}>
+              Select a Friend to Match
+            </h2>
+            <p style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.95rem', marginBottom: '2rem', lineHeight: '1.55' }}>
+              Choose a friend from your connected network to compare watchlists, calculate taste compatibility, and generate shared recommendations.
+            </p>
 
-            {myFriends.length > 0 && (
-              <div style={{ marginTop: '1.75rem', paddingTop: '1.25rem', borderTop: '1px solid rgba(255,255,255,0.1)', textAlign: 'left' }}>
-                <p style={{ fontSize: '0.85rem', fontWeight: 600, color: 'rgba(255,255,255,0.6)', marginBottom: '0.75rem' }}>
-                  Or pick a friend to test match:
+            {matchError && <p className="error-text" style={{ marginBottom: '1.5rem' }}>{matchError}</p>}
+
+            {myFriends.length > 0 ? (
+              <div className="friends-match-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '1rem' }}>
+                {myFriends.map((friend) => (
+                  <button
+                    key={friend.uid}
+                    type="button"
+                    className="friend-match-selector-btn"
+                    onClick={() => {
+                      setSearchCode(friend.friendCode);
+                      executeMatch(friend.friendCode);
+                    }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '1rem',
+                      padding: '1rem 1.25rem',
+                      background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.03) 100%)',
+                      border: '1px solid rgba(255, 255, 255, 0.16)',
+                      borderRadius: '16px',
+                      color: '#ffffff',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      backdropFilter: 'blur(12px)',
+                      transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                      boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)'
+                    }}
+                  >
+                    <div style={{
+                      width: '42px',
+                      height: '42px',
+                      borderRadius: '50%',
+                      background: 'linear-gradient(135deg, rgba(229, 9, 20, 0.85) 0%, rgba(185, 9, 11, 0.95) 100%)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontWeight: 800,
+                      fontSize: '1.1rem',
+                      color: '#fff',
+                      flexShrink: 0,
+                      boxShadow: '0 0 12px rgba(229, 9, 20, 0.4)'
+                    }}>
+                      {(friend.username || friend.email || 'F')[0].toUpperCase()}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 700, fontSize: '0.98rem', color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {friend.username || friend.email?.split('@')[0]}
+                      </div>
+                      <div style={{ fontSize: '0.78rem', color: 'var(--color-accent)', fontWeight: 600, marginTop: '2px' }}>
+                        {friend.friendCode}
+                      </div>
+                    </div>
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ color: 'rgba(255,255,255,0.4)', flexShrink: 0, transition: 'all 0.2s ease' }}>
+                      <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div style={{ padding: '2rem 1rem', background: 'rgba(255,255,255,0.03)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.95rem', marginBottom: '1.25rem' }}>
+                  You haven't added any friends yet. Add friends using their Friend Code in the Friends tab to start matching!
                 </p>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem' }}>
-                  {myFriends.map(friend => (
-                    <button
-                      key={friend.uid}
-                      type="button"
-                      onClick={() => {
-                        setSearchCode(friend.friendCode);
-                        executeMatch(friend.friendCode);
-                      }}
-                      style={{
-                        background: 'rgba(255,255,255,0.06)',
-                        border: '1px solid rgba(255,255,255,0.16)',
-                        color: '#fff',
-                        padding: '0.5rem 0.95rem',
-                        borderRadius: '20px',
-                        fontSize: '0.85rem',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.45rem',
-                        transition: 'all 0.2s ease',
-                        backdropFilter: 'blur(8px)'
-                      }}
-                    >
-                      <span style={{ fontWeight: 600 }}>👤 {friend.username || friend.email?.split('@')[0]}</span>
-                      <span style={{ fontSize: '0.78rem', color: 'var(--color-accent)' }}>({friend.friendCode})</span>
-                    </button>
-                  ))}
-                </div>
+                <button 
+                  type="button" 
+                  className="btn-primary" 
+                  onClick={() => window.location.hash = '#friends'}
+                  style={{ padding: '0.65rem 1.6rem', fontSize: '0.9rem' }}
+                >
+                  Go to Friends Tab
+                </button>
               </div>
             )}
           </div>
@@ -411,10 +442,10 @@ const SocialPage = () => {
       {matchResult && !matchLoading && (
         <div className="match-results">
           {/* Top Action Header */}
-          <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.75rem' }}>
+          <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '2rem' }}>
             <button 
               type="button" 
-              className="match-back-btn" 
+              className="btn-secondary" 
               onClick={async () => {
                 await handleClearMatch();
                 window.location.hash = '#friends';
@@ -422,43 +453,34 @@ const SocialPage = () => {
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '0.5rem',
-                background: 'rgba(255, 255, 255, 0.08)',
-                border: '1px solid rgba(255, 255, 255, 0.16)',
-                color: '#ffffff',
-                padding: '0.55rem 1.15rem',
-                borderRadius: '999px',
-                fontSize: '0.88rem',
-                fontWeight: '600',
-                cursor: 'pointer',
-                backdropFilter: 'blur(12px)',
-                transition: 'all 0.22s ease'
+                gap: '0.55rem',
+                padding: '0.65rem 1.35rem',
+                fontSize: '0.9rem'
               }}
             >
-              ← Back to Friends
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+              <span>Back to Friends</span>
             </button>
 
             <button 
               type="button" 
-              className="match-restart-btn" 
+              className="btn-primary" 
               onClick={handleClearMatch}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '0.5rem',
-                background: 'linear-gradient(135deg, rgba(229, 9, 20, 0.85) 0%, rgba(185, 9, 11, 0.95) 100%)',
-                border: '1px solid rgba(255, 59, 71, 0.4)',
-                color: '#ffffff',
-                padding: '0.55rem 1.25rem',
-                borderRadius: '999px',
-                fontSize: '0.88rem',
-                fontWeight: '600',
-                cursor: 'pointer',
-                boxShadow: '0 0 16px rgba(229, 9, 20, 0.3)',
-                transition: 'all 0.22s ease'
+                gap: '0.55rem',
+                padding: '0.65rem 1.45rem',
+                fontSize: '0.9rem'
               }}
             >
-              🔄 Test Another Friend
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+              </svg>
+              <span>Select Another Friend</span>
             </button>
           </div>
 
