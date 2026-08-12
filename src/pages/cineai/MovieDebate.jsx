@@ -61,6 +61,44 @@ const getCategoryIcon = (name = '') => {
   );
 };
 
+const getIsWinnerA = (winnerName, rawMovieA, rawMovieB, mediaA, mediaB) => {
+  if (!winnerName) return true;
+  const w = winnerName.toLowerCase().replace(/\s*\(\d{4}\)\s*/, '').trim();
+  const nameA = (mediaA?.title || rawMovieA || '').replace(/\s*\(\d{4}\)\s*/, '').toLowerCase().trim();
+  const nameB = (mediaB?.title || rawMovieB || '').replace(/\s*\(\d{4}\)\s*/, '').toLowerCase().trim();
+
+  // 1. Exact title match
+  if (w === nameA) return true;
+  if (w === nameB) return false;
+
+  // 2. Longer distinct title match (e.g. "The Godfather Part II" vs "The Godfather")
+  if (nameB && nameB.length > nameA.length && w.includes(nameB)) return false;
+  if (nameA && nameA.length > nameB.length && w.includes(nameA)) return true;
+
+  // 3. Unique keyword check
+  const stopWords = new Set(['the', 'a', 'an', 'and', 'or', 'of', 'in', 'on', 'at', 'to', 'for', 'with', 'part']);
+  const getWords = (str) => str.split(/[\s:,\-]+/).filter(word => word.length > 1 && !stopWords.has(word));
+
+  const wordsA = getWords(nameA);
+  const wordsB = getWords(nameB);
+
+  const uniqueB = wordsB.filter(word => !wordsA.includes(word));
+  for (const word of uniqueB) {
+    if (w.includes(word)) return false;
+  }
+
+  const uniqueA = wordsA.filter(word => !wordsB.includes(word));
+  for (const word of uniqueA) {
+    if (w.includes(word)) return true;
+  }
+
+  // 4. Substring fallback
+  if (nameB && w.includes(nameB)) return false;
+  if (nameA && w.includes(nameA)) return true;
+
+  return true;
+};
+
 const MovieDebate = () => {
   const [movieA, setMovieA] = useState('');
   const [movieB, setMovieB] = useState('');
@@ -347,7 +385,7 @@ const MovieDebate = () => {
 
             <div className="debate-categories">
               {result.categories?.map((cat, idx) => {
-                const isWinnerA = cat.winner && movieA && cat.winner.toLowerCase().includes(movieA.trim().toLowerCase().split(' ')[0]);
+                const isWinnerA = getIsWinnerA(cat.winner, movieA, movieB, selectedMediaA, selectedMediaB);
                 const winnerClass = isWinnerA ? 'winner-side-a' : 'winner-side-b';
 
                 return (
