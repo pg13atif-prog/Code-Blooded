@@ -1,10 +1,15 @@
 .cineai-hub {
   position: relative;
-  padding-top: 110px;
-  min-height: 100vh;
-  padding-bottom: 6rem;
+  padding-top: calc(var(--navbar-height, 80px) + 1rem);
+  padding-bottom: 1.5rem;
+  min-height: calc(100vh - var(--navbar-height, 80px));
+  max-height: 100vh;
+  box-sizing: border-box;
   overflow: hidden;
   background: transparent;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .cineai-hub::before {
@@ -48,13 +53,14 @@
   position: relative;
   z-index: 1;
   text-align: center;
-  margin-bottom: 3.5rem;
+  margin-bottom: 1.5rem;
+  flex-shrink: 0;
 }
 
 .cineai-hub-header h1 {
-  font-size: 3.5rem;
+  font-size: 2.65rem;
   font-weight: 900;
-  margin-bottom: 1rem;
+  margin-bottom: 0.4rem;
   letter-spacing: -0.02em;
   color: #ffffff;
 }
@@ -68,10 +74,10 @@
 
 .cineai-hub-header p {
   color: rgba(255, 255, 255, 0.65);
-  font-size: 1.15rem;
-  max-width: 640px;
+  font-size: 1.02rem;
+  max-width: 600px;
   margin: 0 auto;
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
 /* 2x2 grid */
@@ -80,10 +86,13 @@
   z-index: 1;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1.75rem;
-  max-width: 1400px;
+  gap: 1.25rem;
+  max-width: 1280px;
+  width: 100%;
   margin: 0 auto;
   padding: 0 1.5rem;
+  flex: 1;
+  max-height: calc(100vh - 220px);
 }
 
 /* Liquid Glass Tile Cards */
@@ -91,14 +100,15 @@
   --accent: #e50914;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%);
   border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 36px;
-  padding: 3rem 3rem;
+  border-radius: 26px;
+  padding: 1.6rem 2rem;
   text-decoration: none;
   color: #fff;
   transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
-  min-height: 300px;
+  justify-content: space-between;
+  min-height: 0;
   backdrop-filter: blur(24px) saturate(190%);
   -webkit-backdrop-filter: blur(24px) saturate(190%);
   box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.2), 0 20px 45px rgba(0, 0, 0, 0.55);
@@ -130,19 +140,22 @@
 }
 
 .cineai-card:hover {
-  transform: translateY(-8px) scale(1.015);
+  transform: translateY(-5px) scale(1.01);
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.04) 100%);
   border-color: rgba(255, 255, 255, 0.35);
   box-shadow: inset 0 1px 2px 0 rgba(255, 255, 255, 0.4), 0 30px 60px rgba(0, 0, 0, 0.65), 0 0 30px var(--accent);
 }
 
 .cineai-card-top {
-  margin-bottom: 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.1rem;
 }
 
 .cineai-card-icon-wrapper {
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.06);
   border: 1.5px solid var(--accent);
@@ -156,13 +169,48 @@
 }
 
 .cineai-card:hover .cineai-card-icon-wrapper {
-  transform: scale(1.1);
+  transform: scale(1.08);
   box-shadow: 0 0 25px var(--accent), inset 0 1px 2px rgba(255, 255, 255, 0.4);
 }
 
 .cineai-card-icon-wrapper svg {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
+}
+
+.cineai-card-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.95rem;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.cineai-card-cta-btn svg {
+  width: 14px;
+  height: 14px;
+  stroke: var(--accent);
+  transition: transform 0.3s ease, stroke 0.3s ease;
+}
+
+.cineai-card:hover .cineai-card-cta-btn {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #ffffff;
+  box-shadow: 0 0 16px var(--accent);
+}
+
+.cineai-card:hover .cineai-card-cta-btn svg {
+  stroke: #ffffff;
+  transform: translateX(3px);
 }
 
 .cineai-card-body {
@@ -170,83 +218,44 @@
 }
 
 .cineai-card-body h2 {
-  font-size: 1.5rem;
+  font-size: 1.35rem;
   font-weight: 800;
-  margin: 0 0 0.85rem;
+  margin: 0 0 0.5rem;
   color: #ffffff;
   letter-spacing: -0.01em;
-  line-height: 1.3;
+  line-height: 1.25;
 }
 
 .cineai-card-body p {
   color: rgba(255, 255, 255, 0.65);
-  font-size: 0.98rem;
-  line-height: 1.65;
+  font-size: 0.92rem;
+  line-height: 1.55;
   margin: 0;
-}
-
-.cineai-card-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 2rem;
-  padding-top: 1.35rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-.cineai-launch-text {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #ffffff;
-  letter-spacing: 0.02em;
-}
-
-.cineai-arrow-circle {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--accent);
-  flex-shrink: 0;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-.cineai-card:hover .cineai-arrow-circle {
-  background: var(--accent);
-  color: #ffffff;
-  border-color: var(--accent);
-  box-shadow: 0 0 20px var(--accent);
-  transform: translateX(4px);
-}
-
-.cineai-arrow-circle svg {
-  width: 16px;
-  height: 16px;
-}
-
-.cineai-card:hover .cineai-arrow-circle {
-  background: rgba(255, 255, 255, 0.07);
 }
 
 /* Mobile */
 @media (max-width: 820px) {
+  .cineai-hub {
+    min-height: 100vh;
+    max-height: none;
+    overflow-y: auto;
+    padding-top: 100px;
+    padding-bottom: 4rem;
+  }
+
   .cineai-tools-grid {
     grid-template-columns: 1fr;
     gap: 1.25rem;
+    max-height: none;
   }
 
   .cineai-hub-header h1 {
-    font-size: 2.5rem;
+    font-size: 2.25rem;
   }
 
   .cineai-card {
-    padding: 1.85rem 1.75rem;
+    padding: 1.6rem 1.6rem;
     min-height: auto;
-    border-radius: 32px;
+    border-radius: 24px;
   }
 }

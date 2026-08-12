@@ -48,14 +48,6 @@ const DISPLAY_GENRES = [
 const DiscoverPage = ({ activeTab = 'movies' }) => {
   const [showFilters, setShowFilters] = useState(false);
   const [filterMediaType, setFilterMediaType] = useState(activeTab === 'tv' ? 'tv' : (activeTab === 'trending' ? 'trending' : 'movie'));
-  const [canAnimatePill, setCanAnimatePill] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setCanAnimatePill(true);
-    }, 250);
-    return () => clearTimeout(timer);
-  }, []);
   const [trendingTimeWindow, setTrendingTimeWindow] = useState('day'); // 'day' | 'week'
   const [selectedGenres, setSelectedGenres] = useState([]);
   const [selectedDecade, setSelectedDecade] = useState('');
@@ -248,7 +240,7 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
               >
                 {filterMediaType === 'tv' && (
                   <motion.div
-                    layoutId={canAnimatePill ? "discoverTabPill" : undefined}
+                    layoutId="discoverTabPill"
                     initial={false}
                     className="discover-tab-pill-active"
                     transition={{ type: "spring", stiffness: 450, damping: 32 }}
@@ -266,7 +258,7 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
               >
                 {filterMediaType === 'movie' && (
                   <motion.div
-                    layoutId={canAnimatePill ? "discoverTabPill" : undefined}
+                    layoutId="discoverTabPill"
                     initial={false}
                     className="discover-tab-pill-active"
                     transition={{ type: "spring", stiffness: 450, damping: 32 }}
@@ -285,7 +277,7 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
               >
                 {filterMediaType === 'trending' && (
                   <motion.div
-                    layoutId={canAnimatePill ? "discoverTabPill" : undefined}
+                    layoutId="discoverTabPill"
                     initial={false}
                     className="discover-tab-pill-active"
                     transition={{ type: "spring", stiffness: 450, damping: 32 }}
@@ -333,7 +325,7 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
                 >
                   {trendingTimeWindow === 'day' && (
                     <motion.div
-                      layoutId={canAnimatePill ? "trendingTimePill" : undefined}
+                      layoutId="trendingTimePill"
                       initial={false}
                       className="discover-tab-pill-active"
                       transition={{ type: "spring", stiffness: 450, damping: 32 }}
@@ -348,7 +340,7 @@ const DiscoverPage = ({ activeTab = 'movies' }) => {
                 >
                   {trendingTimeWindow === 'week' && (
                     <motion.div
-                      layoutId={canAnimatePill ? "trendingTimePill" : undefined}
+                      layoutId="trendingTimePill"
                       initial={false}
                       className="discover-tab-pill-active"
                       transition={{ type: "spring", stiffness: 450, damping: 32 }}

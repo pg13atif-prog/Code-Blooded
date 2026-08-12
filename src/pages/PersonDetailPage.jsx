@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { getPersonDetails, getPersonCredits } from '../services/tmdb';
 import MovieCard from '../components/MovieCard';
 import CustomSelect from '../components/CustomSelect';
@@ -249,29 +249,32 @@ const PersonDetailPage = ({ personId, onBack }) => {
 
           <div className="filmography-controls">
             {/* Filter Pills */}
-            <div className="filter-pill-group">
-              {[
-                { id: 'all', label: `All (${credits.length})` },
-                { id: 'movies', label: 'Movies' },
-                { id: 'tv', label: 'TV Shows' }
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  type="button"
-                  className={`filter-pill ${mediaFilter === tab.id ? 'active' : ''}`}
-                  onClick={() => setMediaFilter(tab.id)}
-                >
-                  {mediaFilter === tab.id && (
-                    <motion.div
-                      layoutId="personMediaFilterPill"
-                      className="filter-pill-active-bg"
-                      transition={{ type: 'spring', stiffness: 450, damping: 32 }}
-                    />
-                  )}
-                  <span className="filter-pill-label">{tab.label}</span>
-                </button>
-              ))}
-            </div>
+            <LayoutGroup id="personMediaFilterGroup" inherit={false}>
+              <div className="filter-pill-group">
+                {[
+                  { id: 'all', label: `All (${credits.length})` },
+                  { id: 'movies', label: 'Movies' },
+                  { id: 'tv', label: 'TV Shows' }
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    className={`filter-pill ${mediaFilter === tab.id ? 'active' : ''}`}
+                    onClick={() => setMediaFilter(tab.id)}
+                  >
+                    {mediaFilter === tab.id && (
+                      <motion.div
+                        layoutId="personMediaFilterPill"
+                        initial={false}
+                        className="filter-pill-active-bg"
+                        transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+                      />
+                    )}
+                    <span className="filter-pill-label">{tab.label}</span>
+                  </button>
+                ))}
+              </div>
+            </LayoutGroup>
 
             {/* Sort Dropdown */}
             <div className="person-sort-wrapper">

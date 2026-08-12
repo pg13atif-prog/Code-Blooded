@@ -3,9 +3,69 @@ import { getAiMovieDebate } from '../../services/gemini';
 import { searchMedia } from '../../services/tmdb';
 import './CineAiTools.css';
 
+const getCategoryIcon = (name = '') => {
+  const n = name.toLowerCase();
+  if (n.includes('story') || n.includes('screenplay') || n.includes('plot')) {
+    return (
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+      </svg>
+    );
+  }
+  if (n.includes('acting') || n.includes('character') || n.includes('performance')) {
+    return (
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2">
+        <circle cx="12" cy="8" r="5"></circle>
+        <path d="M20 21a8 8 0 1 0-16 0"></path>
+      </svg>
+    );
+  }
+  if (n.includes('direct') || n.includes('pace') || n.includes('pacing')) {
+    return (
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2">
+        <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+        <path d="M6 4v16M18 4v16M2 10h20M2 14h20"></path>
+      </svg>
+    );
+  }
+  if (n.includes('vfx') || n.includes('visual') || n.includes('cinematography')) {
+    return (
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2">
+        <polygon points="23 7 16 12 23 17 23 7"></polygon>
+        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+      </svg>
+    );
+  }
+  if (n.includes('sound') || n.includes('audio') || n.includes('music') || n.includes('score')) {
+    return (
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M9 18V5l12-2v13"></path>
+        <circle cx="6" cy="18" r="3"></circle>
+        <circle cx="18" cy="16" r="3"></circle>
+      </svg>
+    );
+  }
+  if (n.includes('end') || n.includes('climax')) {
+    return (
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2">
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+      </svg>
+    );
+  }
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2">
+      <circle cx="12" cy="12" r="10"></circle>
+      <polygon points="10 8 16 12 10 16 10 8"></polygon>
+    </svg>
+  );
+};
+
 const MovieDebate = () => {
   const [movieA, setMovieA] = useState('');
   const [movieB, setMovieB] = useState('');
+  const [selectedMediaA, setSelectedMediaA] = useState(null);
+  const [selectedMediaB, setSelectedMediaB] = useState(null);
   const [suggestionsA, setSuggestionsA] = useState([]);
   const [suggestionsB, setSuggestionsB] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -47,6 +107,29 @@ const MovieDebate = () => {
     setLoading(true);
     setError(null);
     setResult(null);
+
+    // Ensure TMDB metadata for both movies (poster, TMDB ID, category) is fetched
+    let mediaA = selectedMediaA;
+    let mediaB = selectedMediaB;
+
+    try {
+      if (!mediaA || !movieA.toLowerCase().includes(mediaA.title?.toLowerCase())) {
+        const resA = await searchMedia(movieA);
+        if (resA && resA.length > 0) {
+          mediaA = resA[0];
+          setSelectedMediaA(mediaA);
+        }
+      }
+      if (!mediaB || !movieB.toLowerCase().includes(mediaB.title?.toLowerCase())) {
+        const resB = await searchMedia(movieB);
+        if (resB && resB.length > 0) {
+          mediaB = resB[0];
+          setSelectedMediaB(mediaB);
+        }
+      }
+    } catch (err) {
+      console.warn("Could not pre-fetch contender details:", err);
+    }
 
     try {
       const debateResult = await getAiMovieDebate(movieA, movieB);
@@ -96,6 +179,7 @@ const MovieDebate = () => {
                       onClick={() => {
                         const formattedTitle = movie.year && movie.year !== '—' ? `${movie.title} (${movie.year})` : movie.title;
                         setMovieA(formattedTitle);
+                        setSelectedMediaA(movie);
                         setSuggestionsA([]);
                       }}
                     >
@@ -134,6 +218,7 @@ const MovieDebate = () => {
                       onClick={() => {
                         const formattedTitle = movie.year && movie.year !== '—' ? `${movie.title} (${movie.year})` : movie.title;
                         setMovieB(formattedTitle);
+                        setSelectedMediaB(movie);
                         setSuggestionsB([]);
                       }}
                     >
@@ -163,9 +248,81 @@ const MovieDebate = () => {
           <div className="debate-results animated-entrance">
             <div className="debate-winner-banner">
               <div className="winner-trophy">🏆</div>
-              <span className="winner-label">Overall Winner</span>
+              <span className="winner-label">Overall Debate Champion</span>
               <h2>{result.overallWinner}</h2>
-              <p>"{result.verdict}"</p>
+              <p>&ldquo;{result.verdict}&rdquo;</p>
+            </div>
+
+            {/* Contenders Navigation Cards */}
+            <div className="debate-contenders-section">
+              <div className="contenders-section-header">
+                <h3>Explore Contenders</h3>
+                <p>View full cast, trailers, and overview for each title</p>
+              </div>
+
+              <div className="debate-contenders-cards">
+                <div className="contender-card">
+                  <div className="contender-poster-wrapper">
+                    {selectedMediaA?.poster ? (
+                      <img src={selectedMediaA.poster} alt={movieA} className="contender-poster" />
+                    ) : (
+                      <div className="contender-poster-placeholder">🎬</div>
+                    )}
+                  </div>
+                  <div className="contender-info">
+                    <span className="contender-badge side-a">Contender 1</span>
+                    <h4 className="contender-title">{selectedMediaA?.title || movieA}</h4>
+                    <span className="contender-meta">
+                      {selectedMediaA?.year ? `${selectedMediaA.year} • ` : ''}
+                      {(selectedMediaA?.category || selectedMediaA?.mediaType || 'movie').toUpperCase()}
+                    </span>
+                    {selectedMediaA?.id && (
+                      <a
+                        href={`#${selectedMediaA.mediaType || 'movie'}/${selectedMediaA.id}`}
+                        className="btn-contender-action side-a"
+                      >
+                        <span>View Details</span>
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5">
+                          <line x1="5" y1="12" x2="19" y2="12"></line>
+                          <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                      </a>
+                    )}
+                  </div>
+                </div>
+
+                <div className="contenders-vs-pill">VS</div>
+
+                <div className="contender-card">
+                  <div className="contender-poster-wrapper">
+                    {selectedMediaB?.poster ? (
+                      <img src={selectedMediaB.poster} alt={movieB} className="contender-poster" />
+                    ) : (
+                      <div className="contender-poster-placeholder">🎬</div>
+                    )}
+                  </div>
+                  <div className="contender-info">
+                    <span className="contender-badge side-b">Contender 2</span>
+                    <h4 className="contender-title">{selectedMediaB?.title || movieB}</h4>
+                    <span className="contender-meta">
+                      {selectedMediaB?.year ? `${selectedMediaB.year} • ` : ''}
+                      {(selectedMediaB?.category || selectedMediaB?.mediaType || 'movie').toUpperCase()}
+                    </span>
+                    {selectedMediaB?.id && (
+                      <a
+                        href={`#${selectedMediaB.mediaType || 'movie'}/${selectedMediaB.id}`}
+                        className="btn-contender-action side-b"
+                      >
+                        <span>View Details</span>
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5">
+                          <line x1="5" y1="12" x2="19" y2="12"></line>
+                          <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="debate-breakdown-header">
@@ -174,17 +331,35 @@ const MovieDebate = () => {
             </div>
 
             <div className="debate-categories">
-              {result.categories?.map((cat, idx) => (
-                <div key={idx} className="debate-category-card">
-                  <div className="cat-card-header">
-                    <span className="cat-name">{cat.name}</span>
-                    <span className="cat-winner-badge">
-                      <span className="cat-winner-label">Winner:</span> {cat.winner}
-                    </span>
+              {result.categories?.map((cat, idx) => {
+                const isWinnerA = cat.winner && movieA && cat.winner.toLowerCase().includes(movieA.trim().toLowerCase().split(' ')[0]);
+                const winnerClass = isWinnerA ? 'winner-side-a' : 'winner-side-b';
+
+                return (
+                  <div key={idx} className={`debate-category-card ${winnerClass}`}>
+                    <div className="cat-card-header">
+                      <div className="cat-title-group">
+                        <div className="cat-icon-badge">
+                          {getCategoryIcon(cat.name)}
+                        </div>
+                        <span className="cat-name">{cat.name}</span>
+                      </div>
+
+                      <div className={`cat-winner-pill ${isWinnerA ? 'pill-side-a' : 'pill-side-b'}`}>
+                        <span className="pill-star">🏆</span>
+                        <span className="pill-text">Winner: <strong>{cat.winner}</strong></span>
+                      </div>
+                    </div>
+
+                    <div className="cat-reason-box">
+                      <svg className="cat-quote-icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                        <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+                      </svg>
+                      <p className="cat-reason-text">{cat.reason}</p>
+                    </div>
                   </div>
-                  <div className="cat-reason">{cat.reason}</div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}

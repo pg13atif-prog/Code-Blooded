@@ -8,6 +8,8 @@ import {
   getRecommendations,
   getReviews,
   getTvSeason,
+  getTvSeasonVideos,
+  searchYouTubeVideoId,
   getExternalRatings,
   getMediaStills
 } from '../services/tmdb';
@@ -50,6 +52,12 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
   const [selectedSeason, setSelectedSeason] = useState(1);
   const [seasonDetails, setSeasonDetails] = useState(null);
   
+  // Trailer Season State
+  const [activeTrailerSeason, setActiveTrailerSeason] = useState('main');
+  const [activeTrailerKey, setActiveTrailerKey] = useState(null);
+  const [trailerLoading, setTrailerLoading] = useState(false);
+  const [trailerNotice, setTrailerNotice] = useState('');
+
   // Episode Modal
   const [selectedEpisode, setSelectedEpisode] = useState(null);
   
@@ -82,6 +90,8 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
   };
   const [friendSearch, setFriendSearch] = useState('');
   const [sentFriends, setSentFriends] = useState({});
+
+  const trailerMouseDownRef = useRef(null);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -126,11 +136,27 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
       safeCall(getMediaStills(movieId, mediaType), [])
     ])
       .then(([detailsData, castData, videosData, similarData, providersData, recsData, reviewsData, customReviewsData, stillsData]) => {
+        let mainKey = videosData[0]?.key || null;
         setMovie(detailsData);
         setCast(castData);
-        setTrailerKey(videosData[0]?.key || null);
+        setTrailerKey(mainKey);
+        setActiveTrailerKey(mainKey);
+        setActiveTrailerSeason('main');
+        setTrailerNotice('');
         setSimilarMovies(similarData);
         setStills(stillsData);
+
+        // Fallback: If TMDB has no video key for main title, perform live YouTube search
+        if (!mainKey && detailsData) {
+          searchYouTubeVideoId(`${detailsData.title} ${detailsData.year || ''} official trailer`)
+            .then(ytId => {
+              if (ytId) {
+                setTrailerKey(ytId);
+                setActiveTrailerKey(ytId);
+              }
+            })
+            .catch(() => {});
+        }
         
         // Fetch IMDb and Rotten Tomatoes ratings safely
         if (detailsData) {
@@ -317,6 +343,39 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
       setIsWatchedItem(true);
       checkAndUnlockAchievements(currentUser.uid);
     } catch (err) { console.error(err); }
+  };
+
+  const trailerSeasonOptions = useMemo(() => {
+    if (!movie?.seasons) return [];
+    const validSeasons = movie.seasons.filter(s => s.season_number > 0);
+    return validSeasons.map(s => ({
+      value: s.season_number,
+      label: `Season ${s.season_number}`
+    }));
+  }, [movie]);
+
+  const handleSelectTrailerSeason = async (seasonNum) => {
+    const sNum = Number(seasonNum) || 1;
+    setActiveTrailerSeason(sNum);
+    setTrailerNotice('');
+
+    setTrailerLoading(true);
+    try {
+      // Initiate YouTube search directly for top result as first priority
+      const searchQuery = `${movie?.title || ''} Season ${sNum} official trailer`;
+      const ytVideoId = await searchYouTubeVideoId(searchQuery);
+
+      if (ytVideoId) {
+        setActiveTrailerKey(ytVideoId);
+      } else {
+        setActiveTrailerKey(trailerKey);
+      }
+    } catch (err) {
+      console.error("Failed to load season trailer:", err);
+      setActiveTrailerKey(trailerKey);
+    } finally {
+      setTrailerLoading(false);
+    }
   };
 
   const getGenreColor = (genre) => {
@@ -721,30 +780,27 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
             <div className="detail-actions">
               {/* Trailer */}
               <div className="action-item action-item-trailer">
-                {trailerKey ? (
-                  <button
-                    className="squircle-btn btn-primary"
-                    title="Watch Official Trailer"
-                    onClick={() => {
-                      setShowTrailerModal(true);
-                      if (currentUser) {
-                        incrementStat(currentUser.uid, 'trailersWatchedCount');
-                      }
-                    }}
-                  >
-                    <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                    <span className="mobile-btn-text">Watch Official Trailer</span>
-                  </button>
-                ) : (
-                  <button className="squircle-btn btn-primary disabled" disabled title="Trailer Unavailable">
-                    <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                    <span className="mobile-btn-text">Trailer Unavailable</span>
-                  </button>
-                )}
+                <button
+                  className="squircle-btn btn-primary"
+                  title="Watch Official Trailer"
+                  onClick={() => {
+                    if (movie?.mediaType === 'tv') {
+                      const initSeason = selectedSeason || 1;
+                      handleSelectTrailerSeason(initSeason);
+                    } else {
+                      setActiveTrailerKey(trailerKey);
+                    }
+                    setShowTrailerModal(true);
+                    if (currentUser) {
+                      incrementStat(currentUser.uid, 'trailersWatchedCount');
+                    }
+                  }}
+                >
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                  <span className="mobile-btn-text">Watch Official Trailer</span>
+                </button>
                 <span className="action-label desktop-only-label">Trailer</span>
               </div>
 
@@ -827,6 +883,77 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
                 {movie.overview || 'No overview description available for this movie.'}
               </p>
             </div>
+
+            {/* TV Seasons & Episodes Section */}
+            {movie.mediaType === 'tv' && movie.seasons && movie.seasons.length > 0 && (
+              <div className="detail-section">
+                <div className="season-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap' }}>
+                    <h3 className="section-title" style={{ marginBottom: 0 }}>Episodes</h3>
+                    <CustomSelect 
+                      value={selectedSeason} 
+                      onChange={(e) => setSelectedSeason(Number(e.target.value))}
+                      className="season-selector"
+                      options={movie.seasons.filter(s => s.season_number > 0).map(s => ({
+                        value: s.season_number,
+                        label: `Season ${s.season_number}`
+                      }))}
+                    />
+                    <button 
+                      onClick={handleMarkSeasonWatched} 
+                      className="btn-secondary season-watched-btn" 
+                      style={{ 
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        padding: '0.55rem 1.15rem',
+                        fontSize: '0.88rem',
+                        fontWeight: '600',
+                        whiteSpace: 'nowrap',
+                        borderRadius: '999px',
+                        height: '42px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5" /></svg>
+                      Season Watched
+                    </button>
+                  </div>
+                </div>
+                
+                {seasonDetails && seasonDetails.episodes && (
+                  <div className="episodes-list" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    {seasonDetails.episodes.map(ep => (
+                      <div 
+                        key={ep.id} 
+                        className="episode-card" 
+                        onClick={() => setSelectedEpisode(ep)}
+                        style={{ display: 'flex', gap: '1rem', background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '12px', cursor: 'pointer', transition: 'background 0.2s' }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
+                      >
+                        {ep.still_path ? (
+                           <img src={`https://image.tmdb.org/t/p/w300${ep.still_path}`} alt={ep.name} style={{ width: '160px', height: '90px', objectFit: 'cover', borderRadius: '8px', flexShrink: 0 }} />
+                        ) : (
+                           <div style={{ width: '160px', height: '90px', background: 'rgba(255,255,255,0.1)', borderRadius: '8px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>No Image</div>
+                        )}
+                        <div>
+                          <h4 style={{ margin: '0 0 4px 0', fontSize: '1.1rem' }}>{ep.episode_number}. {ep.name}</h4>
+                          <div style={{ display: 'flex', gap: '1rem', fontSize: '0.85rem', color: '#aaa', marginBottom: '8px' }}>
+                            <span>{ep.air_date ? new Date(ep.air_date).getFullYear() : '—'}</span>
+                            <span>{ep.runtime || 45}m</span>
+                            <span>★ {ep.vote_average?.toFixed(1)}</span>
+                          </div>
+                          <p style={{ margin: 0, fontSize: '0.9rem', color: '#ccc', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                            {ep.overview}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             {isMobile && renderSidebarBoxes()}
 
@@ -1163,77 +1290,7 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
                 </div>
               </div>
             )}
-            
-            {/* TV Seasons Section */}
-            {movie.mediaType === 'tv' && movie.seasons && movie.seasons.length > 0 && (
-              <div className="detail-section">
-                <div className="season-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap' }}>
-                    <h3 className="section-title" style={{ marginBottom: 0 }}>Episodes</h3>
-                    <CustomSelect 
-                      value={selectedSeason} 
-                      onChange={(e) => setSelectedSeason(Number(e.target.value))}
-                      className="season-selector"
-                      options={movie.seasons.filter(s => s.season_number > 0).map(s => ({
-                        value: s.season_number,
-                        label: `Season ${s.season_number}`
-                      }))}
-                    />
-                    <button 
-                      onClick={handleMarkSeasonWatched} 
-                      className="btn-secondary season-watched-btn" 
-                      style={{ 
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '0.5rem',
-                        padding: '0.55rem 1.15rem',
-                        fontSize: '0.88rem',
-                        fontWeight: '600',
-                        whiteSpace: 'nowrap',
-                        borderRadius: '999px',
-                        height: '42px',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5" /></svg>
-                      Season Watched
-                    </button>
-                  </div>
-                </div>
-                
-                {seasonDetails && seasonDetails.episodes && (
-                  <div className="episodes-list" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    {seasonDetails.episodes.map(ep => (
-                      <div 
-                        key={ep.id} 
-                        className="episode-card" 
-                        onClick={() => setSelectedEpisode(ep)}
-                        style={{ display: 'flex', gap: '1rem', background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '12px', cursor: 'pointer', transition: 'background 0.2s' }}
-                        onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-                        onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
-                      >
-                        {ep.still_path ? (
-                           <img src={`https://image.tmdb.org/t/p/w300${ep.still_path}`} alt={ep.name} style={{ width: '160px', height: '90px', objectFit: 'cover', borderRadius: '8px', flexShrink: 0 }} />
-                        ) : (
-                           <div style={{ width: '160px', height: '90px', background: 'rgba(255,255,255,0.1)', borderRadius: '8px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>No Image</div>
-                        )}
-                        <div>
-                          <h4 style={{ margin: '0 0 4px 0', fontSize: '1.1rem' }}>{ep.episode_number}. {ep.name}</h4>
-                          <div style={{ display: 'flex', gap: '1rem', fontSize: '0.85rem', color: '#aaa', marginBottom: '8px' }}>
-                            <span>{new Date(ep.air_date).getFullYear()}</span>
-                            <span>{ep.runtime}m</span>
-                            <span>★ {ep.vote_average?.toFixed(1)}</span>
-                          </div>
-                          <p style={{ margin: 0, fontSize: '0.9rem', color: '#ccc', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                            {ep.overview}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
+
 
           </div>
         </div>
@@ -1247,19 +1304,70 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
       )}
 
       {/* ── Trailer Video Modal ── */}
-      {showTrailerModal && trailerKey && (
-        <div className="trailer-modal-overlay" onClick={() => setShowTrailerModal(false)}>
-          <div className="trailer-modal-content" onClick={(e) => e.stopPropagation()}>
+      {showTrailerModal && (
+        <div 
+          className="trailer-modal-overlay" 
+          onMouseDown={(e) => { trailerMouseDownRef.current = e.target; }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget && trailerMouseDownRef.current === e.currentTarget) {
+              setShowTrailerModal(false);
+            }
+          }}
+        >
+          <div className="trailer-modal-wrapper" onClick={(e) => e.stopPropagation()}>
             <button className="modal-close-btn" onClick={() => setShowTrailerModal(false)} aria-label="Close trailer">
               &times;
             </button>
-            <div className="iframe-wrapper">
-              <iframe
-                src={`https://www.youtube.com/embed/${trailerKey}?autoplay=1`}
-                title={`${movie.title} Official Trailer`}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              ></iframe>
+
+            {/* Season Trailer Selector OUTSIDE YouTube container */}
+            {movie?.mediaType === 'tv' && movie?.seasons && movie.seasons.filter(s => s.season_number > 0).length > 0 && (
+              <div className="trailer-season-select-container">
+                <span className="trailer-season-select-label">Select Trailer:</span>
+                <CustomSelect
+                  value={activeTrailerSeason}
+                  onChange={(e) => {
+                    handleSelectTrailerSeason(Number(e.target.value));
+                  }}
+                  className="trailer-season-select"
+                  options={trailerSeasonOptions}
+                />
+              </div>
+            )}
+
+            {/* YouTube Container */}
+            <div className="trailer-modal-content">
+              <div className="iframe-wrapper">
+                {trailerLoading ? (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#aaa', minHeight: '260px' }}>
+                    Loading Season Trailer...
+                  </div>
+                ) : (activeTrailerKey || trailerKey) ? (
+                  <iframe
+                    src={`https://www.youtube.com/embed/${activeTrailerKey || trailerKey}?autoplay=1`}
+                    title={`${movie?.title || 'Title'} Official Trailer`}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  ></iframe>
+                ) : (
+                  <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', padding: '2rem', textAlign: 'center' }}>
+                    <div style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>🎬</div>
+                    <h3 style={{ margin: '0 0 0.5rem', color: '#fff', fontSize: '1.25rem' }}>Trailer Stream Unavailable</h3>
+                    <p style={{ margin: '0 0 1.25rem', color: '#94a3b8', fontSize: '0.9rem', maxWidth: '420px', lineHeight: 1.5 }}>
+                      No direct video key registered for {movie?.title}. Search YouTube directly to watch official trailers.
+                    </p>
+                    <a
+                      href={`https://www.youtube.com/results?search_query=${encodeURIComponent((movie?.title || '') + ' official trailer')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-primary"
+                      style={{ textDecoration: 'none', padding: '0.65rem 1.4rem', borderRadius: '30px', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, fontSize: '0.9rem' }}
+                    >
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                      Search on YouTube ↗
+                    </a>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

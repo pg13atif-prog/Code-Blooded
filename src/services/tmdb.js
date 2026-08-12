@@ -461,21 +461,141 @@ export const getMovieCredits = async (movieId, mediaType = 'movie', signal) => {
 };
 
 export const getMovieVideos = async (movieId, mediaType = 'movie', signal) => {
-  const response = await fetchWithTimeout(
-    `${API_BASE_URL}/${mediaType}/${movieId}/videos?language=en-US`,
-    { signal },
-  );
+  try {
+    let response = await fetchWithTimeout(
+      `${API_BASE_URL}/${mediaType}/${movieId}/videos?include_video_language=en,null`,
+      { signal },
+    );
 
-  if (!response.ok) {
+    if (!response.ok) {
+      response = await fetchWithTimeout(
+        `${API_BASE_URL}/${mediaType}/${movieId}/videos`,
+        { signal },
+      );
+    }
+
+    if (!response.ok) return [];
+
+    const data = await response.json();
+    let results = data.results || [];
+
+    if (results.length === 0) {
+      const fallbackResp = await fetchWithTimeout(
+        `${API_BASE_URL}/${mediaType}/${movieId}/videos`,
+        { signal }
+      );
+      if (fallbackResp.ok) {
+        const fallbackData = await fallbackResp.json();
+        results = fallbackData.results || [];
+      }
+    }
+
+    const youtubeVideos = results.filter((v) => v.site === 'YouTube');
+    const officialTrailers = youtubeVideos.filter((v) => v.type === 'Trailer' && v.official);
+    if (officialTrailers.length > 0) return officialTrailers;
+
+    const anyTrailers = youtubeVideos.filter((v) => v.type === 'Trailer');
+    if (anyTrailers.length > 0) return anyTrailers;
+
+    const teasers = youtubeVideos.filter((v) => v.type === 'Teaser' || v.type === 'Clip');
+    if (teasers.length > 0) return teasers;
+
+    return youtubeVideos;
+  } catch (err) {
+    console.error("Error fetching movie videos:", err);
     return [];
   }
+};
 
-  const data = await response.json();
-  const results = data.results || [];
+export const getTvSeasonVideos = async (seriesId, seasonNumber, signal) => {
+  try {
+    let response = await fetchWithTimeout(
+      `${API_BASE_URL}/tv/${seriesId}/season/${seasonNumber}/videos?include_video_language=en,null`,
+      { signal },
+    );
 
-  // Filter YouTube trailers/clips
-  const trailers = results.filter((v) => v.site === 'YouTube' && v.type === 'Trailer');
-  return trailers.length > 0 ? trailers : results.filter((v) => v.site === 'YouTube');
+    if (!response.ok) {
+      response = await fetchWithTimeout(
+        `${API_BASE_URL}/tv/${seriesId}/season/${seasonNumber}/videos`,
+        { signal },
+      );
+    }
+
+    if (!response.ok) return [];
+
+    const data = await response.json();
+    let results = data.results || [];
+
+    if (results.length === 0) {
+      const fallbackResp = await fetchWithTimeout(
+        `${API_BASE_URL}/tv/${seriesId}/season/${seasonNumber}/videos`,
+        { signal }
+      );
+      if (fallbackResp.ok) {
+        const fallbackData = await fallbackResp.json();
+        results = fallbackData.results || [];
+      }
+    }
+
+    const youtubeVideos = results.filter((v) => v.site === 'YouTube');
+    const officialTrailers = youtubeVideos.filter((v) => v.type === 'Trailer');
+    if (officialTrailers.length > 0) return officialTrailers;
+
+    const teasers = youtubeVideos.filter((v) => v.type === 'Teaser' || v.type === 'Clip');
+    if (teasers.length > 0) return teasers;
+
+    return youtubeVideos;
+  } catch (err) {
+    console.error("Error fetching season videos:", err);
+    return [];
+  }
+};
+
+export const searchYouTubeVideoId = async (query) => {
+  if (!query) return null;
+  const q = query.trim();
+
+  // High performance public API mirrors
+  const apiUrls = [
+    `https://invidious.flokinet.to/api/v1/search?q=${encodeURIComponent(q)}&type=video`,
+    `https://inv.nadeko.net/api/v1/search?q=${encodeURIComponent(q)}&type=video`,
+    `https://invidious.drgns.space/api/v1/search?q=${encodeURIComponent(q)}&type=video`,
+    `https://inv.us.projectsegfau.lt/api/v1/search?q=${encodeURIComponent(q)}&type=video`,
+    `https://invidious.lunar.icu/api/v1/search?q=${encodeURIComponent(q)}&type=video`,
+    `https://invidious.no-kyc.ac/api/v1/search?q=${encodeURIComponent(q)}&type=video`,
+  ];
+
+  for (const url of apiUrls) {
+    try {
+      const res = await fetch(url, { signal: AbortSignal.timeout(3000) });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          const first = data.find(item => (item.type === 'video' || !item.type) && item.videoId);
+          if (first && first.videoId) {
+            return first.videoId;
+          }
+        }
+      }
+    } catch (e) {
+      // Continue to next mirror
+    }
+  }
+
+  // Fallback: Direct YouTube search HTML regex scrape
+  try {
+    const ytUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(q)}`;
+    const res = await fetchWithTimeout(ytUrl, { timeout: 4000 });
+    if (res.ok) {
+      const html = await res.text();
+      const match = html.match(/"videoId":"([a-zA-Z0-9_-]{11})"/);
+      if (match && match[1]) {
+        return match[1];
+      }
+    }
+  } catch (e) {}
+
+  return null;
 };
 
 export const discoverMedia = async ({

@@ -874,10 +874,57 @@
   background: rgba(0, 0, 0, 0.88);
   backdrop-filter: var(--glass-heavy-filter);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  padding: 1.5rem;
   animation: fadeIn 0.25s ease;
+}
+
+.trailer-modal-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 960px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+}
+
+.trailer-season-select-container {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  width: 100%;
+  z-index: 10;
+}
+
+.trailer-season-select-label {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.trailer-season-select .custom-select-trigger {
+  min-width: 210px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  border-radius: 24px;
+  padding: 0.45rem 1.1rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.trailer-season-select .custom-select-trigger:hover,
+.trailer-season-select .custom-select-trigger.open {
+  border-color: #e50914;
+  box-shadow: 0 0 14px rgba(229, 9, 20, 0.4);
 }
 
 @keyframes fadeIn {
@@ -888,11 +935,11 @@
 .trailer-modal-content {
   position: relative;
   width: 100%;
-  max-width: 960px;
   background: #000;
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  padding: 0;
 }
 
 .modal-close-btn {
@@ -1240,19 +1287,31 @@
     left: 1rem;
   }
 
-  .btn-back {
-    padding: 0.45rem 0.9rem;
-    font-size: 0.8rem;
-  }
-  
-  .trailer-modal-content {
-    width: 95vw;
+  .trailer-modal-overlay {
     padding: 1rem;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .trailer-modal-wrapper {
+    width: 94vw;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .trailer-modal-content {
+    width: 100%;
+    border-radius: 12px;
+    padding: 0;
   }
   
   .modal-close-btn {
-    top: -35px;
-    font-size: 1.5rem;
+    top: -40px;
+    right: 0;
+    font-size: 1.8rem;
   }
   
   .review-card {

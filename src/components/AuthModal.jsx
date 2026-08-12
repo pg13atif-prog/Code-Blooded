@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import './AuthModal.css';
 
@@ -11,8 +11,19 @@ const AuthModal = ({ isOpen, onClose }) => {
   const [successMsg, setSuccessMsg] = useState('');
   const [loading, setLoading] = useState(false);
   const { login, signup, loginWithGoogle, loginAsGuest, resetPassword } = useAuth();
+  const mouseDownTargetRef = useRef(null);
 
   if (!isOpen) return null;
+
+  const handleOverlayMouseDown = (e) => {
+    mouseDownTargetRef.current = e.target;
+  };
+
+  const handleOverlayClick = (e) => {
+    if (e.target === e.currentTarget && mouseDownTargetRef.current === e.currentTarget) {
+      onClose();
+    }
+  };
 
   const handleGoogleSignIn = async () => {
     setError('');
@@ -78,7 +89,11 @@ const AuthModal = ({ isOpen, onClose }) => {
   };
 
   return (
-    <div className="auth-overlay" onClick={onClose}>
+    <div 
+      className="auth-overlay" 
+      onMouseDown={handleOverlayMouseDown}
+      onClick={handleOverlayClick}
+    >
       <div className="auth-modal" onClick={e => e.stopPropagation()}>
         <button className="close-btn" onClick={onClose}>&times;</button>
         

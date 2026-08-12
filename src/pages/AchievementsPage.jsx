@@ -16,14 +16,6 @@ const AchievementsPage = () => {
   const [watched, setWatched] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all'); // 'all' | 'unlocked' | 'locked'
-  const [canAnimatePill, setCanAnimatePill] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setCanAnimatePill(true);
-    }, 250);
-    return () => clearTimeout(timer);
-  }, []);
 
   useEffect(() => {
     if (!currentUser) {
@@ -107,7 +99,7 @@ const AchievementsPage = () => {
           <button className={`filter-btn ${filter === 'all' ? 'active' : ''}`} onClick={() => setFilter('all')}>
             {filter === 'all' && (
               <motion.div
-                layoutId={canAnimatePill ? "achFilterPill" : undefined}
+                layoutId="achFilterPill"
                 initial={false}
                 className="ach-filter-pill-active"
                 transition={{ type: "spring", stiffness: 450, damping: 32 }}
@@ -118,7 +110,7 @@ const AchievementsPage = () => {
           <button className={`filter-btn ${filter === 'unlocked' ? 'active' : ''}`} onClick={() => setFilter('unlocked')}>
             {filter === 'unlocked' && (
               <motion.div
-                layoutId={canAnimatePill ? "achFilterPill" : undefined}
+                layoutId="achFilterPill"
                 initial={false}
                 className="ach-filter-pill-active"
                 transition={{ type: "spring", stiffness: 450, damping: 32 }}
@@ -129,7 +121,7 @@ const AchievementsPage = () => {
           <button className={`filter-btn ${filter === 'locked' ? 'active' : ''}`} onClick={() => setFilter('locked')}>
             {filter === 'locked' && (
               <motion.div
-                layoutId={canAnimatePill ? "achFilterPill" : undefined}
+                layoutId="achFilterPill"
                 initial={false}
                 className="ach-filter-pill-active"
                 transition={{ type: "spring", stiffness: 450, damping: 32 }}

@@ -7,6 +7,7 @@ const AI_TOOLS = [
     title: 'What Should I Watch?',
     description: 'Describe your exact mood, genre blend, or vibe in plain English and get 5 hyper-tailored recommendations.',
     accentColor: '#e50914',
+    ctaLabel: 'Ask AI',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
@@ -21,6 +22,7 @@ const AI_TOOLS = [
     title: 'Movie Night Planner',
     description: 'Answer 3 quick preferences about mood, pace, and runtime to find the single perfect movie for your night.',
     accentColor: '#8b5cf6',
+    ctaLabel: 'Plan Night',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -35,6 +37,7 @@ const AI_TOOLS = [
     title: 'Pick For Me',
     description: 'The ultimate decision cure. One click fetches one high-confidence movie recommendation with zero hassle.',
     accentColor: '#ec4899',
+    ctaLabel: 'Quick Pick',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <polygon points="5 3 19 12 5 21 5 3"></polygon>
@@ -46,6 +49,7 @@ const AI_TOOLS = [
     title: 'Movie Debate',
     description: 'Torn between two movies? Let our AI pit them head-to-head across 9 key criteria and declare a clear winner.',
     accentColor: '#f59e0b',
+    ctaLabel: 'Start Debate',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
@@ -84,21 +88,18 @@ const CineAiPage = () => {
               <div className="cineai-card-icon-wrapper">
                 {tool.icon}
               </div>
-            </div>
-
-            <div className="cineai-card-body">
-              <h2>{tool.title}</h2>
-              <p>{tool.description}</p>
-            </div>
-
-            <div className="cineai-card-footer">
-              <span className="cineai-launch-text">Launch Experience</span>
-              <div className="cineai-arrow-circle">
+              <div className="cineai-card-cta-btn">
+                <span>{tool.ctaLabel}</span>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <line x1="5" y1="12" x2="19" y2="12"></line>
                   <polyline points="12 5 19 12 12 19"></polyline>
                 </svg>
               </div>
+            </div>
+
+            <div className="cineai-card-body">
+              <h2>{tool.title}</h2>
+              <p>{tool.description}</p>
             </div>
           </a>
         ))}

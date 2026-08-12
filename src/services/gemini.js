@@ -474,17 +474,18 @@ export const getAiMovieDebate = async (movieA, movieB) => {
     - You are provided with verified TMDB ground-truth fact sheets for both films below.
     - You MUST use the provided Director, Music Composer(s), Main Cast, Release Year, and Genres as ABSOLUTE GROUND TRUTH.
     - NEVER invent or alter music composers, directors, or cast (e.g. if the fact sheet states Music Composer(s): Kalyanji-Anandji, you MUST credit Kalyanji-Anandji for Soundtrack).
-    - Ensure every reason given for a winning category is 100% factually aligned with the verified fact sheets.
+    - Ensure every reason given for a winning ca    You must compare the two titles across exactly 9 distinct filmmaking categories (e.g. Story & Narrative, Character & Performances, Direction & Pacing, Visuals & VFX, Cinematography, Soundtrack & Audio, Climax & Resolution, Rewatchability).
+    For each category:
+    1. Declare a clear single winner.
+    2. Write a punchy, sharp, 1-2 sentence comparative rationale ("reason") explaining specifically why the winner prevailed over the opponent. Keep it concise, direct, and impactful—avoid long essays.
 
-    Compare them across exactly these 9 categories: Story, Characters, Acting, Direction, VFX, Cinematography, Soundtrack, Ending, Rewatchability.
     Return a JSON object with this exact structure:
     {
       "categories": [
-        { "name": "Story", "winner": "Title of Winner", "reason": "1 short sentence why" },
-        ...
+        { "name": "Story & Narrative", "winner": "Title of Winner", "reason": "Punchy, concise 1-2 sentence comparative rationale." }
       ],
       "overallWinner": "Title of Overall Winner",
-      "verdict": "A 2-3 sentence final verdict summarizing the debate."
+      "verdict": "A 1-2 sentence crisp final verdict summarizing the debate."
     }
     Return ONLY JSON.
   `;
@@ -507,18 +508,18 @@ export const getAiMovieDebate = async (movieA, movieB) => {
     console.warn('OpenRouter rate limited or unavailable, using Debate fallback:', err.message);
     return {
       categories: [
-        { name: "Story", winner: movieA, reason: `Deeper narrative complexity and character arcs in ${movieA}.` },
-        { name: "Characters", winner: movieB, reason: `More memorable ensemble cast and iconic dialogue in ${movieB}.` },
-        { name: "Acting", winner: movieA, reason: `Outstanding lead performance with high emotional resonance.` },
-        { name: "Direction", winner: movieB, reason: `Masterful pacing and visionary camera work by the director.` },
-        { name: "VFX", winner: movieA, reason: `Immersive world-building and ground-breaking visual effects.` },
-        { name: "Cinematography", winner: movieB, reason: `Stunning color palette and memorable composition in every scene.` },
-        { name: "Soundtrack", winner: movieA, reason: `Iconic musical score that elevates key emotional moments.` },
-        { name: "Ending", winner: movieB, reason: `Unforgettable, powerful final sequence that stays with you.` },
-        { name: "Rewatchability", winner: movieA, reason: `Rewarding experience with new details discovered on repeat views.` }
+        { name: "Story & Narrative", winner: movieA, reason: `${movieA} features tighter narrative control, richer thematic depth, and more satisfying emotional payoffs than ${movieB}.` },
+        { name: "Character & Performances", winner: movieB, reason: `${movieB} delivers a more iconic ensemble performance with unforgettable dialogue and deeper character dynamics.` },
+        { name: "Acting & Emotional Depth", winner: movieA, reason: `The leads in ${movieA} bring remarkable emotional vulnerability and nuance, outshining the performances in ${movieB}.` },
+        { name: "Direction & Pacing", winner: movieB, reason: `${movieB} achieves masterclass pacing and momentum, maintaining high engagement from start to finish.` },
+        { name: "Visuals & World-Building", winner: movieA, reason: `${movieA} constructs a far more immersive visual universe with distinct atmosphere and groundbreaking design.` },
+        { name: "Cinematography & Framing", winner: movieB, reason: `${movieB} stands out with striking composition, vibrant color palettes, and painterly camera framing.` },
+        { name: "Soundtrack & Audio Design", winner: movieA, reason: `The score in ${movieA} elevates key dramatic moments with far greater emotional resonance.` },
+        { name: "Climax & Resolution", winner: movieB, reason: `${movieB} delivers a more intense, unforgettable finale that ties together all thematic threads perfectly.` },
+        { name: "Rewatchability & Legacy", winner: movieA, reason: `${movieA} holds superior rewatch value thanks to subtle foreshadowing and lasting cultural impact.` }
       ],
       overallWinner: movieA,
-      verdict: `Both ${movieA} and ${movieB} are landmark achievements in cinema, but ${movieA} edges out the victory thanks to its superior narrative depth and emotional impact.`
+      verdict: `Both ${movieA} and ${movieB} are landmark achievements, but ${movieA} edges out the win thanks to its superior narrative depth and emotional impact.`
     };
   }
 };
