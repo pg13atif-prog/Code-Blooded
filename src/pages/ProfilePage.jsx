@@ -240,7 +240,9 @@ const ProfilePage = () => {
         setProfileData(pData);
         let derivedUsername = pData?.username;
         if (!derivedUsername || derivedUsername === 'Guest') {
-          derivedUsername = currentUser.email ? currentUser.email.split('@')[0] : 'Guest';
+          derivedUsername = (currentUser.email && currentUser.email !== 'Guest') 
+            ? currentUser.email.split('@')[0] 
+            : (code ? `Guest #${code.replace('CS-', '')}` : `Guest #${currentUser.uid.substring(0, 5).toUpperCase()}`);
         }
         setEditName(derivedUsername);
       } catch (err) {
@@ -343,7 +345,9 @@ const ProfilePage = () => {
   const email = currentUser.email || '';
   let username = profileData?.username;
   if (!username || username === 'Guest') {
-    username = email ? email.split('@')[0] : 'Guest';
+    username = (email && email !== 'Guest') 
+      ? email.split('@')[0] 
+      : (friendCode ? `Guest #${friendCode.replace('CS-', '')}` : `Guest #${currentUser.uid.substring(0, 5).toUpperCase()}`);
   }
   const avatarLetter = username.charAt(0).toUpperCase() || '?';
   const avatarImage = profileData?.avatar || null;

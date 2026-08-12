@@ -472,7 +472,9 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
         }
       }
       if (!realUsername) {
-        realUsername = currentUser.email ? currentUser.email.split('@')[0] : 'User';
+        realUsername = (currentUser.email && currentUser.email !== 'Guest') 
+          ? currentUser.email.split('@')[0] 
+          : `Guest #${currentUser.uid.substring(0, 5).toUpperCase()}`;
       }
 
       const authorName = postAnonymously ? 'Anonymous' : realUsername;
