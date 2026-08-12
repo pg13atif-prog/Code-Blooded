@@ -1,8 +1,20 @@
 # CineScope
 
+<div align="center">
+
 > **Search Less. Watch Better.**
 
-CineScope is an intelligent movie and TV discovery platform designed to eliminate choice paralysis. Powered by real-time TMDB content data, Google Gemini AI reasoning, and Firebase authentication & backend services, CineScope blends personalized AI recommendations, deep social movie sharing, achievements, and seamless media tracking into a single unified web application.
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-8-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Firebase](https://img.shields.io/badge/Firebase-Auth%20%26%20DB-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com/)
+[![Google Gemini](https://img.shields.io/badge/Google_Gemini-AI_Engine-8E44AD?style=for-the-badge&logo=googlegemini&logoColor=white)](https://ai.google.dev/)
+[![Vercel](https://img.shields.io/badge/Vercel-Deployed-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com/)
+
+An intelligent, AI-powered movie and TV discovery platform designed to eliminate choice paralysis. Powered by real-time TMDB content data, Google Gemini AI reasoning, and Firebase authentication & database services.
+
+👉 **[Launch CineScope Live Demo](https://cine-scope-ivory-one.vercel.app)** 👈
+
+</div>
 
 ---
 
@@ -17,17 +29,17 @@ Experience CineScope live in your browser:
 
 ## 📸 Screenshots
 
-| Page / Feature | Visual Preview |
+| Feature Section | Preview |
 | :--- | :--- |
 | **Hero Landing Page** | ![CineScope Hero](screenshots/hero.png) |
 | **Media Browse & Discovery** | ![Browse Page](screenshots/browse.png) |
-| **Rich Movie & TV Detail Page** | ![Movie Detail](screenshots/movie-detail.png) |
+| **Movie & TV Details** | ![Movie Detail](screenshots/movie-detail.png) |
 | **CineAI Discovery Engine** | ![CineAI Engine](screenshots/cineai-engine.png) |
 | **Social & Friend Movie Match** | ![Friend Match](screenshots/friend-match.png) |
-| **AI Compatibility & Group Watch** | ![Friend Match Recommendations](screenshots/friend-match%20-recommendation.png) |
+| **AI Group Watch & Match Recs** | ![Friend Match Recommendations](screenshots/friend-match%20-recommendation.png) |
 | **Personal Library & Collections** | ![Personal Library](screenshots/library.png) |
-| **Gamified Achievements System** | ![Achievements System](screenshots/achievements.png) |
-| **User Profile & Stats Dashboard** | ![User Profile](screenshots/profile.png) |
+| **Achievements System** | ![Achievements System](screenshots/achievements.png) |
+| **User Profile & Stats** | ![User Profile](screenshots/profile.png) |
 
 ---
 
@@ -41,35 +53,31 @@ Instead of browsing endless grid thumbnails, CineScope users can express exact m
 
 ## 2. Key Features
 
-### 🎬 Discover
-* **Trending & Catalog Explorer**: Browse popular movies, top-rated series, and genre collections with high-resolution backdrops, logos, and trailers.
-* **Unified Search Modal**: Instant spotlight overlay searching for titles, actors, directors, and genres with auto-suggest and instant TMDB data lookup.
-* **Actor & Person Detail Pages**: Complete filmography, biography, and media breakdowns for directors and actors.
+### 🎬 Discover & Search
+* **Trending & Catalog Explorer**: Browse popular movies, top-rated series, and genre collections with high-resolution backdrops, logos, and official trailers.
+* **Spotlight Search Modal**: Instant overlay search for titles, actors, directors, and genres with auto-suggest and dynamic popular recommendations.
+* **Actor & Director Profiles**: Complete filmography, biography, and media breakdowns for cast and crew.
 * **TV Season & Episode Guide**: Deep-dive into TV series with season lists, episode descriptions, runtimes, and individual episode backdrops.
 
-### ✨ CineAI
-* **Natural Language Watch Assistant**: Enter prompt-based requests (e.g. *"dark sci-fi thrillers with mind-bending twists"*) and receive AI recommendations with customized contextual rationales.
-* **Movie Night Planner**: Interactive guided questionnaire tailored for solo viewing, couples, or group movie nights based on vibe, duration, and tone.
-* **Pick For Me**: Instant random choice generator with mood filters for quick decisions when stuck.
-* **Movie Debate**: Head-to-head AI analysis comparing any two movies across acting, direction, pacing, score, and visuals with dynamic category point allocations.
+### ✨ CineAI Intelligence Suite
+* **Natural Language Watch Assistant**: Enter prompt-based requests (*"dark sci-fi thrillers with mind-bending twists"*) to receive AI recommendations with custom 1–2 sentence comparative rationales.
+* **Movie Night Planner**: Interactive guided questionnaire tailored for solo viewing, couples, or group movie nights based on vibe, duration, and era preferences.
+* **Pick For Me**: Instant decision spinner with mood filters for quick recommendations when stuck.
+* **Movie Debate Engine**: Head-to-head AI analysis comparing any two movies across acting, direction, pacing, score, and visuals with dynamic category point allocations.
 
-### 🤝 Friends / Social
-* **Friend Code System**: Connect with friends using unique 6-character alphanumeric friend codes (`CS-XXXXXX`).
+### 🤝 Friends & Social Match
+* **Unique Friend Codes**: Connect with friends using 6-character alphanumeric friend codes (`CS-XXXXXX`).
 * **Movie Match Engine**: Compare watch history and taste overlaps with friends to get an instant compatibility percentage score.
 * **Friend-to-Friend Recommendations**: Send inline movie recommendations directly to friends with custom notes, delivered via real-time notifications.
 
 ### ❤️ Library & Watchlist
 * **Personal Media Collections**: Separate tabs for *Watchlist*, *Liked*, *Watched*, and *Recently Viewed* titles.
-* **Automatic TMDB Data Healing**: Automatically resolves and syncs TMDB vote averages for saved items to prevent stale or missing ratings.
-* **Watch Time Tracking**: Tracks cumulative minutes spent watching movies and TV series across your library.
+* **Automatic TMDB Data Repair**: Automatically resolves and syncs TMDB vote averages for saved items to prevent stale ratings.
+* **Watch Time Analytics**: Tracks cumulative minutes spent watching movies and TV series across your library.
 
-### 👤 Profiles & Customization
-* **Profile Management**: Update display name, avatar, bio, and change account passwords securely.
-* **Taste Breakdown Analytics**: Visual genre distribution charts and user rating summaries based on your saved library items.
-
-### 🏆 Achievements
-* **Gamified Milestones**: Automatic tracking and unlocking of 15+ achievements (e.g., *First Steps*, *Collector*, *AI Explorer*, *Curious Mind*, *Trailer Seeker*).
-* **Interactive Toast & Swipe-to-Dismiss**: Framer Motion animated toast notifications that slide in upon unlocking achievements and support swipe-to-dismiss gestures on mobile viewports.
+### 🏆 Gamified Achievements
+* **Milestone Unlocking**: Automatic tracking and unlocking of 15+ achievements (*First Steps*, *Collector*, *AI Explorer*, *Curious Mind*, *Trailer Seeker*).
+* **Swipe-to-Dismiss Toasts**: Interactive Framer Motion toast notifications with drag-to-dismiss gestures on mobile viewports.
 
 ---
 
@@ -93,41 +101,9 @@ Most movie database applications function as passive reference guides. CineScope
 
 ---
 
-## 5. Architecture / Data Flow
+## 5. AI Features Breakdown
 
-```mermaid
-flowchart TD
-    User([User / Browser])
-    
-    subgraph Frontend ["React 19 + Vite Frontend"]
-        UI[UI Components & Pages]
-        AuthCtx[Auth Context & State]
-        Router[Hash Router & Spotlight Search]
-    end
-    
-    subgraph Serverless ["Vercel API Proxy"]
-        VercelAPI["/api/tmdb API Handler"]
-    end
-    
-    subgraph ExternalServices ["External Backend Services"]
-        TMDB["TMDB API (Movie & TV Data)"]
-        FirebaseDB["Firebase Realtime Database & Auth"]
-        LLM["AI Services (Gemini / Groq / OpenRouter)"]
-    end
-    
-    User <--> UI
-    UI <--> AuthCtx
-    AuthCtx <--> FirebaseDB
-    UI --> VercelAPI
-    VercelAPI --> TMDB
-    UI <--> LLM
-```
-
----
-
-## 6. AI Features
-
-CineScope leverages large language models (via Google Gemini / Groq LLaMA / OpenRouter APIs) for multiple custom workflows:
+CineScope leverages large language models (via Google Gemini / Groq LLaMA / OpenRouter APIs) to power decision-making workflows:
 
 | AI Feature | User Input | AI Output & Behavior |
 | :--- | :--- | :--- |
@@ -139,7 +115,7 @@ CineScope leverages large language models (via Google Gemini / Groq LLaMA / Open
 
 ---
 
-## 7. Firebase Integration
+## 6. Firebase Integration
 
 Firebase handles authentication and user data storage:
 
@@ -156,7 +132,7 @@ Firebase handles authentication and user data storage:
 
 ---
 
-## 8. Getting Started
+## 7. Getting Started
 
 Follow these steps to set up and run CineScope locally:
 
@@ -193,7 +169,7 @@ Follow these steps to set up and run CineScope locally:
 
 ---
 
-## 9. Environment Variables
+## 8. Environment Variables
 
 Create a `.env` file in the root of the project with the following environment variables:
 
@@ -220,7 +196,7 @@ VITE_OPENROUTER_API_KEY=your_openrouter_api_key
 
 ---
 
-## 10. Project Structure
+## 9. Project Structure
 
 ```text
 Code-Blooded/
@@ -275,7 +251,7 @@ Code-Blooded/
 
 ---
 
-## 11. Deployment
+## 10. Deployment
 
 CineScope is configured for seamless deployment on **Vercel**:
 
@@ -284,21 +260,21 @@ CineScope is configured for seamless deployment on **Vercel**:
 
 ---
 
-## 12. Team & Acknowledgments
+## 11. Team & Acknowledgments
 
 * **Project**: CineScope (Code-Blooded)
 * **Built for**: Hackathon Project
 
 ---
 
-## 13. Future Improvements
+## 12. Future Improvements
 
-* **Custom User Lists**: Ability to create custom curated playlists (e.g. *"Halloween Favorites"*).
-* **Trailer Cinema Mode**: Continuous autoplay queue for trending trailers.
+* **Custom User Playlists**: Ability to create custom themed playlists (e.g. *"Halloween Horror Night"*).
+* **Trailer Queue Mode**: Continuous autoplay queue for trending trailers.
 * **Offline Caching**: Enhanced offline bookmarking for saved watchlists.
 
 ---
 
-## 14. License
+## 13. License
 
 This project was created as a hackathon project.
