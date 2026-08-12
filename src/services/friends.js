@@ -16,16 +16,21 @@ export const ensureFriendCode = async (userId, email) => {
     const userSnap = await get(userRef);
     
     let userData = userSnap.exists() ? userSnap.val() : {};
+    const effectiveEmail = email || userData.email || 'Guest';
+    const computedUsername = userData.displayName || userData.username || (effectiveEmail.includes('@') ? effectiveEmail.split('@')[0] : effectiveEmail);
     
     if (userData.friendCode) {
-      // If they were a Guest but now have a real email (e.g. they linked an account), update it
-      if (email && email !== 'Guest' && (!userData.email || userData.email === 'Guest')) {
-        try {
-          await set(ref(db, `users/${userId}/email`), email);
-        } catch (e) {
-          console.error('Failed to update email for linked account', e);
-        }
+      const updates = {};
+      if (!userData.email || (effectiveEmail !== 'Guest' && userData.email === 'Guest')) {
+        updates[`users/${userId}/email`] = effectiveEmail;
       }
+      if (!userData.username || (computedUsername !== 'Guest' && userData.username === 'Guest')) {
+        updates[`users/${userId}/username`] = computedUsername;
+      }
+      if (Object.keys(updates).length > 0) {
+        await update(ref(db), updates).catch(console.error);
+      }
+      set(ref(db, `friendCodes/${userData.friendCode}`), userId).catch(console.error);
       return userData.friendCode;
     }
 
@@ -49,10 +54,14 @@ export const ensureFriendCode = async (userId, email) => {
       return null;
     }
 
-    // Set the code atomically
+    // Set the code and user profile atomically
     const updates = {};
     updates[`users/${userId}/friendCode`] = newCode;
-    updates[`users/${userId}/email`] = email || 'Guest';
+    updates[`users/${userId}/email`] = effectiveEmail;
+    updates[`users/${userId}/username`] = computedUsername;
+    if (!userData.createdAt) {
+      updates[`users/${userId}/createdAt`] = Date.now();
+    }
     updates[`friendCodes/${newCode}`] = userId;
 
     await update(ref(db), updates);
@@ -60,8 +69,6 @@ export const ensureFriendCode = async (userId, email) => {
     return newCode;
   } catch (error) {
     console.error('ensureFriendCode error:', error);
-    
-    // Try to read existing code even if write failed
     try {
       const userSnap = await get(ref(db, `users/${userId}`));
       if (userSnap.exists() && userSnap.val().friendCode) {
@@ -70,7 +77,47 @@ export const ensureFriendCode = async (userId, email) => {
     } catch (readError) {
       console.error('Fallback read error:', readError);
     }
-    
+    return null;
+  }
+};
+
+export const syncUserProfile = async (user) => {
+  if (!user || !user.uid) return null;
+  const userId = user.uid;
+
+  try {
+    const userSnap = await get(ref(db, `users/${userId}`));
+    const existing = userSnap.exists() ? userSnap.val() : {};
+
+    const effectiveEmail = user.isAnonymous ? 'Guest' : (user.email || existing.email || 'Guest');
+    const computedName = user.displayName || existing.username || (effectiveEmail.includes('@') ? effectiveEmail.split('@')[0] : effectiveEmail);
+
+    const profileUpdates = {};
+
+    if (!existing.email || (effectiveEmail !== 'Guest' && existing.email === 'Guest')) {
+      profileUpdates[`users/${userId}/email`] = effectiveEmail;
+    }
+    if (!existing.username || (computedName !== 'Guest' && existing.username === 'Guest')) {
+      profileUpdates[`users/${userId}/username`] = computedName;
+    }
+    if (!existing.createdAt) {
+      profileUpdates[`users/${userId}/createdAt`] = Date.now();
+    }
+
+    let code = existing.friendCode;
+    if (!code) {
+      code = await ensureFriendCode(userId, effectiveEmail);
+    } else {
+      set(ref(db, `friendCodes/${code}`), userId).catch(() => {});
+    }
+
+    if (Object.keys(profileUpdates).length > 0) {
+      await update(ref(db), profileUpdates);
+    }
+
+    return code;
+  } catch (err) {
+    console.error('syncUserProfile error:', err);
     return null;
   }
 };

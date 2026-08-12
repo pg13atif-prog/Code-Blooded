@@ -16,6 +16,8 @@ import {
 } from 'firebase/auth';
 import { auth } from '../services/firebase';
 
+import { syncUserProfile } from '../services/friends';
+
 const AuthContext = createContext();
 
 export const useAuth = () => {
@@ -106,6 +108,9 @@ export const AuthProvider = ({ children }) => {
       const unsubscribe = onAuthStateChanged(auth, (user) => {
         setCurrentUser(user);
         setLoading(false);
+        if (user) {
+          syncUserProfile(user).catch(err => console.error("Profile auto-sync error:", err));
+        }
       }, (err) => {
         console.error("Auth state change error:", err);
         setLoading(false);
