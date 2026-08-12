@@ -17,21 +17,28 @@ export const ensureFriendCode = async (userId, email) => {
     
     let userData = userSnap.exists() ? userSnap.val() : {};
     const effectiveEmail = email || userData.email || 'Guest';
-    const computedUsername = userData.displayName || userData.username || (effectiveEmail.includes('@') ? effectiveEmail.split('@')[0] : effectiveEmail);
+    const isGuest = !effectiveEmail || effectiveEmail === 'Guest' || !effectiveEmail.includes('@');
     
-    if (userData.friendCode) {
+    const existingCode = userData.friendCode;
+    const codeSuffix = existingCode ? existingCode.replace('CS-', '') : userId.substring(0, 5).toUpperCase();
+    const guestUsername = `Guest #${codeSuffix}`;
+
+    const computedUsername = userData.displayName 
+      || (!isGuest ? effectiveEmail.split('@')[0] : (userData.username && userData.username !== 'Guest' ? userData.username : guestUsername));
+    
+    if (existingCode) {
       const updates = {};
       if (!userData.email || (effectiveEmail !== 'Guest' && userData.email === 'Guest')) {
         updates[`users/${userId}/email`] = effectiveEmail;
       }
-      if (!userData.username || (computedUsername !== 'Guest' && userData.username === 'Guest')) {
+      if (!userData.username || userData.username === 'Guest' || (!isGuest && userData.username.startsWith('Guest #'))) {
         updates[`users/${userId}/username`] = computedUsername;
       }
       if (Object.keys(updates).length > 0) {
         await update(ref(db), updates).catch(console.error);
       }
-      set(ref(db, `friendCodes/${userData.friendCode}`), userId).catch(console.error);
-      return userData.friendCode;
+      set(ref(db, `friendCodes/${existingCode}`), userId).catch(console.error);
+      return existingCode;
     }
 
     // Generate unique code with max attempts guard
@@ -54,11 +61,14 @@ export const ensureFriendCode = async (userId, email) => {
       return null;
     }
 
+    const newGuestUsername = `Guest #${newCode.replace('CS-', '')}`;
+    const finalUsername = userData.displayName || (!isGuest ? effectiveEmail.split('@')[0] : newGuestUsername);
+
     // Set the code and user profile atomically
     const updates = {};
     updates[`users/${userId}/friendCode`] = newCode;
     updates[`users/${userId}/email`] = effectiveEmail;
-    updates[`users/${userId}/username`] = computedUsername;
+    updates[`users/${userId}/username`] = finalUsername;
     if (!userData.createdAt) {
       updates[`users/${userId}/createdAt`] = Date.now();
     }
@@ -89,26 +99,32 @@ export const syncUserProfile = async (user) => {
     const userSnap = await get(ref(db, `users/${userId}`));
     const existing = userSnap.exists() ? userSnap.val() : {};
 
-    const effectiveEmail = user.isAnonymous ? 'Guest' : (user.email || existing.email || 'Guest');
-    const computedName = user.displayName || existing.username || (effectiveEmail.includes('@') ? effectiveEmail.split('@')[0] : effectiveEmail);
+    const isGuest = user.isAnonymous || !user.email;
+    const effectiveEmail = isGuest ? 'Guest' : (user.email || existing.email || 'Guest');
+    
+    let code = existing.friendCode;
+    if (!code) {
+      code = await ensureFriendCode(userId, effectiveEmail);
+    } else {
+      set(ref(db, `friendCodes/${code}`), userId).catch(() => {});
+    }
+
+    const codeSuffix = code ? code.replace('CS-', '') : userId.substring(0, 5).toUpperCase();
+    const guestDefaultName = `Guest #${codeSuffix}`;
+
+    const computedName = user.displayName 
+      || (!isGuest && effectiveEmail.includes('@') ? effectiveEmail.split('@')[0] : (existing.username && existing.username !== 'Guest' ? existing.username : guestDefaultName));
 
     const profileUpdates = {};
 
     if (!existing.email || (effectiveEmail !== 'Guest' && existing.email === 'Guest')) {
       profileUpdates[`users/${userId}/email`] = effectiveEmail;
     }
-    if (!existing.username || (computedName !== 'Guest' && existing.username === 'Guest')) {
+    if (!existing.username || existing.username === 'Guest' || (!isGuest && existing.username.startsWith('Guest #'))) {
       profileUpdates[`users/${userId}/username`] = computedName;
     }
     if (!existing.createdAt) {
       profileUpdates[`users/${userId}/createdAt`] = Date.now();
-    }
-
-    let code = existing.friendCode;
-    if (!code) {
-      code = await ensureFriendCode(userId, effectiveEmail);
-    } else {
-      set(ref(db, `friendCodes/${code}`), userId).catch(() => {});
     }
 
     if (Object.keys(profileUpdates).length > 0) {
@@ -153,11 +169,13 @@ export const searchByFriendCode = async (code) => {
   if (!userSnap.exists()) return null;
   
   const data = userSnap.val();
+  const codeSuffix = data.friendCode ? data.friendCode.replace('CS-', '') : friendId.substring(0, 5).toUpperCase();
+  const defaultGuestName = `Guest #${codeSuffix}`;
   return {
     uid: friendId,
     friendCode: data.friendCode,
     email: data.email,
-    username: data.displayName || (data.email ? data.email.split('@')[0] : 'Guest'),
+    username: data.displayName || (data.username && data.username !== 'Guest' ? data.username : (data.email && data.email !== 'Guest' ? data.email.split('@')[0] : defaultGuestName)),
     favoriteGenre: data.favoriteGenre || 'Unknown',
     avatar: data.avatarUrl || data.avatar || null
   };
@@ -175,11 +193,13 @@ export const getFriendData = async (userId) => {
       console.error('Error ensuring friend code in getFriendData:', e);
     }
   }
+  const codeSuffix = friendCode ? friendCode.replace('CS-', '') : userId.substring(0, 5).toUpperCase();
+  const defaultGuestName = `Guest #${codeSuffix}`;
   return {
     uid: userId,
     friendCode: friendCode || null,
     email: data.email,
-    username: data.displayName || (data.email ? data.email.split('@')[0] : 'Guest'),
+    username: data.displayName || (data.username && data.username !== 'Guest' ? data.username : (data.email && data.email !== 'Guest' ? data.email.split('@')[0] : defaultGuestName)),
     favoriteGenre: data.favoriteGenre || 'Unknown',
     avatar: data.avatarUrl || data.avatar || null
   };
