@@ -110,27 +110,51 @@ const FriendsPage = ({ initialTab = 'list' }) => {
     }
   };
 
-  const handleSendRequest = async (toId) => {
-    await sendFriendRequest(currentUser.uid, toId);
-    setSearchResult(null);
-    setSearchCode('');
-    loadRelationships();
-    setActiveTab('requests');
+  const handleSendRequest = async (toId, friendName = '') => {
+    try {
+      await sendFriendRequest(currentUser.uid, toId);
+      const nameStr = friendName ? ` to ${friendName}` : '';
+      showToast(`Friend request sent${nameStr}!`, 'success');
+      setSearchResult(null);
+      setSearchCode('');
+      handleTabChange('requests');
+    } catch (err) {
+      console.error('Failed to send friend request:', err);
+      showToast(err.message || 'Failed to send friend request.', 'error');
+    }
   };
 
-  const handleAccept = async (id) => {
-    await acceptFriendRequest(currentUser.uid, id);
-    loadRelationships();
+  const handleAccept = async (id, friendName = '') => {
+    try {
+      await acceptFriendRequest(currentUser.uid, id);
+      const nameStr = friendName ? ` from ${friendName}` : '';
+      showToast(`Accepted friend request${nameStr}!`, 'success');
+    } catch (err) {
+      console.error('Failed to accept request:', err);
+      showToast('Failed to accept request.', 'error');
+    }
   };
 
-  const handleReject = async (id) => {
-    await rejectFriendRequest(currentUser.uid, id);
-    loadRelationships();
+  const handleReject = async (id, friendName = '') => {
+    try {
+      await rejectFriendRequest(currentUser.uid, id);
+      const nameStr = friendName ? ` from ${friendName}` : '';
+      showToast(`Rejected request${nameStr}`, 'info');
+    } catch (err) {
+      console.error('Failed to reject request:', err);
+      showToast('Failed to reject request.', 'error');
+    }
   };
 
-  const handleCancel = async (id) => {
-    await cancelFriendRequest(currentUser.uid, id);
-    loadRelationships();
+  const handleCancel = async (id, friendName = '') => {
+    try {
+      await cancelFriendRequest(currentUser.uid, id);
+      const nameStr = friendName ? ` to ${friendName}` : '';
+      showToast(`Cancelled request${nameStr}`, 'info');
+    } catch (err) {
+      console.error('Failed to cancel request:', err);
+      showToast('Failed to cancel request.', 'error');
+    }
   };
 
   const handleRemove = async (id) => {
@@ -359,8 +383,8 @@ const FriendsPage = ({ initialTab = 'list' }) => {
                           <span>{req.username}</span>
                         </div>
                         <div className="req-actions">
-                          <button className="btn-primary btn-sm" onClick={() => handleAccept(req.uid)}>Accept</button>
-                          <button className="btn-secondary btn-sm" onClick={() => handleReject(req.uid)}>Reject</button>
+                          <button className="btn-primary btn-sm" onClick={() => handleAccept(req.uid, req.username)}>Accept</button>
+                          <button className="btn-secondary btn-sm" onClick={() => handleReject(req.uid, req.username)}>Reject</button>
                         </div>
                       </div>
                     ))}
@@ -379,7 +403,7 @@ const FriendsPage = ({ initialTab = 'list' }) => {
                           <span>{req.username}</span>
                         </div>
                         <div className="req-actions">
-                          <button className="btn-danger btn-sm" onClick={() => handleCancel(req.uid)}>Cancel</button>
+                          <button className="btn-danger btn-sm" onClick={() => handleCancel(req.uid, req.username)}>Cancel</button>
                         </div>
                       </div>
                     ))}
@@ -421,7 +445,7 @@ const FriendsPage = ({ initialTab = 'list' }) => {
                     ) : incoming.find(i => i.uid === searchResult.uid) ? (
                       <p className="already-friends-txt">This user has sent you a request.</p>
                     ) : (
-                      <button className="btn-primary w-full" onClick={() => handleSendRequest(searchResult.uid)}>
+                      <button className="btn-primary w-full" onClick={() => handleSendRequest(searchResult.uid, searchResult.username)}>
                         Send Friend Request
                       </button>
                     )}
