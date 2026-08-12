@@ -1,5 +1,5 @@
 import { ref, set, remove, get } from 'firebase/database';
-import { db } from './firebase';
+import { db, auth } from './firebase';
 import { getMovieDetails } from './tmdb';
 
 const getUserWatchlistRef = (userId) => ref(db, `users/${userId}/watchlist`);
@@ -249,6 +249,12 @@ export const getLiked = async (userId) => {
 // ── Custom Reviews ──
 export const addCustomReview = async (movieId, userId, reviewData) => {
   if (!movieId || !userId || !reviewData) return;
+
+  // Guard: Guest accounts cannot post custom reviews
+  if (auth.currentUser && auth.currentUser.isAnonymous) {
+    throw new Error("Guest accounts cannot post reviews. Please sign in or register.");
+  }
+
   const cleanUserId = String(userId);
   const cleanMovieId = String(movieId);
   const reviewRef = ref(db, `users/${cleanUserId}/reviews/${cleanMovieId}`);
