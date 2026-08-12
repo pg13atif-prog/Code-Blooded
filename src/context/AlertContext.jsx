@@ -165,11 +165,12 @@ export const AlertProvider = ({ children }) => {
           <motion.div
             key="global-toast"
             className={`custom-floating-toast ${toastState.type || 'info'}`}
-            drag="x"
-            dragConstraints={{ left: -100, right: 100 }}
-            dragElastic={0.6}
+            drag="y"
+            dragSnapToOrigin
+            dragConstraints={{ top: 0, bottom: 0 }}
+            dragElastic={0.4}
             onDragEnd={(_, info) => {
-              if (Math.abs(info.offset.x) > 50 || Math.abs(info.offset.y) > 40) {
+              if (info.offset.y < -30 || info.velocity.y < -150 || Math.abs(info.offset.x) > 50) {
                 if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
                 setToastState(null);
               }

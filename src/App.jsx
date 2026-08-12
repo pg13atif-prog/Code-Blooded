@@ -458,17 +458,18 @@ const AchievementToasts = () => {
           <motion.div
             key={t.id}
             className="achievement-toast"
-            drag
-            dragConstraints={{ left: -120, right: 120, top: -120, bottom: 60 }}
-            dragElastic={0.65}
+            drag="y"
+            dragSnapToOrigin
+            dragConstraints={{ top: 0, bottom: 0 }}
+            dragElastic={0.4}
             onDragEnd={(_, info) => {
-              if (Math.abs(info.offset.x) > 55 || Math.abs(info.offset.y) > 45) {
+              if (info.offset.y < -30 || info.velocity.y < -150 || Math.abs(info.offset.x) > 50) {
                 handleDismiss(t.id);
               }
             }}
-            initial={{ opacity: 0, y: -24, scale: 0.9 }}
+            initial={{ opacity: 0, y: -30, scale: 0.92 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -24, scale: 0.9, transition: { duration: 0.18 } }}
+            exit={{ opacity: 0, y: -40, opacity: 0, scale: 0.85, transition: { duration: 0.18 } }}
             layout
           >
             <div className="toast-trophy">🏆</div>
