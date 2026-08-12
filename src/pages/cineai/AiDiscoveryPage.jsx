@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getAiRecommendations } from '../../services/gemini';
+import { getAiRecommendations } from '../../services/ai';
 import { searchMedia } from '../../services/tmdb';
 import MovieCard from '../../components/MovieCard';
 import { Skeleton } from '../../components/SkeletonLoader';
@@ -160,7 +160,7 @@ const AiDiscoveryPage = () => {
     setResults([]);
 
     try {
-      // 1. Get raw JSON recommendations from Gemini
+      // 1. Get raw JSON recommendations from AI engine
       const aiRecs = await getAiRecommendations(prompt);
 
       // 2. Fetch TMDB details for each recommendation

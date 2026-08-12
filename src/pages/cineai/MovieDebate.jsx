@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { getAiMovieDebate } from '../../services/gemini';
+import { getAiMovieDebate } from '../../services/ai';
 import { searchMedia } from '../../services/tmdb';
 import './CineAiTools.css';
 

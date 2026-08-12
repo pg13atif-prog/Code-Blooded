@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { ref, get, set } from 'firebase/database';
 import { db } from '../services/firebase';
 import { getWatchlist, getLiked, getWatched } from '../services/firestore';
-import { getFriendCompatibilityRecs } from '../services/gemini';
+import { getFriendCompatibilityRecs } from '../services/ai';
 import { searchMedia } from '../services/tmdb';
 import { ensureFriendCode, searchByFriendCode, getFriendData } from '../services/friends';
 import MovieCard from '../components/MovieCard';

@@ -2,7 +2,7 @@
 
 ### *Search Less. Watch Better.*
 
-CineScope is an intelligent media discovery platform that combines TMDB content browsing, Google Gemini AI reasoning, and real-time social movie matching to eliminate choice paralysis.
+CineScope is an intelligent media discovery platform that combines TMDB content browsing, AI reasoning (Groq / OpenRouter), and real-time social movie matching to eliminate choice paralysis.
 
 **[🚀 Live Demo](https://cinescopeai.vercel.app)**
 
@@ -92,7 +92,7 @@ Finding something great to watch shouldn't feel like endless scrolling. CineScop
 
 ## 🧠 How CineAI Works
 
-CineScope integrates large language models (Google Gemini / Groq LLaMA / OpenRouter) to turn vague user intents into actionable watch decisions:
+CineScope integrates large language models (Groq LLaMA / OpenRouter) to turn vague user intents into actionable watch decisions:
 
 | AI Workflow | User Input | AI Output & Behavior |
 | :--- | :--- | :--- |
@@ -121,7 +121,7 @@ Firebase Realtime Database and Authentication power CineScope's backend state an
 | :--- | :--- |
 | **Frontend** | React 19, Vite 8, Framer Motion 12, Vanilla CSS3 (Liquid Glassmorphism) |
 | **Backend & Data** | Firebase Realtime Database, Firebase Authentication |
-| **APIs & AI** | TMDB API, Google Gemini API / Groq LLaMA / OpenRouter |
+| **APIs & AI** | TMDB API, Groq LLaMA / OpenRouter AI |
 | **Deployment** | Vercel (Single Page App rewrites & serverless API proxy) |
 
 
@@ -206,16 +206,7 @@ Code-Blooded/
 │   └── index.css     # Global CSS design system
 ├── vercel.json       # Deployment rewrites
 ├── vite.config.js    # Vite configuration & proxy
-└── package.json      # Dependencies and scripts
 ```
-
-| Directory | Purpose |
-| :--- | :--- |
-| `components/` | Reusable UI elements (Navbar, MovieCard, Hero, AuthModal) |
-| `pages/` | Top-level view routes (Discover, Profile, MovieDetail, Social) |
-| `pages/cineai/` | Dedicated CineAI intelligence tools (Planner, PickForMe, Debate) |
-| `services/` | Integration services for TMDB, Firebase Realtime DB, and Gemini AI |
-| `context/` | React context state providers for Auth and global Alert toasts |
 
 ---
 

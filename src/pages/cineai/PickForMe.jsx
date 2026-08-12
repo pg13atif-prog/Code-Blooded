@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { getAiPickForMe } from '../../services/gemini';
+import { getAiPickForMe } from '../../services/ai';
 import { searchMedia } from '../../services/tmdb';
 import MovieCard from '../../components/MovieCard';
 import './CineAiTools.css';
