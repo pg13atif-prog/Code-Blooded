@@ -333,6 +333,7 @@ const FriendsPage = ({ initialTab = 'list' }) => {
                             <div className="friend-avatar">{f.avatar ? <img src={f.avatar} style={{width:'100%', height:'100%', borderRadius:'50%', objectFit:'cover'}} alt=""/> : f.username.charAt(0).toUpperCase()}</div>
                             <div className="friend-info">
                               <h4>{f.username}</h4>
+                              {f.friendCode && <span className="friend-code-badge">{f.friendCode}</span>}
                             </div>
                           </div>
                           <div className="friend-card-actions">
@@ -380,7 +381,10 @@ const FriendsPage = ({ initialTab = 'list' }) => {
                       <div key={req.uid} className="request-card">
                         <div className="req-user">
                           <div className="friend-avatar-sm">{req.avatar ? <img src={req.avatar} style={{width:'100%', height:'100%', borderRadius:'50%', objectFit:'cover'}} alt=""/> : req.username.charAt(0).toUpperCase()}</div>
-                          <span>{req.username}</span>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                            <span>{req.username}</span>
+                            {req.friendCode && <span className="friend-code-badge">{req.friendCode}</span>}
+                          </div>
                         </div>
                         <div className="req-actions">
                           <button className="btn-primary btn-sm" onClick={() => handleAccept(req.uid, req.username)}>Accept</button>
@@ -400,7 +404,10 @@ const FriendsPage = ({ initialTab = 'list' }) => {
                       <div key={req.uid} className="request-card">
                         <div className="req-user">
                           <div className="friend-avatar-sm">{req.avatar ? <img src={req.avatar} style={{width:'100%', height:'100%', borderRadius:'50%', objectFit:'cover'}} alt=""/> : req.username.charAt(0).toUpperCase()}</div>
-                          <span>{req.username}</span>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                            <span>{req.username}</span>
+                            {req.friendCode && <span className="friend-code-badge">{req.friendCode}</span>}
+                          </div>
                         </div>
                         <div className="req-actions">
                           <button className="btn-danger btn-sm" onClick={() => handleCancel(req.uid, req.username)}>Cancel</button>
@@ -436,6 +443,7 @@ const FriendsPage = ({ initialTab = 'list' }) => {
                       <div className="friend-avatar-lg">{searchResult.avatar ? <img src={searchResult.avatar} style={{width:'100%', height:'100%', borderRadius:'50%', objectFit:'cover'}} alt=""/> : searchResult.username.charAt(0).toUpperCase()}</div>
                       <div className="search-result-info">
                         <h2>{searchResult.username}</h2>
+                        {searchResult.friendCode && <span className="friend-code-badge">{searchResult.friendCode}</span>}
                       </div>
                     </div>
                     {friends.find(f => f.uid === searchResult.uid) ? (
