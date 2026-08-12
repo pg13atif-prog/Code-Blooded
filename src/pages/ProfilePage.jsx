@@ -135,6 +135,7 @@ const ProfilePage = () => {
     setIsLinking(true);
     try {
       await linkGuestWithGoogle();
+      showToast('Account successfully upgraded with Google!', 'success');
     } catch (err) {
       console.error('Google linking error:', err);
       if (err.code === 'auth/credential-already-in-use' || err.code === 'auth/email-already-in-use') {
@@ -303,7 +304,7 @@ const ProfilePage = () => {
     setIsLinking(true);
     try {
       await linkGuestAccount(linkEmail, linkPassword);
-      // Optional: alert or toast here
+      showToast('Account successfully upgraded to permanent account!', 'success');
     } catch (err) {
       console.error(err);
       if (err.code === 'auth/email-already-in-use') {
