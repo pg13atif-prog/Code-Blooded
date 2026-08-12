@@ -7,6 +7,9 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     server: {
+      watch: {
+        ignored: ['**/screenshots/**'],
+      },
       proxy: {
         '/api/tmdb': {
           target: 'https://cine-scope-ivory-one.vercel.app',

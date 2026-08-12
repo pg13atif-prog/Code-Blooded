@@ -460,6 +460,8 @@ button {
   max-width: 480px;
   max-height: 85vh;
   overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
   background: var(--glass-heavy-bg);
   backdrop-filter: var(--glass-heavy-filter);
   -webkit-backdrop-filter: var(--glass-heavy-filter);
@@ -509,9 +511,13 @@ button {
 }
 
 /* Scrollbar inside modal */
-.modal-content::-webkit-scrollbar { width: 4px; }
+.modal-content::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
 .modal-content::-webkit-scrollbar-track { background: transparent; }
-.modal-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+.modal-content::-webkit-scrollbar-thumb { background: transparent; }
 
 /* ---------- Logout Confirmation Modal ---------- */
 .logout-confirm-modal {

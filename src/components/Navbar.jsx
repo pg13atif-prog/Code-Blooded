@@ -83,7 +83,7 @@ const Navbar = () => {
 
   // Mobile accordion
   const [mobileAccordion, setMobileAccordion] = useState(null);
-  
+
   // Notifications
   const [notifications, setNotifications] = useState([]);
   const [incomingRequestsList, setIncomingRequestsList] = useState([]);
@@ -383,10 +383,10 @@ const Navbar = () => {
       } else if (actionType === 'watched') {
         await addToWatched(currentUser.uid, notif.movie, 120);
       }
-      
+
       // Mark specific action as added locally so other buttons remain active
-      setAddedNotifs(prev => ({ 
-        ...prev, 
+      setAddedNotifs(prev => ({
+        ...prev,
         [notif.id]: {
           ...(prev[notif.id] || {}),
           [actionType]: true
@@ -541,7 +541,7 @@ const Navbar = () => {
               <span className="logo-cine">Cine</span><span className="logo-scope">Scope</span>
             </span>
           </a>
-          <span className="navbar__tagline">Discover Your Next Favorite.</span>
+          <span className="navbar__tagline">Discover Your Next Favorite</span>
         </div>
 
         {/* Centered navigation */}
@@ -710,9 +710,9 @@ const Navbar = () => {
         const isSearchingActive = isSearchModalOpen || currentPath.startsWith('#search');
         return (
           <nav className={`mobile-bottom-nav ${isMobileMenuOpen ? 'mobile-bottom-nav--hidden' : ''}`} aria-label="Mobile Navigation">
-            <a 
-              href="#discover/movies" 
-              onClick={(e) => handleNavClick(e, '#discover/movies')} 
+            <a
+              href="#discover/movies"
+              onClick={(e) => handleNavClick(e, '#discover/movies')}
               className={`mobile-nav-item ${!isSearchingActive && currentPath.startsWith('#discover') ? 'active' : ''}`}
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -723,9 +723,9 @@ const Navbar = () => {
               <span>Browse</span>
             </a>
 
-            <a 
-              href="#cineai" 
-              onClick={(e) => handleNavClick(e, '#cineai')} 
+            <a
+              href="#cineai"
+              onClick={(e) => handleNavClick(e, '#cineai')}
               className={`mobile-nav-item ${!isSearchingActive && currentPath.startsWith('#cineai') ? 'active' : ''}`}
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -736,9 +736,9 @@ const Navbar = () => {
               <span>CineAI</span>
             </a>
 
-            <a 
-              href="#friends" 
-              onClick={(e) => handleNavClick(e, '#friends')} 
+            <a
+              href="#friends"
+              onClick={(e) => handleNavClick(e, '#friends')}
               className={`mobile-nav-item ${!isSearchingActive && (currentPath.startsWith('#friends') || currentPath.startsWith('#social')) ? 'active' : ''}`}
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -750,13 +750,13 @@ const Navbar = () => {
               <span>Friends</span>
             </a>
 
-            <button 
-              type="button" 
+            <button
+              type="button"
               onClick={() => {
                 setIsSearchModalOpen(true);
                 setSearchQuery('');
                 setFocusedIndex(-1);
-              }} 
+              }}
               className={`mobile-nav-item ${isSearchingActive || isSearchModalOpen ? 'active' : ''}`}
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -766,9 +766,9 @@ const Navbar = () => {
               <span>Search</span>
             </button>
 
-            <a 
-              href="#profile" 
-              onClick={handleMobileProfileClick} 
+            <a
+              href="#profile"
+              onClick={handleMobileProfileClick}
               className={`mobile-nav-item ${!isSearchingActive && currentPath === '#profile' ? 'active' : ''}`}
             >
               {currentUser ? (
@@ -795,12 +795,12 @@ const Navbar = () => {
       {isSearchModalOpen && (
         <div className="search-modal-overlay" onClick={() => setIsSearchModalOpen(false)}>
           <div className="search-modal-container" onClick={(e) => e.stopPropagation()}>
-            
+
             {/* ── Fixed Top Header (Title + Filter Selector + Close Button + Search Input) ── */}
             <div className="search-modal-fixed-header">
               <div className="search-modal-header-top">
                 <h2 className="search-modal-title">Search</h2>
-                
+
                 <div className="search-modal-header-actions">
                   <CustomSelect
                     value={searchFilterType}
@@ -808,7 +808,7 @@ const Navbar = () => {
                     options={MOBILE_SEARCH_TYPES}
                     className="search-modal-type-select"
                   />
-                  
+
                   <button
                     type="button"
                     className="search-modal-close-btn"
@@ -892,10 +892,10 @@ const Navbar = () => {
                                   <div className="search-item-no-poster">🎬</div>
                                 )}
                               </div>
-                              
+
                               <div className="search-item-info">
                                 <h4 className="search-item-title">{item.title || item.name}</h4>
-                                
+
                                 <div className="search-item-meta">
                                   <span className="search-meta-type">{item.mediaType === 'tv' ? 'TV Show' : 'Movie'}</span>
                                   {item.year && item.year !== '—' && (
@@ -1092,8 +1092,8 @@ const Navbar = () => {
                       sent you a friend request!
                     </p>
                     <div className="notif-card-actions" style={{ display: 'flex', gap: '0.5rem' }}>
-                      <button 
-                        className="notif-action-btn active-watched" 
+                      <button
+                        className="notif-action-btn active-watched"
                         onClick={async () => {
                           await acceptFriendRequest(currentUser.uid, req.uid);
                           showToast(`Accepted ${req.username}'s friend request!`, 'success');
@@ -1102,8 +1102,8 @@ const Navbar = () => {
                       >
                         Accept
                       </button>
-                      <button 
-                        className="notif-action-btn active-liked" 
+                      <button
+                        className="notif-action-btn active-liked"
                         onClick={async () => {
                           await rejectFriendRequest(currentUser.uid, req.uid);
                           showToast(`Rejected friend request`, 'info');
@@ -1134,22 +1134,22 @@ const Navbar = () => {
                         recommended you <strong>{notif.movie?.title || 'a movie'}</strong>
                       </p>
                       <div className="notif-card-actions">
-                        <button 
-                          className={`notif-action-btn ${notifState.watchlist ? 'active-watchlist' : ''}`} 
+                        <button
+                          className={`notif-action-btn ${notifState.watchlist ? 'active-watchlist' : ''}`}
                           onClick={() => handleNotificationAction(notif, 'watchlist')}
                           disabled={!!notifState.watchlist}
                         >
                           {notifState.watchlist ? 'Added' : 'Watchlist'}
                         </button>
-                        <button 
-                          className={`notif-action-btn ${notifState.liked ? 'active-liked' : ''}`} 
+                        <button
+                          className={`notif-action-btn ${notifState.liked ? 'active-liked' : ''}`}
                           onClick={() => handleNotificationAction(notif, 'liked')}
                           disabled={!!notifState.liked}
                         >
                           {notifState.liked ? 'Liked' : 'Like'}
                         </button>
-                        <button 
-                          className={`notif-action-btn ${notifState.watched ? 'active-watched' : ''}`} 
+                        <button
+                          className={`notif-action-btn ${notifState.watched ? 'active-watched' : ''}`}
                           onClick={() => handleNotificationAction(notif, 'watched')}
                           disabled={!!notifState.watched}
                         >
@@ -1173,9 +1173,9 @@ const Navbar = () => {
               <span className={`logout-modal-icon ${currentUser?.isAnonymous ? 'guest-warning-icon' : ''}`}>
                 {currentUser?.isAnonymous ? (
                   <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#ef4444" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                    <line x1="12" y1="9" x2="12" y2="13"/>
-                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                    <line x1="12" y1="9" x2="12" y2="13" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
                   </svg>
                 ) : (
                   <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -1205,8 +1205,8 @@ const Navbar = () => {
 
             <div className="logout-modal-actions vertical-if-guest">
               {currentUser?.isAnonymous && (
-                <button 
-                  className="logout-link-first-btn" 
+                <button
+                  className="logout-link-first-btn"
                   onClick={() => {
                     setIsLogoutModalOpen(false);
                     window.location.hash = '#profile';
@@ -1223,8 +1223,8 @@ const Navbar = () => {
                 <button className="logout-cancel-btn" onClick={() => setIsLogoutModalOpen(false)}>
                   Cancel
                 </button>
-                <button 
-                  className={`logout-confirm-btn ${currentUser?.isAnonymous ? 'danger-guest-logout' : ''}`} 
+                <button
+                  className={`logout-confirm-btn ${currentUser?.isAnonymous ? 'danger-guest-logout' : ''}`}
                   onClick={handleConfirmLogout}
                 >
                   {currentUser?.isAnonymous ? 'Log Out & Lose Data' : 'Log Out'}
