@@ -111,6 +111,14 @@ const MovieCard = memo((props) => {
     }
   };
 
+  const formattedRating = (rating && rating !== '—' && rating !== '-' && rating !== 'N/A' && rating !== '' && rating !== '0' && rating !== '0.0')
+    ? rating
+    : (props.vote_average && Number(props.vote_average) > 0)
+      ? Number(props.vote_average).toFixed(1)
+      : (props.voteAverage && Number(props.voteAverage) > 0)
+        ? Number(props.voteAverage).toFixed(1)
+        : 'N/A';
+
   const handleWatchlistClick = async (e) => {
     e.stopPropagation();
     if (!currentUser) return showAlert({ title: 'Sign In Required', message: 'Please log in to add movies to your watchlist.', type: 'info' });
@@ -119,7 +127,7 @@ const MovieCard = memo((props) => {
         await removeFromWatchlist(currentUser.uid, id);
         setIsSaved(false);
       } else {
-        await addToWatchlist(currentUser.uid, props);
+        await addToWatchlist(currentUser.uid, { ...props, rating: formattedRating });
         setIsSaved(true);
         checkAndUnlockAchievements(currentUser.uid);
       }
@@ -134,7 +142,7 @@ const MovieCard = memo((props) => {
         await removeFromLiked(currentUser.uid, id);
         setIsLikedItem(false);
       } else {
-        await addToLiked(currentUser.uid, props);
+        await addToLiked(currentUser.uid, { ...props, rating: formattedRating });
         setIsLikedItem(true);
         checkAndUnlockAchievements(currentUser.uid);
       }
@@ -149,18 +157,7 @@ const MovieCard = memo((props) => {
         await removeFromWatched(currentUser.uid, id);
         setIsWatchedItem(false);
       } else {
-        let runtime = 0;
-        try {
-          const controller = new AbortController();
-          const details = await getMovieDetails(id, mediaType || 'movie', controller.signal);
-          if ((mediaType || 'movie') === 'tv') {
-             runtime = (details.numberOfEpisodes || 1) * (details.runtimeMinutes || 45);
-          } else {
-             runtime = details.runtimeMinutes || 120;
-          }
-        } catch(e) { console.error("Could not fetch runtime", e); }
-        
-        await addToWatched(currentUser.uid, props, runtime);
+        await addToWatched(currentUser.uid, { ...props, rating: formattedRating });
         setIsWatchedItem(true);
         checkAndUnlockAchievements(currentUser.uid);
       }
@@ -226,7 +223,7 @@ const MovieCard = memo((props) => {
             <button className="play-button" onClick={handlePlayTrailer} aria-label={`Play ${title} trailer`}>
               <span aria-hidden="true">&#9654;</span>
             </button>
-            <span className="movie-rating"><span className="star" aria-hidden="true">&#9733;</span> {(rating && rating !== '—' && rating !== '-') ? rating : 'N/A'}</span>
+            <span className="movie-rating"><span className="star" aria-hidden="true">&#9733;</span> {formattedRating}</span>
             <span className="movie-year">{year}</span>
           </div>
         </div>
@@ -319,7 +316,7 @@ const MovieCard = memo((props) => {
                 <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" stroke="none" style={{ marginRight: '4px' }}>
                   <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                 </svg>
-                {(rating && rating !== '—' && rating !== '-') ? rating : 'N/A'}
+                {formattedRating}
               </span>
               <span className="hover-meta-dot">&bull;</span>
               <span className="hover-year">{year}</span>

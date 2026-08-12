@@ -1,24 +1,70 @@
 import { ref, set, remove, get } from 'firebase/database';
 import { db } from './firebase';
+import { getMovieDetails } from './tmdb';
 
 const getUserWatchlistRef = (userId) => ref(db, `users/${userId}/watchlist`);
 const getMovieDocRef = (userId, movieId) => ref(db, `users/${userId}/watchlist/${movieId}`);
 
 const sanitizeRating = (rawRating, movie) => {
-  if (rawRating !== undefined && rawRating !== null && rawRating !== '—' && rawRating !== '-' && rawRating !== 'N/A' && rawRating !== '') {
-    const num = Number(rawRating);
-    if (!isNaN(num) && num > 0) return num.toFixed(1);
-    if (typeof rawRating === 'string' && rawRating.trim().length > 0 && rawRating !== '0.0' && rawRating !== '0') {
-      return rawRating;
+  const candidates = [
+    rawRating,
+    movie?.rating,
+    movie?.vote_average,
+    movie?.voteAverage,
+    movie?.imdbRating
+  ];
+
+  for (const candidate of candidates) {
+    if (candidate !== undefined && candidate !== null && candidate !== '—' && candidate !== '-' && candidate !== 'N/A' && candidate !== '' && candidate !== '0' && candidate !== '0.0') {
+      const num = Number(candidate);
+      if (!isNaN(num) && num > 0) {
+        return num.toFixed(1);
+      }
+      if (typeof candidate === 'string' && candidate.trim().length > 0 && candidate !== '0.0' && candidate !== '0') {
+        return candidate.trim();
+      }
     }
   }
-  if (movie?.vote_average && Number(movie.vote_average) > 0) {
-    return Number(movie.vote_average).toFixed(1);
-  }
-  if (movie?.voteAverage && Number(movie.voteAverage) > 0) {
-    return Number(movie.voteAverage).toFixed(1);
-  }
   return 'N/A';
+};
+
+const resolveRatingBeforeSave = async (movie) => {
+  let rating = sanitizeRating(movie.rating, movie);
+  if (rating === 'N/A' && movie?.id) {
+    try {
+      const details = await getMovieDetails(movie.id, movie.mediaType || 'movie');
+      if (details && details.rating && details.rating !== 'N/A') {
+        return details.rating;
+      }
+    } catch (e) {
+      // Ignore fallback errors
+    }
+  }
+  return rating;
+};
+
+const resolveMissingRatingsInList = async (userId, listPath, items) => {
+  if (!items || items.length === 0) return items;
+  
+  const updatedItems = await Promise.all(items.map(async (item) => {
+    if (!item.rating || item.rating === 'N/A' || item.rating === '—' || item.rating === '-') {
+      try {
+        const details = await getMovieDetails(item.id, item.mediaType || 'movie');
+        if (details && details.rating && details.rating !== 'N/A') {
+          const freshRating = details.rating;
+          if (userId && listPath) {
+            set(ref(db, `users/${userId}/${listPath}/${item.id}/rating`), freshRating).catch(() => {});
+          }
+          return { ...item, rating: freshRating, year: (item.year === 'N/A' || item.year === '—') ? details.year : item.year };
+        }
+      } catch (e) {
+        // Ignore fallback errors
+      }
+    }
+    return item;
+  }));
+
+  return updatedItems;
 };
 
 const sanitizeMovie = (movie) => {
@@ -31,6 +77,7 @@ const sanitizeMovie = (movie) => {
 export const addToWatchlist = async (userId, movie) => {
   if (!userId || !movie) return;
   const movieRef = getMovieDocRef(userId, movie.id);
+  const rating = await resolveRatingBeforeSave(movie);
   
   await set(movieRef, {
     id: movie.id,
@@ -38,7 +85,7 @@ export const addToWatchlist = async (userId, movie) => {
     poster: movie.poster !== undefined ? movie.poster : null,
     category: movie.category || 'Movie',
     year: (movie.year && movie.year !== '—' && movie.year !== '-') ? movie.year : (movie.releaseDate?.slice(0, 4) || 'N/A'),
-    rating: sanitizeRating(movie.rating, movie),
+    rating,
     mediaType: movie.mediaType || 'movie',
     addedAt: new Date().toISOString()
   });
@@ -64,7 +111,8 @@ export const getWatchlist = async (userId) => {
   
   if (snapshot.exists()) {
     const data = snapshot.val();
-    return Object.values(data).filter(Boolean).map(sanitizeMovie);
+    const items = Object.values(data).filter(Boolean).map(sanitizeMovie);
+    return await resolveMissingRatingsInList(userId, 'watchlist', items);
   }
   return [];
 };
@@ -79,6 +127,7 @@ export const addRecentlyViewed = async (userId, movie) => {
   let history = snapshot.exists() ? snapshot.val() : [];
   
   history = history.filter(item => item.id !== movie.id);
+  const rating = await resolveRatingBeforeSave(movie);
   
   history.unshift({
     id: movie.id,
@@ -86,7 +135,7 @@ export const addRecentlyViewed = async (userId, movie) => {
     poster: movie.poster !== undefined ? movie.poster : null,
     category: movie.category || 'Movie',
     year: (movie.year && movie.year !== '—' && movie.year !== '-') ? movie.year : (movie.releaseDate?.slice(0, 4) || 'N/A'),
-    rating: sanitizeRating(movie.rating, movie),
+    rating,
     mediaType: movie.mediaType || 'movie',
     viewedAt: new Date().toISOString()
   });
@@ -102,7 +151,8 @@ export const getRecentlyViewed = async (userId) => {
   const snapshot = await get(historyRef);
   if (snapshot.exists()) {
     const data = snapshot.val();
-    return (Array.isArray(data) ? data : Object.values(data)).filter(Boolean).map(sanitizeMovie);
+    const items = (Array.isArray(data) ? data : Object.values(data)).filter(Boolean).map(sanitizeMovie);
+    return await resolveMissingRatingsInList(userId, 'recentlyViewed', items);
   }
   return [];
 };
@@ -114,13 +164,14 @@ const getWatchedDocRef = (userId, movieId) => ref(db, `users/${userId}/watched/$
 export const addToWatched = async (userId, movie, runtime = 0) => {
   if (!userId || !movie) return;
   const movieRef = getWatchedDocRef(userId, movie.id);
+  const rating = await resolveRatingBeforeSave(movie);
   await set(movieRef, {
     id: movie.id,
     title: movie.title || movie.originalTitle || 'Unknown Title',
     poster: movie.poster !== undefined ? movie.poster : null,
     category: movie.category || 'Movie',
     year: (movie.year && movie.year !== '—' && movie.year !== '-') ? movie.year : (movie.releaseDate?.slice(0, 4) || 'N/A'),
-    rating: sanitizeRating(movie.rating, movie),
+    rating,
     mediaType: movie.mediaType || 'movie',
     runtime: runtime || 0,
     addedAt: new Date().toISOString()
@@ -145,7 +196,8 @@ export const getWatched = async (userId) => {
   const watchedRef = getWatchedRef(userId);
   const snapshot = await get(watchedRef);
   if (snapshot.exists()) {
-    return Object.values(snapshot.val()).filter(Boolean).map(sanitizeMovie);
+    const items = Object.values(snapshot.val()).filter(Boolean).map(sanitizeMovie);
+    return await resolveMissingRatingsInList(userId, 'watched', items);
   }
   return [];
 };
@@ -157,13 +209,14 @@ const getLikedDocRef = (userId, movieId) => ref(db, `users/${userId}/liked/${mov
 export const addToLiked = async (userId, movie) => {
   if (!userId || !movie) return;
   const movieRef = getLikedDocRef(userId, movie.id);
+  const rating = await resolveRatingBeforeSave(movie);
   await set(movieRef, {
     id: movie.id,
     title: movie.title || movie.originalTitle || 'Unknown Title',
     poster: movie.poster !== undefined ? movie.poster : null,
     category: movie.category || 'Movie',
     year: (movie.year && movie.year !== '—' && movie.year !== '-') ? movie.year : (movie.releaseDate?.slice(0, 4) || 'N/A'),
-    rating: sanitizeRating(movie.rating, movie),
+    rating,
     mediaType: movie.mediaType || 'movie',
     addedAt: new Date().toISOString()
   });
@@ -187,7 +240,8 @@ export const getLiked = async (userId) => {
   const likedRef = getLikedRef(userId);
   const snapshot = await get(likedRef);
   if (snapshot.exists()) {
-    return Object.values(snapshot.val()).filter(Boolean).map(sanitizeMovie);
+    const items = Object.values(snapshot.val()).filter(Boolean).map(sanitizeMovie);
+    return await resolveMissingRatingsInList(userId, 'liked', items);
   }
   return [];
 };
