@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { ref, get, set } from 'firebase/database';
+import { ref, get, set, remove } from 'firebase/database';
 import { db } from '../services/firebase';
 import { getWatchlist, getLiked, getWatched } from '../services/firestore';
 import { getFriendCompatibilityRecs } from '../services/ai';
 import { searchMedia } from '../services/tmdb';
-import { ensureFriendCode, searchByFriendCode, getFriendData } from '../services/friends';
+import { ensureFriendCode, searchByFriendCode, getFriendData, subscribeToRelationships } from '../services/friends';
 import MovieCard from '../components/MovieCard';
 import './SocialPage.css';
 
@@ -19,8 +19,47 @@ const SocialPage = () => {
   const [matchResult, setMatchResult] = useState(null);
   const [showAllShared, setShowAllShared] = useState(false);
   const [selectedRationaleModal, setSelectedRationaleModal] = useState(null);
-  
+  const [myFriends, setMyFriends] = useState([]);
   const [loadingCaption, setLoadingCaption] = useState("Comparing Watchlists...");
+
+  const handleClearMatch = async () => {
+    window.__cinescope_last_match_result = null;
+    window.__cinescope_last_match_code = null;
+    try {
+      if (currentUser) {
+        localStorage.removeItem(`cinescope_last_match_result_${currentUser.uid}`);
+        localStorage.removeItem(`cinescope_last_match_code_${currentUser.uid}`);
+        await remove(ref(db, `users/${currentUser.uid}/lastMatch`));
+      }
+    } catch (e) {
+      console.error('Error clearing match', e);
+    }
+    setMatchResult(null);
+    setSearchCode('');
+    setMatchError(null);
+  };
+
+  useEffect(() => {
+    if (!currentUser) return;
+    const unsub = subscribeToRelationships(currentUser.uid, async (relData) => {
+      if (relData.friends && relData.friends.length > 0) {
+        try {
+          const friendObjects = await Promise.all(
+            relData.friends.map(async (fUid) => {
+              const fData = await getFriendData(fUid);
+              return { uid: fUid, ...fData };
+            })
+          );
+          setMyFriends(friendObjects.filter(f => f && f.friendCode));
+        } catch (e) {
+          console.error('Error fetching friends list for match', e);
+        }
+      } else {
+        setMyFriends([]);
+      }
+    });
+    return () => unsub();
+  }, [currentUser]);
 
   useEffect(() => {
     if (selectedRationaleModal) {
@@ -320,6 +359,43 @@ const SocialPage = () => {
               </button>
             </form>
             {matchError && <p className="error-text">{matchError}</p>}
+
+            {myFriends.length > 0 && (
+              <div style={{ marginTop: '1.75rem', paddingTop: '1.25rem', borderTop: '1px solid rgba(255,255,255,0.1)', textAlign: 'left' }}>
+                <p style={{ fontSize: '0.85rem', fontWeight: 600, color: 'rgba(255,255,255,0.6)', marginBottom: '0.75rem' }}>
+                  Or pick a friend to test match:
+                </p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem' }}>
+                  {myFriends.map(friend => (
+                    <button
+                      key={friend.uid}
+                      type="button"
+                      onClick={() => {
+                        setSearchCode(friend.friendCode);
+                        executeMatch(friend.friendCode);
+                      }}
+                      style={{
+                        background: 'rgba(255,255,255,0.06)',
+                        border: '1px solid rgba(255,255,255,0.16)',
+                        color: '#fff',
+                        padding: '0.5rem 0.95rem',
+                        borderRadius: '20px',
+                        fontSize: '0.85rem',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.45rem',
+                        transition: 'all 0.2s ease',
+                        backdropFilter: 'blur(8px)'
+                      }}
+                    >
+                      <span style={{ fontWeight: 600 }}>👤 {friend.username || friend.email?.split('@')[0]}</span>
+                      <span style={{ fontSize: '0.78rem', color: 'var(--color-accent)' }}>({friend.friendCode})</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -334,20 +410,13 @@ const SocialPage = () => {
 
       {matchResult && !matchLoading && (
         <div className="match-results">
-          {/* Top Left Back Button */}
-          <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-start', marginBottom: '1.5rem' }}>
+          {/* Top Action Header */}
+          <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.75rem' }}>
             <button 
               type="button" 
               className="match-back-btn" 
               onClick={async () => {
-                window.__cinescope_last_match_result = null;
-                window.__cinescope_last_match_code = null;
-                try {
-                  localStorage.removeItem(`cinescope_last_match_result_${currentUser.uid}`);
-                  localStorage.removeItem(`cinescope_last_match_code_${currentUser.uid}`);
-                  await remove(ref(db, `users/${currentUser.uid}/lastMatch`));
-                } catch (e) {}
-                setMatchResult(null);
+                await handleClearMatch();
                 window.location.hash = '#friends';
               }}
               style={{
@@ -367,6 +436,29 @@ const SocialPage = () => {
               }}
             >
               ← Back to Friends
+            </button>
+
+            <button 
+              type="button" 
+              className="match-restart-btn" 
+              onClick={handleClearMatch}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                background: 'linear-gradient(135deg, rgba(229, 9, 20, 0.85) 0%, rgba(185, 9, 11, 0.95) 100%)',
+                border: '1px solid rgba(255, 59, 71, 0.4)',
+                color: '#ffffff',
+                padding: '0.55rem 1.25rem',
+                borderRadius: '999px',
+                fontSize: '0.88rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                boxShadow: '0 0 16px rgba(229, 9, 20, 0.3)',
+                transition: 'all 0.22s ease'
+              }}
+            >
+              🔄 Test Another Friend
             </button>
           </div>
 
