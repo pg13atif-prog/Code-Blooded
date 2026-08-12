@@ -179,6 +179,14 @@
   font-size: 0.92rem;
   font-weight: 600;
   pointer-events: auto;
+  white-space: nowrap;
+  max-width: 92vw;
+}
+
+.toast-message {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .toast-dot {
