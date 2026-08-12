@@ -450,8 +450,12 @@ const Navbar = () => {
     const hasDropdown = items && items.length > 0;
     const isOpen = hasDropdown && openDropdown === id;
 
+    // Suppress dropdown only when on the exact main page (e.g. #cineai, #discover/movies)
+    // but allow it on sub-pages (e.g. #cineai-tool/debate)
+    const isOnExactPage = currentPath === hash;
+
     const handleMouseEnter = () => {
-      if (hasDropdown && !isActive && window.matchMedia('(hover: hover)').matches) {
+      if (hasDropdown && !isOnExactPage && window.matchMedia('(hover: hover)').matches) {
         setOpenDropdown(id);
       }
     };
@@ -463,8 +467,8 @@ const Navbar = () => {
     };
 
     const handleItemClick = (e) => {
-      if (hasDropdown && isActive) {
-        // Already on this section — just navigate, don't toggle dropdown
+      if (hasDropdown && isOnExactPage) {
+        // Already on this section's main page — just navigate, don't toggle dropdown
         handleNavClick(e, hash);
         return;
       }
