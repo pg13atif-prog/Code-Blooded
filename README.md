@@ -25,31 +25,39 @@ Finding something great to watch shouldn't feel like endless scrolling. CineScop
 
 ---
 
-## 🎬 Key Features
+## ✨ CineAI Engine — Core USP
 
-### 🎬 Discover
-* **Spotlight Search**: Instant command overlay (`Ctrl+K` / `Cmd+K`) searching titles, actors, directors, and genres.
-* **Catalog Explorer**: Browse trending movies, series, season guides, and official YouTube trailers.
-* **Person Profiles**: Complete filmographies, biographies, and media breakdowns for cast & crew.
+CineAI is CineScope's central intelligence engine, leveraging large language models (Groq LLaMA / OpenRouter) to transform natural human intent into actionable viewing decisions:
 
-### ✨ CineAI
-* **What Should I Watch?**: Prompt-driven natural language recommendations with contextual rationales.
-* **Movie Night Planner**: Interactive quiz tailored for solo, couples, or group movie nights.
-* **Pick For Me**: Instant decision spinner with mood filters.
-* **Movie Debate**: Head-to-head AI analysis comparing any two films across acting, plot, visuals, pacing, and score.
+| CineAI Tool | User Input | AI Result & Intelligence |
+| :--- | :--- | :--- |
+| 💬 **What Should I Watch?** | Natural prompt (*"dark sci-fi with mind-bending twists"*) | Returns hyper-tailored recommendations paired with 1–2 sentence contextual rationales |
+| 🍿 **Movie Night Planner** | Vibe, group size, and era selections | Multi-step quiz generating tailored picks for solo, date, or group movie nights |
+| 🎲 **Pick For Me** | Selected mood filter | Instant decision spinner highlighting a single title with an encouraging rationale |
+| ⚔️ **Movie Debate Engine** | Any two competing movie titles | Head-to-head comparison evaluating acting, plot, pacing, visuals, and score with point totals |
+| 🤝 **Friend Movie Match AI** | Selected friend profile | Analyzes taste overlap & watch histories to calculate compatibility score and joint recommendations |
 
-### 🤝 Friends & Social
-* **Friend Codes**: Connect using unique 6-character codes (`CS-XXXXXX`).
-* **Movie Match**: Calculate taste compatibility percentages based on watch history.
-* **In-App Recommendations**: Send inline movie recommendations directly to friends with custom notes.
+---
 
-### ❤️ Watchlist & Library
-* **Personal Collections**: Organizes *Watchlist*, *Liked*, and *Watched* titles.
-* **Watch Time Analytics**: Live calculation of total hours and minutes watched.
+## 🎬 Core Features
 
-### 🏆 Achievements
-* **Gamified Milestones**: Unlock 15+ achievement badges as you browse, save, and watch.
-* **Animated Toasts**: Framer Motion notifications with swipe-to-dismiss support on mobile.
+### 🎬 Content Discovery & Search
+* **Spotlight Search Overlay**: Instant command-style search (`Ctrl+K` / `Cmd+K`) for titles, actors, directors, and genres.
+* **Catalog Explorer**: Browse trending movies, TV series, season/episode guides, and official YouTube trailers.
+* **Person Profiles**: Complete filmographies, biographies, and media breakdowns for directors and actors.
+
+### 🤝 Friends & Social Network
+* **Alphanumeric Friend Codes**: Connect with friends using unique 6-character codes (`CS-XXXXXX`).
+* **Friend Recommendations**: Send inline movie recommendations directly to friends with custom notes via real-time notifications.
+* **Pending Requests Manager**: Accept or reject incoming friend requests with live database updates.
+
+### ❤️ Library & Watchlist
+* **Personal Media Collections**: Separate tabs for *Watchlist*, *Liked*, and *Watched* titles.
+* **Watch Time Analytics**: Live calculation of total hours and minutes watched across your saved library.
+
+### 🏆 Gamified Achievements
+* **Milestone Unlocking**: Automatic tracking and unlocking of 15+ achievement badges (*First Steps*, *Collector*, *AI Explorer*, *Curious Mind*, *Trailer Seeker*).
+* **Framer Motion Animations**: Toast alerts with spring animations and drag-to-dismiss support on mobile viewports.
 
 ---
 
@@ -90,21 +98,7 @@ Finding something great to watch shouldn't feel like endless scrolling. CineScop
 
 ---
 
-## 🧠 How CineAI Works
-
-CineScope integrates large language models (Groq LLaMA / OpenRouter) to turn vague user intents into actionable watch decisions:
-
-| AI Workflow | User Input | AI Output & Behavior |
-| :--- | :--- | :--- |
-| **Watch Assistant** | Natural prompt (*"dark sci-fi with mind-bending twists"*) | Curated recommendations paired with 1–2 sentence rationales |
-| **Movie Night Planner** | Vibe, group size, and era selections | Tailored picks for solo, date, or group movie nights |
-| **Pick For Me** | Mood filter selection | Single highlighted recommendation with instant rationale |
-| **Movie Debate** | Selection of two competing titles | Head-to-head score comparison across acting, plot, pacing, visuals, & score |
-| **Movie Match AI** | Friend profile comparison | Joint compatibility score and shared watch recommendations |
-
----
-
-## 🔥 Firebase
+## 🔥 Firebase Infrastructure
 
 Firebase Realtime Database and Authentication power CineScope's backend state and social features:
 
@@ -123,8 +117,6 @@ Firebase Realtime Database and Authentication power CineScope's backend state an
 | **Backend & Data** | Firebase Realtime Database, Firebase Authentication |
 | **APIs & AI** | TMDB API, Groq LLaMA / OpenRouter AI |
 | **Deployment** | Vercel (Single Page App rewrites & serverless API proxy) |
-
-
 
 ---
 
@@ -206,6 +198,7 @@ Code-Blooded/
 │   └── index.css     # Global CSS design system
 ├── vercel.json       # Deployment rewrites
 ├── vite.config.js    # Vite configuration & proxy
+└── package.json      # Dependencies and scripts
 ```
 
 ---
