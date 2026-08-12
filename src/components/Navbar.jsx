@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useAlert } from '../context/AlertContext';
 import AuthModal from './AuthModal';
-import { searchMedia } from '../services/tmdb';
+import { searchMedia, getTrending } from '../services/tmdb';
 import { getNotifications, removeNotification, getFriendData, subscribeToNotifications, subscribeToRelationships, acceptFriendRequest, rejectFriendRequest } from '../services/friends';
 import { addToWatchlist, addToLiked, addToWatched } from '../services/firestore';
 import CustomSelect from './CustomSelect';
@@ -53,6 +53,23 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const [popularPicks, setPopularPicks] = useState([]);
+  const [popularLoading, setPopularLoading] = useState(false);
+
+  useEffect(() => {
+    if (isSearchModalOpen && popularPicks.length === 0) {
+      setPopularLoading(true);
+      getTrending('all', 'day')
+        .then(res => {
+          const items = Array.isArray(res) ? res : (res?.results || []);
+          if (items.length > 0) {
+            setPopularPicks(items.slice(0, 6));
+          }
+        })
+        .catch(err => console.error('Failed to load popular picks:', err))
+        .finally(() => setPopularLoading(false));
+    }
+  }, [isSearchModalOpen, popularPicks.length]);
   const [searchFilterType, setSearchFilterType] = useState('all');
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -974,82 +991,6 @@ const Navbar = () => {
                 })()
               ) : (
                 <div className="search-modal-initial-dashboard">
-                  {/* Recent Searches */}
-                  {recentSearches.length > 0 && (
-                    <div className="search-modal-recent-card">
-                      <div className="search-recent-header">
-                        <span className="search-recent-label">RECENT SEARCHES</span>
-                        <button
-                          type="button"
-                          className="search-clear-recent-btn"
-                          onClick={() => setRecentSearches([])}
-                        >
-                          Clear All
-                        </button>
-                      </div>
-
-                      <div className="search-recent-pills">
-                        {recentSearches.map((term, idx) => (
-                          <div
-                            key={idx}
-                            className="search-recent-pill"
-                            onClick={() => setSearchQuery(term)}
-                          >
-                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="search-clock-icon">
-                              <circle cx="12" cy="12" r="10"></circle>
-                              <polyline points="12 6 12 12 16 14"></polyline>
-                            </svg>
-                            <span>{term}</span>
-                            <button
-                              type="button"
-                              className="search-recent-pill-delete"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setRecentSearches(prev => prev.filter(t => t !== term));
-                              }}
-                              title="Remove search"
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Quick Category / Genre Explorer */}
-                  <div className="search-initial-section">
-                    <div className="search-section-label">
-                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="12" cy="12" r="10" />
-                        <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
-                      </svg>
-                      <span>EXPLORE CATEGORIES</span>
-                    </div>
-                    <div className="search-genre-chips">
-                      {[
-                        { label: '💥 Action', query: 'Action' },
-                        { label: '🚀 Sci-Fi', query: 'Sci-Fi' },
-                        { label: '🍿 Comedy', query: 'Comedy' },
-                        { label: '😱 Horror', query: 'Horror' },
-                        { label: '🎭 Drama', query: 'Drama' },
-                        { label: '🤠 Western', query: 'Western' },
-                        { label: '🪄 Fantasy', query: 'Fantasy' },
-                        { label: '🏆 Top Rated', query: 'Top Rated' }
-                      ].map((genre) => (
-                        <button
-                          key={genre.query}
-                          type="button"
-                          className="search-genre-chip"
-                          onClick={() => setSearchQuery(genre.query)}
-                        >
-                          {genre.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Popular Recommendations / Trending Picks */}
                   <div className="search-initial-section">
                     <div className="search-section-label">
                       <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -1058,33 +999,51 @@ const Navbar = () => {
                       </svg>
                       <span>POPULAR SEARCHES</span>
                     </div>
-                    <div className="search-popular-grid">
-                      {[
-                        { id: 27205, title: 'Inception', year: '2010', rating: '8.8', category: 'Sci-Fi', mediaType: 'movie', poster: 'https://image.tmdb.org/t/p/w185/oYuLE1h2CVCdIF9i5kE6pB7wHQv.jpg' },
-                        { id: 157336, title: 'Interstellar', year: '2014', rating: '8.7', category: 'Sci-Fi', mediaType: 'movie', poster: 'https://image.tmdb.org/t/p/w185/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg' },
-                        { id: 155, title: 'The Dark Knight', year: '2008', rating: '8.5', category: 'Action', mediaType: 'movie', poster: 'https://image.tmdb.org/t/p/w185/qJ2tW6WMUDux911r6m7haRef0WH.jpg' },
-                        { id: 66732, title: 'Stranger Things', year: '2016', rating: '8.6', category: 'Sci-Fi', mediaType: 'tv', poster: 'https://image.tmdb.org/t/p/w185/49WJfeN0moxb9IPfGn8AIqMGskD.jpg' }
-                      ].map((item) => (
-                        <div
-                          key={item.id}
-                          className="search-popular-card"
-                          onClick={() => {
-                            window.location.hash = `${item.mediaType}/${item.id}`;
-                            setIsSearchModalOpen(false);
-                          }}
-                        >
-                          <img src={item.poster} alt={item.title} className="search-popular-poster" />
-                          <div className="search-popular-info">
-                            <h5 className="search-popular-title">{item.title}</h5>
-                            <div className="search-popular-meta">
-                              <span>{item.year}</span>
-                              <span>&bull;</span>
-                              <span className="search-popular-rating">★ {item.rating}</span>
+
+                    {popularLoading ? (
+                      <div className="search-popular-grid">
+                        {Array.from({ length: 6 }).map((_, i) => (
+                          <div key={i} className="search-popular-skeleton" />
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="search-popular-grid">
+                        {popularPicks.map((item) => (
+                          <div
+                            key={item.id}
+                            className="search-popular-card"
+                            onClick={() => {
+                              window.location.hash = `${item.mediaType || 'movie'}/${item.id}`;
+                              setIsSearchModalOpen(false);
+                            }}
+                          >
+                            {item.poster ? (
+                              <img src={item.poster} alt={item.title} className="search-popular-poster" />
+                            ) : (
+                              <div className="search-popular-no-poster">🎬</div>
+                            )}
+                            <div className="search-popular-info">
+                              <h5 className="search-popular-title">{item.title}</h5>
+                              <div className="search-popular-meta">
+                                <span className="search-popular-type">{item.mediaType === 'tv' ? 'TV Show' : 'Movie'}</span>
+                                {item.year && item.year !== '—' && (
+                                  <>
+                                    <span>&bull;</span>
+                                    <span>{item.year}</span>
+                                  </>
+                                )}
+                                {item.rating && item.rating !== 'N/A' && Number(item.rating) > 0 && (
+                                  <>
+                                    <span>&bull;</span>
+                                    <span className="search-popular-rating">★ {item.rating}</span>
+                                  </>
+                                )}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
