@@ -451,7 +451,7 @@ const Navbar = () => {
     const isOpen = hasDropdown && openDropdown === id;
 
     const handleMouseEnter = () => {
-      if (hasDropdown && window.matchMedia('(hover: hover)').matches) {
+      if (hasDropdown && !isActive && window.matchMedia('(hover: hover)').matches) {
         setOpenDropdown(id);
       }
     };
@@ -463,6 +463,11 @@ const Navbar = () => {
     };
 
     const handleItemClick = (e) => {
+      if (hasDropdown && isActive) {
+        // Already on this section — just navigate, don't toggle dropdown
+        handleNavClick(e, hash);
+        return;
+      }
       const isTouchDevice = !window.matchMedia('(hover: hover)').matches;
       if (hasDropdown && isTouchDevice) {
         e.preventDefault();
