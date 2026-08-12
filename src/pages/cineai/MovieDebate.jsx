@@ -72,6 +72,19 @@ const MovieDebate = () => {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
 
+  const handleSelectMovie = (movie, type) => {
+    const formattedTitle = movie.year && movie.year !== '—' ? `${movie.title} (${movie.year})` : movie.title;
+    if (type === 'A') {
+      setMovieA(formattedTitle);
+      setSelectedMediaA(movie);
+      setSuggestionsA([]);
+    } else {
+      setMovieB(formattedTitle);
+      setSelectedMediaB(movie);
+      setSuggestionsB([]);
+    }
+  };
+
   const handleInputChange = async (value, type) => {
     if (type === 'A') {
       setMovieA(value);
@@ -167,7 +180,7 @@ const MovieDebate = () => {
                 placeholder="First Movie..." 
                 value={movieA} 
                 onChange={e => handleInputChange(e.target.value, 'A')}
-                onBlur={() => setTimeout(() => setSuggestionsA([]), 200)}
+                onBlur={() => setTimeout(() => setSuggestionsA([]), 300)}
                 required
               />
               {suggestionsA.length > 0 && (
@@ -176,11 +189,12 @@ const MovieDebate = () => {
                     <div 
                       key={movie.id} 
                       className="suggestion-item" 
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        handleSelectMovie(movie, 'A');
+                      }}
                       onClick={() => {
-                        const formattedTitle = movie.year && movie.year !== '—' ? `${movie.title} (${movie.year})` : movie.title;
-                        setMovieA(formattedTitle);
-                        setSelectedMediaA(movie);
-                        setSuggestionsA([]);
+                        handleSelectMovie(movie, 'A');
                       }}
                     >
                       {movie.poster ? (
@@ -206,7 +220,7 @@ const MovieDebate = () => {
                 placeholder="Second Movie..." 
                 value={movieB} 
                 onChange={e => handleInputChange(e.target.value, 'B')}
-                onBlur={() => setTimeout(() => setSuggestionsB([]), 200)}
+                onBlur={() => setTimeout(() => setSuggestionsB([]), 300)}
                 required
               />
               {suggestionsB.length > 0 && (
@@ -215,11 +229,12 @@ const MovieDebate = () => {
                     <div 
                       key={movie.id} 
                       className="suggestion-item" 
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        handleSelectMovie(movie, 'B');
+                      }}
                       onClick={() => {
-                        const formattedTitle = movie.year && movie.year !== '—' ? `${movie.title} (${movie.year})` : movie.title;
-                        setMovieB(formattedTitle);
-                        setSelectedMediaB(movie);
-                        setSuggestionsB([]);
+                        handleSelectMovie(movie, 'B');
                       }}
                     >
                       {movie.poster ? (
