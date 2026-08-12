@@ -58,8 +58,8 @@ Finding something great to watch shouldn't feel like endless scrolling. CineScop
 <table width="100%">
 <tr>
   <td width="50%">
-    <h4 align="center">🏠 Home / Landing Page</h4>
-    <img src="screenshots/hero.png" alt="CineScope Home" width="100%" />
+    <h4 align="center">🍿 Media Browse & Discovery</h4>
+    <img src="screenshots/browse.png" alt="CineScope Browse" width="100%" />
   </td>
   <td width="50%">
     <h4 align="center">✨ CineAI Discovery Engine</h4>
@@ -124,36 +124,7 @@ Firebase Realtime Database and Authentication power CineScope's backend state an
 | **APIs & AI** | TMDB API, Google Gemini API / Groq LLaMA / OpenRouter |
 | **Deployment** | Vercel (Single Page App rewrites & serverless API proxy) |
 
----
 
-## 🏗️ Architecture
-
-```mermaid
-flowchart TD
-    User([User / Browser])
-    
-    subgraph Frontend ["React 19 + Vite App"]
-        UI[UI Components & Pages]
-        AuthCtx[Auth Context & State]
-    end
-    
-    subgraph Proxy ["Vercel Edge Proxy"]
-        VercelAPI["/api/tmdb API Handler"]
-    end
-    
-    subgraph External ["Services & APIs"]
-        TMDB["TMDB API"]
-        FirebaseDB["Firebase Realtime DB & Auth"]
-        AI["Google Gemini / Groq API"]
-    end
-    
-    User <--> UI
-    UI <--> AuthCtx
-    AuthCtx <--> FirebaseDB
-    UI --> VercelAPI
-    VercelAPI --> TMDB
-    UI <--> AI
-```
 
 ---
 
