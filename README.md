@@ -107,19 +107,13 @@ Instead of staring at grid thumbnails, CineScope users can express spontaneous m
 
 ## 💎 Why CineScope Stands Out
 
-```
-┌─────────────────────────────────────────────────────────────────────────────────┐
-│                                                                                 │
-│   ❌ TRADITIONAL BROWSING                     ✅ CINESCOPE EXPERIENCE                │
-│   ----------------------                     -------------------                │
-│   • Endless scrolling through cards           • Conversational AI prompt search      │
-│   • Decision fatigue & choice paralysis      • Guided Movie Night Planner quiz       │
-│   • Checking external review sites           • Head-to-head AI Movie Debates        │
-│   • Asking friends "what should we watch?"   • Real-time Social Movie Match         │
-│   • Static, unpersonalized catalogs          • Gamified achievements & stats        │
-│                                                                                 │
-└─────────────────────────────────────────────────────────────────────────────────┘
-```
+| ❌ Traditional Browsing | ✅ The CineScope Experience |
+| :--- | :--- |
+| **Endless Thumbnail Scrolling**: Spending 30+ minutes flipping through cards | **Conversational AI Prompt Search**: Express natural moods & get rationalized picks |
+| **Decision Fatigue & Paralyzing Choice**: Overwhelmed by thousands of titles | **Interactive Decision Tools**: Movie Night Planner quiz & instant Pick For Me |
+| **Bouncing Across Review Sites**: Checking Rotten Tomatoes & IMDb in separate tabs | **Head-to-Head AI Movie Debates**: Compare acting, plot, visuals & pacing in one place |
+| **Asking Friends "What Should We Watch?"**: Endless back-and-forth messaging | **Real-Time Social Movie Match**: Instantly calculate taste overlap & shared picks |
+| **Static & Passive Catalogs**: No sense of progression or personal growth | **Gamified Milestones & Analytics**: Earn 15+ achievements & track total watch time |
 
 ---
 
