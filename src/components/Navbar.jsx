@@ -819,7 +819,7 @@ const Navbar = () => {
                   onKeyDown={handleSearchKeyDown}
                   autoFocus
                 />
-                {searchQuery.length > 0 ? (
+                {searchQuery.length > 0 && (
                   <button
                     type="button"
                     className="search-modal-clear-btn"
@@ -828,8 +828,6 @@ const Navbar = () => {
                   >
                     ✕
                   </button>
-                ) : (
-                  <span className="search-modal-esc-badge">ESC</span>
                 )}
               </div>
             </div>
@@ -1018,21 +1016,7 @@ const Navbar = () => {
                       ))}
                     </div>
                   </div>
-                ) : (
-                  <div className="search-modal-welcome-hint">
-                    <div className="search-hint-icon">🎬</div>
-                    <h3 className="search-hint-title">Search CineScope</h3>
-                    <p className="search-hint-subtitle">Search for movies, TV series, directors, actors, or genres.</p>
-                    
-                    <div className="search-quick-tags">
-                      <span onClick={() => setSearchQuery('Marvel')}>Marvel</span>
-                      <span onClick={() => setSearchQuery('Batman')}>Batman</span>
-                      <span onClick={() => setSearchQuery('Sci-Fi')}>Sci-Fi</span>
-                      <span onClick={() => setSearchQuery('Anime')}>Anime</span>
-                      <span onClick={() => setSearchQuery('Oscar')}>Oscar Winners</span>
-                    </div>
-                  </div>
-                )
+                ) : null
               )}
             </div>
 
