@@ -16,7 +16,7 @@ import {
 } from 'firebase/auth';
 import { auth } from '../services/firebase';
 
-import { syncUserProfile } from '../services/friends';
+import { syncUserProfile, cleanupGuestData } from '../services/friends';
 
 const AuthContext = createContext();
 
@@ -50,7 +50,14 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Log out
-  const logout = () => {
+  const logout = async () => {
+    if (currentUser && currentUser.isAnonymous) {
+      try {
+        await cleanupGuestData(currentUser.uid);
+      } catch (err) {
+        console.error("Failed to cleanup guest data on logout:", err);
+      }
+    }
     return signOut(auth);
   };
 

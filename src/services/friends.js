@@ -378,6 +378,47 @@ export const subscribeToNotifications = (userId, callback) => {
   return unsubscribe;
 };
 
+export const cleanupGuestData = async (userId) => {
+  if (!userId) return;
+  try {
+    const userSnap = await get(ref(db, `users/${userId}`));
+    if (!userSnap.exists()) return;
+
+    const data = userSnap.val();
+    const friendCode = data.friendCode;
+
+    const updates = {};
+    // Delete user node
+    updates[`users/${userId}`] = null;
+    
+    // Delete friend code reverse lookup
+    if (friendCode) {
+      updates[`friendCodes/${friendCode}`] = null;
+    }
+
+    // Clean up friend references & pending requests if any
+    if (data.friends) {
+      Object.keys(data.friends).forEach(fId => {
+        updates[`users/${fId}/friends/${userId}`] = null;
+      });
+    }
+    if (data.incomingRequests) {
+      Object.keys(data.incomingRequests).forEach(fId => {
+        updates[`users/${fId}/outgoingRequests/${userId}`] = null;
+      });
+    }
+    if (data.outgoingRequests) {
+      Object.keys(data.outgoingRequests).forEach(fId => {
+        updates[`users/${fId}/incomingRequests/${userId}`] = null;
+      });
+    }
+
+    await update(ref(db), updates);
+  } catch (err) {
+    console.error('cleanupGuestData error:', err);
+  }
+};
+
 export const subscribeToRelationships = (userId, callback) => {
   if (!userId) return () => {};
   const userRef = ref(db, `users/${userId}`);
