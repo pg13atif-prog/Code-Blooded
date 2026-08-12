@@ -44,9 +44,8 @@ Finding something great to watch shouldn't feel like endless scrolling. CineScop
 * **In-App Recommendations**: Send inline movie recommendations directly to friends with custom notes.
 
 ### ❤️ Watchlist & Library
-* **Personal Collections**: Organizes *Watchlist*, *Liked*, *Watched*, and *Recently Viewed* titles.
+* **Personal Collections**: Organizes *Watchlist*, *Liked*, and *Watched* titles.
 * **Watch Time Analytics**: Live calculation of total hours and minutes watched.
-* **Background TMDB Data Repair**: Automatically syncs missing vote averages for saved items.
 
 ### 🏆 Achievements
 * **Gamified Milestones**: Unlock 15+ achievement badges as you browse, save, and watch.
@@ -110,7 +109,7 @@ CineScope integrates large language models (Google Gemini / Groq LLaMA / OpenRou
 Firebase Realtime Database and Authentication power CineScope's backend state and social features:
 
 * **Authentication**: Supports Email/Password login, Google OAuth 2.0, and instant Guest Access with account linking.
-* **Persistent Library**: Syncs Watchlist, Liked titles, Watched history, and Recently Viewed items in real time.
+* **Persistent Library**: Syncs Watchlist, Liked titles, and Watched history in real time.
 * **Social Graph & Friend Codes**: Manages 6-character friend codes (`CS-XXXXXX`), friend requests, relationships, and in-app notifications.
 * **Gamification & Progress**: Tracks unlocked achievement milestones and progress counters per account.
 
@@ -253,7 +252,6 @@ Code-Blooded/
 
 * **Custom Playlist Collections**: Create and share custom themed movie lists.
 * **Autoplay Trailer Theater**: Continuous video queue mode for trending trailers.
-* **Offline Watchlist Access**: Enhanced PWA offline caching for saved watchlists.
 
 ---
 
