@@ -973,50 +973,120 @@ const Navbar = () => {
                   );
                 })()
               ) : (
-                recentSearches.length > 0 ? (
-                  <div className="search-modal-recent-card">
-                    <div className="search-recent-header">
-                      <span className="search-recent-label">RECENT</span>
-                      <button
-                        type="button"
-                        className="search-clear-recent-btn"
-                        onClick={() => setRecentSearches([])}
-                      >
-                        Clear
-                      </button>
-                    </div>
-
-                    <div className="search-recent-list">
-                      {recentSearches.map((term, idx) => (
-                        <div
-                          key={idx}
-                          className="search-recent-item"
-                          onClick={() => setSearchQuery(term)}
+                <div className="search-modal-initial-dashboard">
+                  {/* Recent Searches */}
+                  {recentSearches.length > 0 && (
+                    <div className="search-modal-recent-card">
+                      <div className="search-recent-header">
+                        <span className="search-recent-label">RECENT SEARCHES</span>
+                        <button
+                          type="button"
+                          className="search-clear-recent-btn"
+                          onClick={() => setRecentSearches([])}
                         >
-                          <div className="search-recent-item-left">
-                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="search-clock-icon">
+                          Clear All
+                        </button>
+                      </div>
+
+                      <div className="search-recent-pills">
+                        {recentSearches.map((term, idx) => (
+                          <div
+                            key={idx}
+                            className="search-recent-pill"
+                            onClick={() => setSearchQuery(term)}
+                          >
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="search-clock-icon">
                               <circle cx="12" cy="12" r="10"></circle>
                               <polyline points="12 6 12 12 16 14"></polyline>
                             </svg>
-                            <span className="search-recent-term-text">{term}</span>
+                            <span>{term}</span>
+                            <button
+                              type="button"
+                              className="search-recent-pill-delete"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setRecentSearches(prev => prev.filter(t => t !== term));
+                              }}
+                              title="Remove search"
+                            >
+                              ✕
+                            </button>
                           </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
-                          <button
-                            type="button"
-                            className="search-recent-delete-btn"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setRecentSearches(prev => prev.filter(t => t !== term));
-                            }}
-                            title="Remove search"
-                          >
-                            ✕
-                          </button>
+                  {/* Quick Category / Genre Explorer */}
+                  <div className="search-initial-section">
+                    <div className="search-section-label">
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+                      </svg>
+                      <span>EXPLORE CATEGORIES</span>
+                    </div>
+                    <div className="search-genre-chips">
+                      {[
+                        { label: '💥 Action', query: 'Action' },
+                        { label: '🚀 Sci-Fi', query: 'Sci-Fi' },
+                        { label: '🍿 Comedy', query: 'Comedy' },
+                        { label: '😱 Horror', query: 'Horror' },
+                        { label: '🎭 Drama', query: 'Drama' },
+                        { label: '🤠 Western', query: 'Western' },
+                        { label: '🪄 Fantasy', query: 'Fantasy' },
+                        { label: '🏆 Top Rated', query: 'Top Rated' }
+                      ].map((genre) => (
+                        <button
+                          key={genre.query}
+                          type="button"
+                          className="search-genre-chip"
+                          onClick={() => setSearchQuery(genre.query)}
+                        >
+                          {genre.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Popular Recommendations / Trending Picks */}
+                  <div className="search-initial-section">
+                    <div className="search-section-label">
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                        <polyline points="17 6 23 6 23 12" />
+                      </svg>
+                      <span>POPULAR SEARCHES</span>
+                    </div>
+                    <div className="search-popular-grid">
+                      {[
+                        { id: 27205, title: 'Inception', year: '2010', rating: '8.8', category: 'Sci-Fi', mediaType: 'movie', poster: 'https://image.tmdb.org/t/p/w185/oYuLE1h2CVCdIF9i5kE6pB7wHQv.jpg' },
+                        { id: 157336, title: 'Interstellar', year: '2014', rating: '8.7', category: 'Sci-Fi', mediaType: 'movie', poster: 'https://image.tmdb.org/t/p/w185/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg' },
+                        { id: 155, title: 'The Dark Knight', year: '2008', rating: '8.5', category: 'Action', mediaType: 'movie', poster: 'https://image.tmdb.org/t/p/w185/qJ2tW6WMUDux911r6m7haRef0WH.jpg' },
+                        { id: 66732, title: 'Stranger Things', year: '2016', rating: '8.6', category: 'Sci-Fi', mediaType: 'tv', poster: 'https://image.tmdb.org/t/p/w185/49WJfeN0moxb9IPfGn8AIqMGskD.jpg' }
+                      ].map((item) => (
+                        <div
+                          key={item.id}
+                          className="search-popular-card"
+                          onClick={() => {
+                            window.location.hash = `${item.mediaType}/${item.id}`;
+                            setIsSearchModalOpen(false);
+                          }}
+                        >
+                          <img src={item.poster} alt={item.title} className="search-popular-poster" />
+                          <div className="search-popular-info">
+                            <h5 className="search-popular-title">{item.title}</h5>
+                            <div className="search-popular-meta">
+                              <span>{item.year}</span>
+                              <span>&bull;</span>
+                              <span className="search-popular-rating">★ {item.rating}</span>
+                            </div>
+                          </div>
                         </div>
                       ))}
                     </div>
                   </div>
-                ) : null
+                </div>
               )}
             </div>
 
