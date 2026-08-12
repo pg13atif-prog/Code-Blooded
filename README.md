@@ -250,9 +250,13 @@ Code-Blooded/
 │   │   └── AuthContext.jsx     # Firebase auth state provider
 │   ├── hooks/                  # Custom React hooks
 │   ├── pages/                  # Top-level page views
-│   │   ├── cineai/             # CineAI tools (Debate, Planner, PickForMe)
+│   │   ├── cineai/             # CineAI tools & hub pages
+│   │   │   ├── AiDiscoveryPage.jsx # AI watch assistant prompt search
+│   │   │   ├── CineAiPage.jsx  # CineAI main hub landing page
+│   │   │   ├── MovieDebate.jsx # Head-to-head movie comparison
+│   │   │   ├── MoviePlanner.jsx# Movie night planning quiz
+│   │   │   └── PickForMe.jsx   # Random mood decision spinner
 │   │   ├── AchievementsPage.jsx# Achievements dashboard
-│   │   ├── AiDiscoveryPage.jsx # AI prompt search page
 │   │   ├── DiscoverPage.jsx    # Media browse & filtering view
 │   │   ├── FriendsPage.jsx     # Friends management
 │   │   ├── MovieDetail.jsx     # Movie & TV show details

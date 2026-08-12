@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { getAiRecommendations } from '../services/gemini';
-import { searchMedia } from '../services/tmdb';
-import MovieCard from '../components/MovieCard';
-import { Skeleton } from '../components/SkeletonLoader';
+import { getAiRecommendations } from '../../services/gemini';
+import { searchMedia } from '../../services/tmdb';
+import MovieCard from '../../components/MovieCard';
+import { Skeleton } from '../../components/SkeletonLoader';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAuth } from '../context/AuthContext';
-import { incrementStat } from '../services/achievements';
+import { useAuth } from '../../context/AuthContext';
+import { incrementStat } from '../../services/achievements';
 import './AiDiscoveryPage.css';
 
 const SEARCH_CAPTIONS = [

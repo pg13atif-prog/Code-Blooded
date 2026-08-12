@@ -13,11 +13,11 @@ import { getPopularMovies, getPopularTvShows, getTrending, getSimilarMovies, fet
 import { useAuth } from "./context/AuthContext";
 import { getWatchlist } from "./services/firestore";
 import { MovieRowSkeleton } from "./components/SkeletonLoader";
-import AiDiscoveryPage from "./pages/AiDiscoveryPage";
+import AiDiscoveryPage from "./pages/cineai/AiDiscoveryPage";
 import TvEpisodePage from "./pages/TvEpisodePage";
 import RecommendedPage from "./pages/RecommendedPage";
 import DiscoverPage from "./pages/DiscoverPage";
-import CineAiPage from "./pages/CineAiPage";
+import CineAiPage from "./pages/cineai/CineAiPage";
 import SocialPage from "./pages/SocialPage";
 import AchievementsPage from "./pages/AchievementsPage";
 import WatchlistPage from "./pages/WatchlistPage";
