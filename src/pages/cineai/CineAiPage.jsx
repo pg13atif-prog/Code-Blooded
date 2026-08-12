@@ -5,7 +5,7 @@ const AI_TOOLS = [
   {
     id: 'what-to-watch',
     title: 'What Should I Watch?',
-    description: 'Describe your exact mood, genre blend, or vibe in plain English and get 5 hyper-tailored recommendations.',
+    description: 'Describe your exact mood, genre blend, or vibe in plain English and get 6 hyper-tailored recommendations.',
     accentColor: '#e50914',
     ctaLabel: 'Ask AI',
     icon: (
