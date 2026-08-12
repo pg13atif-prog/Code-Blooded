@@ -924,7 +924,7 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
                 </div>
                 
                 {seasonDetails && seasonDetails.episodes && (
-                  <div className="episodes-list" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  <div className="episodes-list">
                     {seasonDetails.episodes.map(ep => (
                       <div 
                         key={ep.id} 
