@@ -422,35 +422,72 @@ function App() {
 
 const AchievementToasts = () => {
   const [toasts, setToasts] = useState([]);
+  const timersRef = useRef({});
+
+  const handleDismiss = useCallback((id) => {
+    if (timersRef.current[id]) {
+      clearTimeout(timersRef.current[id]);
+      delete timersRef.current[id];
+    }
+    setToasts(prev => prev.filter(t => t.id !== id));
+  }, []);
 
   useEffect(() => {
     const handleUnlock = (e) => {
       const { name, desc } = e.detail;
-      const newToast = { id: Date.now(), name, desc };
+      const id = Date.now() + Math.random();
+      const newToast = { id, name, desc };
+      
       setToasts(prev => [...prev, newToast]);
-      setTimeout(() => {
-        setToasts(prev => prev.filter(t => t.id !== newToast.id));
-      }, 4000);
+      
+      timersRef.current[id] = setTimeout(() => {
+        handleDismiss(id);
+      }, 5000);
     };
 
     window.addEventListener('achievement-unlocked', handleUnlock);
     return () => window.removeEventListener('achievement-unlocked', handleUnlock);
-  }, []);
+  }, [handleDismiss]);
 
   if (toasts.length === 0) return null;
 
   return (
     <div className="achievement-toast-container">
-      {toasts.map(t => (
-        <div key={t.id} className="achievement-toast">
-          <div className="toast-trophy">🏆</div>
-          <div className="toast-body">
-            <div className="toast-title">🏆 Achievement Unlocked!</div>
-            <div className="toast-name">{t.name}</div>
-            <div className="toast-desc">"{t.desc}"</div>
-          </div>
-        </div>
-      ))}
+      <AnimatePresence mode="popLayout">
+        {toasts.map(t => (
+          <motion.div
+            key={t.id}
+            className="achievement-toast"
+            drag
+            dragConstraints={{ left: -120, right: 120, top: -120, bottom: 60 }}
+            dragElastic={0.65}
+            onDragEnd={(_, info) => {
+              if (Math.abs(info.offset.x) > 55 || Math.abs(info.offset.y) > 45) {
+                handleDismiss(t.id);
+              }
+            }}
+            initial={{ opacity: 0, y: -24, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -24, scale: 0.9, transition: { duration: 0.18 } }}
+            layout
+          >
+            <div className="toast-trophy">🏆</div>
+            <div className="toast-body">
+              <div className="toast-title">🏆 Achievement Unlocked!</div>
+              <div className="toast-name">{t.name}</div>
+              <div className="toast-desc">"{t.desc}"</div>
+            </div>
+            <button 
+              type="button" 
+              className="achievement-toast-close"
+              onClick={() => handleDismiss(t.id)}
+              aria-label="Dismiss"
+            >
+              ✕
+            </button>
+          </motion.div>
+        ))}
+      </AnimatePresence>
     </div>
   );
 };

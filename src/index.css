@@ -340,30 +340,51 @@ button {
   pointer-events: auto;
   display: flex;
   align-items: flex-start;
-  gap: 16px;
-  background: rgba(15, 23, 42, 0.95);
-  border: 1.5px solid rgba(251, 191, 36, 0.4);
-  border-radius: 16px;
-  padding: 16px 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(251, 191, 36, 0.15);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  animation: toast-scale-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  gap: 14px;
+  background: 
+    radial-gradient(ellipse at top left, rgba(251, 191, 36, 0.15) 0%, transparent 60%),
+    linear-gradient(145deg, rgba(15, 23, 42, 0.96) 0%, rgba(8, 12, 22, 0.98) 100%);
+  border: 1.5px solid rgba(251, 191, 36, 0.45);
+  border-radius: 20px;
+  padding: 14px 18px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(251, 191, 36, 0.2);
+  backdrop-filter: blur(20px) saturate(190%);
+  -webkit-backdrop-filter: blur(20px) saturate(190%);
+  position: relative;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  box-sizing: border-box;
 }
 
-@keyframes toast-scale-in {
-  from {
-    opacity: 0;
-    transform: scale(0.8) translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
+.achievement-toast:active {
+  cursor: grabbing;
+}
+
+.achievement-toast-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 6px;
+  line-height: 1;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.achievement-toast-close:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .toast-trophy {
-  font-size: 2.2rem;
+  font-size: 2rem;
+  flex-shrink: 0;
   animation: trophy-bounce 1s ease infinite alternate;
 }
 
@@ -376,10 +397,11 @@ button {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  padding-right: 14px;
 }
 
 .toast-title {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -387,15 +409,27 @@ button {
 }
 
 .toast-name {
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   font-weight: 800;
   color: #fff;
 }
 
 .toast-desc {
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.75);
   line-height: 1.35;
+}
+
+@media (max-width: 768px) {
+  .achievement-toast-container {
+    top: 18px;
+    bottom: auto;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: calc(100% - 2rem);
+    max-width: 380px;
+  }
 }
 
 /* ── Global Modal Styles ── */

@@ -217,9 +217,14 @@
   transform: scale(1.06);
 }
 
-@media (max-width: 480px) {
+@media (max-width: 768px) {
   .custom-dialog-card {
     padding: 1.6rem 1.3rem 1.4rem;
     border-radius: 22px;
+  }
+
+  .custom-floating-toast {
+    bottom: auto !important;
+    top: 1.25rem !important;
   }
 }
