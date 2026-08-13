@@ -28,7 +28,7 @@ const Footer = () => {
           </div>
 
           {/* Column 2: Navigation Links */}
-          <div className="footer-col">
+          <div className="footer-col footer-col-explore">
             <h4 className="footer-heading">Explore</h4>
             <ul className="footer-links">
               <li><a href="#" onClick={(e) => handleNavClick(e, '')}>Home</a></li>
@@ -39,7 +39,7 @@ const Footer = () => {
           </div>
 
           {/* Column 3: CineAI Tools */}
-          <div className="footer-col">
+          <div className="footer-col footer-col-cineai">
             <h4 className="footer-heading">CineAI Suite</h4>
             <ul className="footer-links">
               <li><a href="#cineai-tool/what-to-watch" onClick={(e) => handleNavClick(e, '#cineai-tool/what-to-watch')}>What Should I Watch?</a></li>
@@ -50,7 +50,7 @@ const Footer = () => {
           </div>
 
           {/* Column 4: Team Code-Blooded */}
-          <div className="footer-col">
+          <div className="footer-col footer-col-team">
             <h4 className="footer-heading">Team Code-Blooded</h4>
             <ul className="footer-members-list">
               <li><span className="member-bullet">▸</span> <span className="member-label">Atif</span></li>

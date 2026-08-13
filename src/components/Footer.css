@@ -250,13 +250,54 @@
   }
 
   .footer-grid {
+    display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1.5rem 1.25rem;
+    align-items: flex-start;
   }
 
+  /* Col 1: Brand spans full width */
   .footer-col-brand {
     grid-column: 1 / -1;
     gap: 0.5rem;
+  }
+
+  /* Col 2 & Col 3: Explore and CineAI Suite share 50-50 space in the same row */
+  .footer-col-explore {
+    grid-column: 1 / 2;
+    min-width: 0;
+  }
+
+  .footer-col-cineai {
+    grid-column: 2 / 3;
+    min-width: 0;
+  }
+
+  /* Col 4: Team Code-Blooded spans full width */
+  .footer-col-team {
+    grid-column: 1 / -1;
+    margin-top: 0.25rem;
+  }
+
+  /* Col 5: Built For VibeForge 1.0 centered horizontally */
+  .footer-col-event {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
+  .vibeforge-box {
+    margin: 0 auto;
+    padding: 0.65rem 1.2rem;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
   }
 
   .footer-logo {
@@ -294,11 +335,6 @@
     font-size: 0.84rem;
   }
 
-  .vibeforge-box {
-    padding: 0.6rem 1rem;
-    border-radius: 8px;
-  }
-
   .vibeforge-prefix {
     font-size: 0.7rem;
   }
@@ -317,8 +353,39 @@
 
 @media (max-width: 480px) {
   .footer-grid {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem 1rem;
+  }
+
+  .footer-col-brand {
+    grid-column: 1 / -1;
+  }
+
+  .footer-col-explore {
+    grid-column: 1 / 2;
+  }
+
+  .footer-col-cineai {
+    grid-column: 2 / 3;
+  }
+
+  .footer-col-team {
+    grid-column: 1 / -1;
+  }
+
+  .footer-col-event {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+
+  .vibeforge-box {
+    margin: 0 auto;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
   }
 
   .cinescope-footer {
