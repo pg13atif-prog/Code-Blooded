@@ -216,7 +216,7 @@ export const handleProviderClick = async (e, providerName, movieTitle, tmdbLink,
           <title>Connecting to ${provider}... | CineScope</title>
           <style>
             body {
-              background-color: #080c14;
+              background-color: #050508;
               color: #ffffff;
               margin: 0;
               padding: 0;

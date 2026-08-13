@@ -33,10 +33,10 @@
   position: absolute;
   inset: 0;
   z-index: 1;
-  /* Multi-stop smooth cinematic gradients */
+  /* Lightened alpha overlay so hero banner image is crisp & vibrant */
   background:
-    linear-gradient(to top, #080c14 0%, rgba(8, 12, 20, 0.95) 15%, rgba(8, 12, 20, 0.6) 45%, transparent 80%),
-    linear-gradient(to right, rgba(8, 12, 20, 0.95) 0%, rgba(8, 12, 20, 0.6) 40%, transparent 75%);
+    linear-gradient(to top, #050508 0%, rgba(5, 5, 8, 0.65) 16%, rgba(5, 5, 8, 0.25) 45%, transparent 75%),
+    linear-gradient(to right, rgba(5, 5, 8, 0.75) 0%, rgba(5, 5, 8, 0.3) 35%, transparent 70%);
 }
 
 /* ---------- Content ---------- */
@@ -355,13 +355,12 @@
   bottom: -2px;
   left: 0;
   right: 0;
-  height: 220px;
+  height: 140px;
   background: linear-gradient(
     to top,
-    #080c14 0%,
-    rgba(8, 12, 20, 0.95) 25%,
-    rgba(8, 12, 20, 0.6) 60%,
-    rgba(8, 12, 20, 0.15) 85%,
+    #050508 0%,
+    rgba(5, 5, 8, 0.7) 35%,
+    rgba(5, 5, 8, 0.15) 75%,
     transparent 100%
   );
   z-index: 1;
