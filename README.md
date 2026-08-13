@@ -42,7 +42,7 @@ CineAI is CineScope's central intelligence engine, leveraging large language mod
 ## 🎬 Core Features
 
 ### 🎬 Content Discovery & Search
-* **Spotlight Search Overlay**: Instant command-style search (`Ctrl+K` / `Cmd+K`) for titles, actors, directors, and genres.
+* **Spotlight Search Overlay**: Instant command-style search (`Ctrl+K` / `Cmd+K`) for titles.
 * **Catalog Explorer**: Browse trending movies, TV series, season/episode guides, and official YouTube trailers.
 * **Person Profiles**: Complete filmographies, biographies, and media breakdowns for directors and actors.
 
