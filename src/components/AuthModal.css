@@ -5,11 +5,16 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.75);
+  background-color: rgba(0, 0, 0, 0.78);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 1.5rem 1rem;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   z-index: 2000;
   animation: fadeIn 0.25s ease-out;
 }
@@ -23,15 +28,34 @@
   -webkit-backdrop-filter: var(--glass-heavy-filter);
   backdrop-filter: var(--glass-heavy-filter);
   border: var(--glass-heavy-border);
-  padding: 2.5rem 2.25rem 2rem;
+  padding: 2.25rem 2rem 1.75rem;
   border-radius: 18px;
   width: 92%;
-  max-width: 400px;
+  max-width: 420px;
+  max-height: min(680px, calc(100vh - 3rem));
+  overflow-y: auto;
+  margin: auto;
   position: relative;
   box-shadow:
     0 0 60px rgba(var(--auth-accent-rgb), 0.15),
     var(--glass-heavy-shadow);
   animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+/* Modal Custom Scrollbar */
+.auth-modal::-webkit-scrollbar {
+  width: 5px;
+}
+.auth-modal::-webkit-scrollbar-track {
+  background: transparent;
+}
+.auth-modal::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: 4px;
+}
+.auth-modal::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.45);
 }
 
 /* ─── Close Button ─── */

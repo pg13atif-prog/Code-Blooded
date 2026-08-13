@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { checkPasswordStrength, formatDisplayName, validateEmail, MAX_DISPLAY_NAME_LENGTH } from '../utils/authValidation';
 import { updateUserProfile } from '../services/friends';
@@ -15,6 +15,16 @@ const AuthModal = ({ isOpen, onClose }) => {
   const [loading, setLoading] = useState(false);
   const { login, signup, loginWithGoogle, loginAsGuest, resetPassword } = useAuth();
   const mouseDownTargetRef = useRef(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
