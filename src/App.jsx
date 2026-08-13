@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import SplashScreen from "./components/SplashScreen";
 import Hero from "./components/Hero";
 import { checkAndUnlockAchievements } from "./services/achievements";
@@ -413,6 +414,7 @@ function App() {
               {renderContent()}
             </motion.div>
           </AnimatePresence>
+          <Footer />
           <AchievementToasts />
         </motion.div>
       )}

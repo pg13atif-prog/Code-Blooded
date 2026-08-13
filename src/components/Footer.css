@@ -1,0 +1,231 @@
+/* ── CineScope Footer Component Styling ──────────────────────────────── */
+
+.cinescope-footer {
+  position: relative;
+  width: 100%;
+  background: linear-gradient(180deg, rgba(10, 10, 10, 0) 0%, rgba(6, 8, 14, 0.85) 25%, #05070c 100%);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: 4rem;
+  padding: 4rem 1.5rem 2rem 1.5rem;
+  color: var(--color-text-secondary, #b3b3b3);
+  font-family: var(--font-body, 'Inter', sans-serif);
+  z-index: 10;
+  overflow: hidden;
+}
+
+.cinescope-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(229, 9, 20, 0.5) 50%, transparent 100%);
+  pointer-events: none;
+}
+
+.footer-container {
+  max-width: var(--content-max-width, 1400px);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+/* ── Top Section ────────────────────────────────────────────────────────── */
+.footer-top {
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr;
+  gap: 3rem;
+  align-items: flex-start;
+}
+
+/* Brand Column */
+.footer-brand-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.footer-logo {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  font-family: var(--font-logo, 'Cinzel', serif);
+  font-weight: 700;
+  font-size: 1.85rem;
+  letter-spacing: -0.5px;
+  width: fit-content;
+  transition: transform 0.25s ease;
+}
+
+.footer-logo:hover {
+  transform: scale(1.02);
+}
+
+.footer-tagline {
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.65);
+  letter-spacing: 0.02em;
+}
+
+/* Navigation Column */
+.footer-nav-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.footer-col-title {
+  font-family: var(--font-heading, 'Outfit', sans-serif);
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+  position: relative;
+  display: inline-block;
+  padding-bottom: 0.4rem;
+}
+
+.footer-col-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 24px;
+  height: 2px;
+  background: var(--color-accent, #e50914);
+  border-radius: 2px;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.footer-links li a {
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.2s ease, padding-left 0.2s ease;
+}
+
+.footer-links li a:hover {
+  color: #ffffff;
+  padding-left: 4px;
+}
+
+/* Team & Event Column */
+.footer-team-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.footer-team-members {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #ffffff;
+  flex-wrap: wrap;
+}
+
+.team-member {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  color: #ffffff;
+  transition: all 0.25s ease;
+}
+
+.team-member:hover {
+  border-color: rgba(229, 9, 20, 0.6);
+  background: rgba(229, 9, 20, 0.12);
+  box-shadow: 0 0 12px rgba(229, 9, 20, 0.3);
+  transform: translateY(-1px);
+}
+
+.member-dot {
+  color: var(--color-accent, #e50914);
+  font-weight: 700;
+}
+
+.footer-event-info {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 0.25rem;
+}
+
+.event-highlight {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* ── Divider ────────────────────────────────────────────────────────────── */
+.footer-divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.08) 20%, rgba(255, 255, 255, 0.08) 80%, transparent 100%);
+}
+
+/* ── Bottom Section ─────────────────────────────────────────────────────── */
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.45);
+  flex-wrap: wrap;
+}
+
+.copyright-brand {
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 600;
+}
+
+.footer-hackathon-credit {
+  font-size: 0.85rem;
+}
+
+.footer-hackathon-credit strong {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* ── Responsive Design ──────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .footer-top {
+    grid-template-columns: 1fr 1fr;
+  }
+  .footer-brand-col {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 600px) {
+  .cinescope-footer {
+    padding: 3rem 1.25rem 6.5rem 1.25rem; /* Additional bottom padding for mobile floating nav */
+    margin-top: 2.5rem;
+  }
+
+  .footer-top {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
