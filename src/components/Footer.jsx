@@ -11,55 +11,61 @@ const Footer = () => {
   return (
     <footer className="cinescope-footer">
       <div className="footer-container">
-        {/* Top Section */}
-        <div className="footer-top">
-          {/* Brand Column */}
-          <div className="footer-brand-col">
+        {/* Main Footer Content */}
+        <div className="footer-grid">
+          {/* Column 1: Brand */}
+          <div className="footer-col footer-col-brand">
             <a href="#" onClick={(e) => handleNavClick(e, '')} className="footer-logo">
               <span className="logo-cine">Cine</span>
               <span className="logo-scope">Scope</span>
             </a>
             <p className="footer-tagline">Discover Your Next Favourite</p>
+            <p className="footer-description">
+              An intelligent media discovery platform bringing movies, TV shows, and AI recommendations together.
+            </p>
           </div>
 
-          {/* Quick Navigation Column */}
-          <div className="footer-nav-col">
-            <h4 className="footer-col-title">Navigation</h4>
+          {/* Column 2: Navigation */}
+          <div className="footer-col footer-col-nav">
+            <h4 className="footer-heading">Navigation</h4>
             <ul className="footer-links">
               <li><a href="#" onClick={(e) => handleNavClick(e, '')}>Home</a></li>
               <li><a href="#discover/movies" onClick={(e) => handleNavClick(e, '#discover/movies')}>Movies</a></li>
               <li><a href="#discover/tv" onClick={(e) => handleNavClick(e, '#discover/tv')}>TV Shows</a></li>
               <li><a href="#cineai" onClick={(e) => handleNavClick(e, '#cineai')}>CineAI</a></li>
-              <li><a href="#social" onClick={(e) => handleNavClick(e, '#social')}>Social</a></li>
+              <li><a href="#social" onClick={(e) => handleNavClick(e, '#social')}>Social Match</a></li>
             </ul>
           </div>
 
-          {/* Team Column */}
-          <div className="footer-team-col">
-            <h4 className="footer-col-title">Built by Team Code-Blooded</h4>
-            <div className="footer-team-members">
-              <span className="team-member">Atif</span>
-              <span className="member-dot">·</span>
-              <span className="team-member">Asif</span>
-              <span className="member-dot">·</span>
-              <span className="team-member">Swastik</span>
+          {/* Column 3: Team & Hackathon Info */}
+          <div className="footer-col footer-col-team">
+            <h4 className="footer-heading">Team & Hackathon</h4>
+            <div className="footer-team-info">
+              <p className="footer-team-name">Built by Team <strong>Code-Blooded</strong></p>
+              <div className="footer-members-list">
+                <span className="member-name">Atif</span>
+                <span className="member-sep">·</span>
+                <span className="member-name">Asif</span>
+                <span className="member-sep">·</span>
+                <span className="member-name">Swastik</span>
+              </div>
+              <p className="footer-hackathon-tag">
+                Built for <span className="hackathon-name">VibeForge 1.0</span> · 2026
+              </p>
             </div>
-            <p className="footer-event-info">
-              Built for <span className="event-highlight">VibeForge 1.0</span> · 2026
-            </p>
           </div>
         </div>
 
-        {/* Accent Glow Line Divider */}
+        {/* Accent Glow Divider */}
         <div className="footer-divider" />
 
         {/* Bottom Bar */}
-        <div className="footer-bottom">
+        <div className="footer-bottom-bar">
           <p className="footer-copyright">
-            © 2026 <span className="copyright-brand">CineScope</span>. All rights reserved.
+            © 2026 <span className="brand-accent">CineScope</span>. All rights reserved.
           </p>
-          <p className="footer-hackathon-credit">
-            Crafted with ♥ for <strong>VibeForge 1.0</strong> by <strong>Team Code-Blooded</strong>
+          <p className="footer-credit">
+            Crafted for <strong>VibeForge 1.0</strong> by <strong>Team Code-Blooded</strong>
           </p>
         </div>
       </div>
