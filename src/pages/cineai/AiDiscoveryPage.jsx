@@ -206,8 +206,25 @@ const AiDiscoveryPage = () => {
     }
   };
 
+  const handleBack = () => {
+    if (window.history.length > 2) {
+      window.history.back();
+    } else {
+      window.location.hash = '#cineai';
+    }
+  };
+
   return (
     <div className="ai-discovery-page">
+      <div className="cineai-tool-nav">
+        <button type="button" className="cineai-back-btn" onClick={handleBack} aria-label="Go back to CineAI">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+          <span>Back</span>
+        </button>
+      </div>
+
       <div className="ai-header">
         <h1 className="ai-title">What Should I Watch?</h1>
         <p className="ai-subtitle">Describe your mood, a scenario, or specific tropes and our AI will curate the perfect watchlist.</p>

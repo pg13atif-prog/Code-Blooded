@@ -53,8 +53,25 @@ const MoviePlanner = () => {
     setError(null);
   };
 
+  const handleBack = () => {
+    if (window.history.length > 2) {
+      window.history.back();
+    } else {
+      window.location.hash = '#cineai';
+    }
+  };
+
   return (
     <div className="cineai-tool-page page-container">
+      <div className="cineai-tool-nav">
+        <button type="button" className="cineai-back-btn" onClick={handleBack} aria-label="Go back to CineAI">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+          <span>Back</span>
+        </button>
+      </div>
+
       <div className="cineai-tool-header">
         <div className="cineai-tool-badge">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
