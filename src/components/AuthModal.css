@@ -143,8 +143,55 @@
 }
 
 .form-group input:focus {
-  border-color: var(--auth-accent);
-  box-shadow: 0 0 0 2px rgba(var(--auth-accent-rgb), 0.18);
+  border-color: rgba(var(--auth-accent-rgb), 0.5);
+  box-shadow: 0 0 16px rgba(var(--auth-accent-rgb), 0.25);
+  color: white;
+}
+
+/* ─── Password Strength Checklist ─── */
+.pwd-strength-container {
+  margin-top: 0.5rem;
+  padding: 0.65rem 0.85rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  font-size: 0.78rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.pwd-strength-title {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 0.15rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.7rem;
+}
+
+.pwd-rule-item {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: rgba(255, 255, 255, 0.45);
+  transition: color 0.2s ease;
+}
+
+.pwd-rule-item.valid {
+  color: #4ade80;
+  font-weight: 500;
+}
+
+.pwd-rule-icon {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.char-counter {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: 500;
 }
 
 /* ─── Password Wrapper ─── */

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { verifyPasswordResetCode, confirmPasswordReset } from 'firebase/auth';
 import { auth } from '../services/firebase';
+import { checkPasswordStrength } from '../utils/authValidation';
 import './ResetPasswordPage.css';
 
 const ResetPasswordPage = ({ oobCode: propOobCode, onComplete }) => {
@@ -16,6 +17,8 @@ const ResetPasswordPage = ({ oobCode: propOobCode, onComplete }) => {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [success, setSuccess] = useState(false);
+
+  const pwdStrength = checkPasswordStrength(newPassword);
 
   useEffect(() => {
     // Extract oobCode from URL search or hash if not passed as prop
@@ -64,8 +67,9 @@ const ResetPasswordPage = ({ oobCode: propOobCode, onComplete }) => {
     e.preventDefault();
     setSubmitError('');
 
-    if (newPassword.length < 6) {
-      setSubmitError('Password must be at least 6 characters long.');
+    const strength = checkPasswordStrength(newPassword);
+    if (!strength.isValid) {
+      setSubmitError(strength.message);
       return;
     }
 
@@ -82,7 +86,7 @@ const ResetPasswordPage = ({ oobCode: propOobCode, onComplete }) => {
     } catch (err) {
       console.error('Confirm password reset error:', err);
       if (err.code === 'auth/weak-password') {
-        setSubmitError('Password is too weak. Please choose a stronger password.');
+        setSubmitError('Password is too weak. Please meet all strength rules (8+ chars, uppercase, lowercase, number, special char).');
       } else if (err.code === 'auth/invalid-action-code') {
         setSubmitError('This reset link is no longer valid. Please request a new one.');
       } else {
@@ -168,6 +172,32 @@ const ResetPasswordPage = ({ oobCode: propOobCode, onComplete }) => {
                     )}
                   </button>
                 </div>
+
+                {newPassword.length > 0 && (
+                  <div className="pwd-strength-container">
+                    <div className="pwd-strength-title">Password Strength Requirements</div>
+                    <div className={`pwd-rule-item ${pwdStrength.rules.hasMinLength ? 'valid' : ''}`}>
+                      <span className="pwd-rule-icon">{pwdStrength.rules.hasMinLength ? '✓' : '•'}</span>
+                      <span>At least 8 characters</span>
+                    </div>
+                    <div className={`pwd-rule-item ${pwdStrength.rules.hasUppercase ? 'valid' : ''}`}>
+                      <span className="pwd-rule-icon">{pwdStrength.rules.hasUppercase ? '✓' : '•'}</span>
+                      <span>At least 1 uppercase letter (A-Z)</span>
+                    </div>
+                    <div className={`pwd-rule-item ${pwdStrength.rules.hasLowercase ? 'valid' : ''}`}>
+                      <span className="pwd-rule-icon">{pwdStrength.rules.hasLowercase ? '✓' : '•'}</span>
+                      <span>At least 1 lowercase letter (a-z)</span>
+                    </div>
+                    <div className={`pwd-rule-item ${pwdStrength.rules.hasNumber ? 'valid' : ''}`}>
+                      <span className="pwd-rule-icon">{pwdStrength.rules.hasNumber ? '✓' : '•'}</span>
+                      <span>At least 1 number (0-9)</span>
+                    </div>
+                    <div className={`pwd-rule-item ${pwdStrength.rules.hasSpecialChar ? 'valid' : ''}`}>
+                      <span className="pwd-rule-icon">{pwdStrength.rules.hasSpecialChar ? '✓' : '•'}</span>
+                      <span>At least 1 special character (!@#$%^&*)</span>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="reset-form-group">

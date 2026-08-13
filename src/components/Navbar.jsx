@@ -438,7 +438,8 @@ const Navbar = () => {
   };
 
   const userAvatar = userProfile?.avatar || currentUser?.photoURL || null;
-  const username = userProfile?.username || (currentUser?.email ? currentUser.email.split('@')[0] : 'User');
+  const rawUsername = userProfile?.username || (currentUser?.email ? currentUser.email.split('@')[0] : 'User');
+  const username = rawUsername ? rawUsername.slice(0, 14) : 'User';
   const avatarLetter = username ? username.charAt(0).toUpperCase() : '?';
 
   /* ── Helper: render premium dropdown ──────────────────────── */

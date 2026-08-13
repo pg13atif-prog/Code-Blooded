@@ -349,18 +349,26 @@ const ProfilePage = () => {
       ? email.split('@')[0] 
       : (friendCode ? `Guest #${friendCode.replace('CS-', '')}` : `Guest #${currentUser.uid.substring(0, 5).toUpperCase()}`);
   }
+  username = username ? username.slice(0, 14) : 'User';
   const avatarLetter = username.charAt(0).toUpperCase() || '?';
   const avatarImage = profileData?.avatar || null;
 
   const handleSaveProfile = async () => {
+    const cleanName = editName ? editName.trim().slice(0, 14) : '';
+    if (!cleanName) {
+      showToast("Display name cannot be empty.", "error");
+      return;
+    }
     try {
       setUploading(true);
-      await updateUserProfile(currentUser.uid, { displayName: editName });
-      setProfileData(prev => ({ ...prev, username: editName }));
+      await updateUserProfile(currentUser.uid, { displayName: cleanName });
+      setProfileData(prev => ({ ...prev, username: cleanName }));
       setIsEditing(false);
       window.dispatchEvent(new Event('user-profile-updated'));
+      showToast("Profile updated!", "success");
     } catch (err) {
       console.error(err);
+      showToast("Failed to update profile.", "error");
     } finally {
       setUploading(false);
     }
@@ -457,10 +465,11 @@ const ProfilePage = () => {
               <div className="edit-profile-form">
                 <input 
                   type="text" 
+                  maxLength={14}
                   value={editName} 
-                  onChange={(e) => setEditName(e.target.value)} 
+                  onChange={(e) => setEditName(e.target.value.slice(0, 14))} 
                   className="edit-name-input"
-                  placeholder="Display Name"
+                  placeholder="Display Name (max 14 chars)"
                   autoFocus
                 />
                 <div className="edit-profile-actions">

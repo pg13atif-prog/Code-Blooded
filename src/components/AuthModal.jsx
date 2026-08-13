@@ -1,10 +1,13 @@
 import { useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { checkPasswordStrength, formatDisplayName, MAX_DISPLAY_NAME_LENGTH } from '../utils/authValidation';
+import { updateUserProfile } from '../services/friends';
 import './AuthModal.css';
 
 const AuthModal = ({ isOpen, onClose }) => {
   const [mode, setMode] = useState('login'); // 'login' | 'signup' | 'forgot'
   const [email, setEmail] = useState('');
+  const [displayName, setDisplayName] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -52,6 +55,19 @@ const AuthModal = ({ isOpen, onClose }) => {
     e.preventDefault();
     setError('');
     setSuccessMsg('');
+
+    if (mode === 'signup') {
+      if (displayName && displayName.trim().length > MAX_DISPLAY_NAME_LENGTH) {
+        setError(`Display name cannot exceed ${MAX_DISPLAY_NAME_LENGTH} characters.`);
+        return;
+      }
+      const strength = checkPasswordStrength(password);
+      if (!strength.isValid) {
+        setError(strength.message);
+        return;
+      }
+    }
+
     setLoading(true);
 
     try {
@@ -65,7 +81,11 @@ const AuthModal = ({ isOpen, onClose }) => {
         await login(email, password);
         onClose();
       } else {
-        await signup(email, password);
+        const userCred = await signup(email, password);
+        if (userCred && userCred.user) {
+          const finalName = formatDisplayName(displayName || email.split('@')[0]);
+          await updateUserProfile(userCred.user.uid, { displayName: finalName });
+        }
         onClose();
       }
     } catch (err) {
@@ -73,7 +93,7 @@ const AuthModal = ({ isOpen, onClose }) => {
       if (err.code === 'auth/email-already-in-use') {
         errorMessage = 'This email is already registered.';
       } else if (err.code === 'auth/weak-password') {
-        errorMessage = 'Password should be at least 6 characters.';
+        errorMessage = 'Password should meet all strength requirements (8+ chars, uppercase, lowercase, number, special char).';
       } else if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
         errorMessage = 'Invalid email or password.';
       } else if (err.code === 'auth/operation-not-allowed') {
@@ -87,6 +107,8 @@ const AuthModal = ({ isOpen, onClose }) => {
 
     setLoading(false);
   };
+
+  const pwdStrength = checkPasswordStrength(password);
 
   return (
     <div 
@@ -120,6 +142,22 @@ const AuthModal = ({ isOpen, onClose }) => {
         }}>{successMsg}</div>}
         
         <form onSubmit={handleSubmit} className="auth-form">
+          {mode === 'signup' && (
+            <div className="form-group">
+              <div className="form-label-row">
+                <label>DISPLAY NAME</label>
+                <span className="char-counter">{displayName.length}/14</span>
+              </div>
+              <input 
+                type="text" 
+                maxLength={MAX_DISPLAY_NAME_LENGTH}
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value.slice(0, MAX_DISPLAY_NAME_LENGTH))}
+                placeholder="Max 14 characters"
+              />
+            </div>
+          )}
+
           <div className="form-group">
             <label>EMAIL ADDRESS</label>
             <input 
@@ -151,7 +189,7 @@ const AuthModal = ({ isOpen, onClose }) => {
                   required 
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Min. 6 characters"
+                  placeholder={mode === 'signup' ? "Must meet strength rules" : "Your password"}
                 />
                 <button 
                   type="button" 
@@ -172,6 +210,32 @@ const AuthModal = ({ isOpen, onClose }) => {
                   )}
                 </button>
               </div>
+
+              {mode === 'signup' && password.length > 0 && (
+                <div className="pwd-strength-container">
+                  <div className="pwd-strength-title">Password Strength Requirements</div>
+                  <div className={`pwd-rule-item ${pwdStrength.rules.hasMinLength ? 'valid' : ''}`}>
+                    <span className="pwd-rule-icon">{pwdStrength.rules.hasMinLength ? '✓' : '•'}</span>
+                    <span>At least 8 characters</span>
+                  </div>
+                  <div className={`pwd-rule-item ${pwdStrength.rules.hasUppercase ? 'valid' : ''}`}>
+                    <span className="pwd-rule-icon">{pwdStrength.rules.hasUppercase ? '✓' : '•'}</span>
+                    <span>At least 1 uppercase letter (A-Z)</span>
+                  </div>
+                  <div className={`pwd-rule-item ${pwdStrength.rules.hasLowercase ? 'valid' : ''}`}>
+                    <span className="pwd-rule-icon">{pwdStrength.rules.hasLowercase ? '✓' : '•'}</span>
+                    <span>At least 1 lowercase letter (a-z)</span>
+                  </div>
+                  <div className={`pwd-rule-item ${pwdStrength.rules.hasNumber ? 'valid' : ''}`}>
+                    <span className="pwd-rule-icon">{pwdStrength.rules.hasNumber ? '✓' : '•'}</span>
+                    <span>At least 1 number (0-9)</span>
+                  </div>
+                  <div className={`pwd-rule-item ${pwdStrength.rules.hasSpecialChar ? 'valid' : ''}`}>
+                    <span className="pwd-rule-icon">{pwdStrength.rules.hasSpecialChar ? '✓' : '•'}</span>
+                    <span>At least 1 special character (!@#$%^&*)</span>
+                  </div>
+                </div>
+              )}
             </div>
           )}
           
