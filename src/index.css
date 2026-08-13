@@ -10,14 +10,14 @@
 }
 
 html {
-  background-color: #141212;
+  background-color: #05070a;
   color: #ffffff;
   overflow-x: hidden;
   overflow-y: auto;
 }
 
 body {
-  background-color: #141212;
+  background-color: #05070a;
   color: #ffffff;
   min-height: 100vh;
   overflow: visible;
@@ -160,7 +160,7 @@ body {
 }
 
 :root {
-  --color-bg: #141212;
+  --color-bg: #05070a;
   --color-surface-hover: rgba(40, 40, 40, 0.9);
   --color-accent: #b9090b;
   --color-accent-hover: #d10a0d;
