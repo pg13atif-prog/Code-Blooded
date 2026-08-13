@@ -1,14 +1,17 @@
 /**
- * Serper.dev Google Search API & AI RAG-powered streaming URL resolver.
+ * Dual Search API (Serper.dev & Tavily) + AI RAG-powered streaming URL resolver.
  * 
- * Fetches the exact official movie/show page link directly via Serper Google Search API
- * when a user views watch providers, caching the results so when clicked,
- * the user lands directly on the official title landing page on Netflix, Prime Video, etc.
+ * Alternates search APIs (Serper -> Tavily -> Serper -> Tavily) to resolve the exact
+ * official movie/show landing page link for each streaming platform with fallback failovers.
  */
 
 const serperApiKey = import.meta.env.VITE_SERPER_API_KEY;
+const tavilyApiKey = import.meta.env.VITE_TAVILY_API_KEY;
 const groqApiKey = import.meta.env.VITE_GROQ_API_KEY;
 const openRouterApiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
+
+// Global request counter for alternating round-robin (Serper -> Tavily -> Serper -> Tavily)
+let searchCallCounter = 0;
 
 // In-memory cache: "title||provider" -> resolved official URL
 const urlCache = {};
@@ -16,12 +19,52 @@ const urlCache = {};
 const cacheKey = (title, provider) => `${title.toLowerCase().trim()}||${provider.toLowerCase().trim()}`;
 
 /**
- * Fetch official direct title URL using Serper.dev Google Search API
+ * Filter search result organic link for matching domain and non-search page
+ */
+const extractValidPlatformUrl = (links = [], providerName = '') => {
+  const providerLower = providerName.toLowerCase();
+
+  for (const link of links) {
+    if (!link) continue;
+    const linkLower = link.toLowerCase();
+
+    if (linkLower.includes('/search') || linkLower.includes('/browse?') || linkLower.includes('wikipedia.org') || linkLower.includes('imdb.com')) {
+      continue;
+    }
+
+    if (providerLower.includes('netflix') && linkLower.includes('netflix.com')) return link;
+    if ((providerLower.includes('amazon') || providerLower.includes('prime')) && (linkLower.includes('primevideo.com') || linkLower.includes('amazon.com'))) return link;
+    if (providerLower.includes('apple') && linkLower.includes('apple.com')) return link;
+    if ((providerLower.includes('disney') || providerLower.includes('hotstar')) && (linkLower.includes('disneyplus.com') || linkLower.includes('hotstar.com'))) return link;
+    if (providerLower.includes('hulu') && linkLower.includes('hulu.com')) return link;
+    if ((providerLower.includes('max') || providerLower.includes('hbo')) && (linkLower.includes('max.com') || linkLower.includes('hbomax.com'))) return link;
+    if (providerLower.includes('peacock') && linkLower.includes('peacocktv.com')) return link;
+    if (providerLower.includes('paramount') && linkLower.includes('paramountplus.com')) return link;
+    if (providerLower.includes('google play') && linkLower.includes('play.google.com')) return link;
+    if (providerLower.includes('youtube') && linkLower.includes('youtube.com')) return link;
+    if (providerLower.includes('crunchyroll') && linkLower.includes('crunchyroll.com')) return link;
+    if (providerLower.includes('jio') && linkLower.includes('jiocinema.com')) return link;
+    if (providerLower.includes('zee') && linkLower.includes('zee5.com')) return link;
+    if (providerLower.includes('sony') && linkLower.includes('sonyliv.com')) return link;
+    if (providerLower.includes('vudu') && linkLower.includes('vudu.com')) return link;
+    if (providerLower.includes('tubi') && linkLower.includes('tubitv.com')) return link;
+    if (providerLower.includes('pluto') && linkLower.includes('pluto.tv')) return link;
+    if (providerLower.includes('plex') && linkLower.includes('plex.tv')) return link;
+  }
+
+  // Fallback to position 1 link if not a search page
+  const top = links[0];
+  if (top && !top.toLowerCase().includes('/search')) return top;
+  return null;
+};
+
+/**
+ * Serper.dev Google Search API
  */
 const fetchSerperUrl = async (movieTitle, providerName) => {
   if (!serperApiKey) return null;
   const query = `watch "${movieTitle}" on ${providerName} official`;
-  
+
   try {
     const res = await fetch("https://google.serper.dev/search", {
       method: "POST",
@@ -34,45 +77,12 @@ const fetchSerperUrl = async (movieTitle, providerName) => {
         num: 5
       })
     });
-    
+
     if (res.ok) {
       const data = await res.json();
       if (data.organic && data.organic.length > 0) {
-        const providerLower = providerName.toLowerCase();
-        
-        // 1. Try to find the top result matching the target domain
-        for (const item of data.organic) {
-          const link = item.link;
-          if (!link) continue;
-          const linkLower = link.toLowerCase();
-          
-          if (linkLower.includes('/search') || linkLower.includes('/browse?') || linkLower.includes('wikipedia.org') || linkLower.includes('imdb.com')) {
-            continue;
-          }
-          
-          if (providerLower.includes('netflix') && linkLower.includes('netflix.com')) return link;
-          if ((providerLower.includes('amazon') || providerLower.includes('prime')) && (linkLower.includes('primevideo.com') || linkLower.includes('amazon.com'))) return link;
-          if (providerLower.includes('apple') && linkLower.includes('apple.com')) return link;
-          if ((providerLower.includes('disney') || providerLower.includes('hotstar')) && (linkLower.includes('disneyplus.com') || linkLower.includes('hotstar.com'))) return link;
-          if (providerLower.includes('hulu') && linkLower.includes('hulu.com')) return link;
-          if ((providerLower.includes('max') || providerLower.includes('hbo')) && (linkLower.includes('max.com') || linkLower.includes('hbomax.com'))) return link;
-          if (providerLower.includes('peacock') && linkLower.includes('peacocktv.com')) return link;
-          if (providerLower.includes('paramount') && linkLower.includes('paramountplus.com')) return link;
-          if (providerLower.includes('google play') && linkLower.includes('play.google.com')) return link;
-          if (providerLower.includes('youtube') && linkLower.includes('youtube.com')) return link;
-          if (providerLower.includes('crunchyroll') && linkLower.includes('crunchyroll.com')) return link;
-          if (providerLower.includes('jio') && linkLower.includes('jiocinema.com')) return link;
-          if (providerLower.includes('zee') && linkLower.includes('zee5.com')) return link;
-          if (providerLower.includes('sony') && linkLower.includes('sonyliv.com')) return link;
-          if (providerLower.includes('vudu') && linkLower.includes('vudu.com')) return link;
-          if (providerLower.includes('tubi') && linkLower.includes('tubitv.com')) return link;
-          if (providerLower.includes('pluto') && linkLower.includes('pluto.tv')) return link;
-          if (providerLower.includes('plex') && linkLower.includes('plex.tv')) return link;
-        }
-        
-        // 2. Fallback to position 1 organic link if non-search
-        const topLink = data.organic[0].link;
-        if (topLink && !topLink.toLowerCase().includes('/search')) return topLink;
+        const links = data.organic.map(o => o.link);
+        return extractValidPlatformUrl(links, providerName);
       }
     }
   } catch (err) {
@@ -82,11 +92,69 @@ const fetchSerperUrl = async (movieTitle, providerName) => {
 };
 
 /**
+ * Tavily Search API
+ */
+const fetchTavilyUrl = async (movieTitle, providerName) => {
+  if (!tavilyApiKey) return null;
+  const query = `watch "${movieTitle}" on ${providerName} official`;
+
+  try {
+    const res = await fetch("https://api.tavily.com/search", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        api_key: tavilyApiKey,
+        query: query,
+        search_depth: "basic",
+        max_results: 5
+      })
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      if (data.results && data.results.length > 0) {
+        const links = data.results.map(r => r.url);
+        return extractValidPlatformUrl(links, providerName);
+      }
+    }
+  } catch (err) {
+    console.warn(`Tavily API error for ${providerName}:`, err.message);
+  }
+  return null;
+};
+
+/**
+ * Alternating Round-Robin Search Handler: Serper -> Tavily -> Serper -> Tavily
+ */
+const fetchSearchUrlAlternating = async (movieTitle, providerName) => {
+  searchCallCounter++;
+  const useSerperFirst = searchCallCounter % 2 === 1;
+
+  if (useSerperFirst) {
+    // Serper first, Tavily fallback
+    let url = await fetchSerperUrl(movieTitle, providerName);
+    if (!url) {
+      url = await fetchTavilyUrl(movieTitle, providerName);
+    }
+    return url;
+  } else {
+    // Tavily first, Serper fallback
+    let url = await fetchTavilyUrl(movieTitle, providerName);
+    if (!url) {
+      url = await fetchSerperUrl(movieTitle, providerName);
+    }
+    return url;
+  }
+};
+
+/**
  * Ask the AI for direct platform URLs for any remaining unresolved providers.
  */
 const resolveWithAI = async (movieTitle, mediaType, providerNames) => {
   if (providerNames.length === 0) return {};
-  
+
   const systemPrompt = `You are a streaming URL resolver. Return the exact official URL where users can watch or view details for the specified title on each platform.
 RULES:
 - Return ONLY a JSON object mapping each platform name to its direct URL.
@@ -128,7 +196,7 @@ Return JSON: {"Platform Name": "https://..."}`;
 };
 
 /**
- * Resolves direct official URLs for all requested providers using Serper Google Search API
+ * Resolves direct official URLs for all requested providers using Alternating Serper/Tavily search APIs
  */
 export const resolveProviderUrls = async (movieTitle, mediaType, providerNames = []) => {
   if (!movieTitle || providerNames.length === 0) return {};
@@ -140,9 +208,9 @@ export const resolveProviderUrls = async (movieTitle, mediaType, providerNames =
     return result;
   }
 
-  // Step 1: Query Serper Google Search API in parallel for each uncached provider
-  const serperPromises = uncached.map(async (provider) => {
-    const url = await fetchSerperUrl(movieTitle, provider);
+  // Step 1: Query Alternating Search APIs (Serper -> Tavily -> Serper -> Tavily) in parallel for each uncached provider
+  const searchPromises = uncached.map(async (provider) => {
+    const url = await fetchSearchUrlAlternating(movieTitle, provider);
     if (url) {
       urlCache[cacheKey(movieTitle, provider)] = url;
       return { provider, url };
@@ -150,8 +218,8 @@ export const resolveProviderUrls = async (movieTitle, mediaType, providerNames =
     return { provider, url: null };
   });
 
-  const serperResults = await Promise.all(serperPromises);
-  const unresolved = serperResults.filter(r => !r.url).map(r => r.provider);
+  const searchResults = await Promise.all(searchPromises);
+  const unresolved = searchResults.filter(r => !r.url).map(r => r.provider);
 
   // Step 2: For any remaining unresolved providers, fallback to AI resolution
   if (unresolved.length > 0) {
@@ -173,13 +241,13 @@ export const resolveProviderUrls = async (movieTitle, mediaType, providerNames =
 };
 
 /**
- * Synchronous getter. Returns cached Serper/AI official URL, or falls back to platform search / TMDB link.
+ * Synchronous getter. Returns cached official URL, or falls back to platform search / TMDB link.
  */
 export const getProviderUrl = (providerName, movieTitle, tmdbLink) => {
   const title = movieTitle ? movieTitle.trim() : '';
   const provider = providerName ? providerName.trim() : '';
 
-  // 1. Return cached Serper/AI-resolved direct official URL if available
+  // 1. Return cached resolved direct official URL if available
   const cached = urlCache[cacheKey(title, provider)];
   if (cached) return cached;
 
@@ -208,6 +276,7 @@ export const getProviderUrl = (providerName, movieTitle, tmdbLink) => {
 
   return `https://www.google.com/search?q=${encodeURIComponent(`watch "${title}" on ${providerName}`)}`;
 };
+
 
 
 
