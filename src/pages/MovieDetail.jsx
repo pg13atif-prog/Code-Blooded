@@ -112,7 +112,13 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
   }, [selectedStill, showTrailerModal, showRecModal]);
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const scrollToTop = () => {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    };
+
+    scrollToTop();
     const controller = new AbortController();
     setStatus('loading');
     setShowAllCast(false);
@@ -175,6 +181,10 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
         setReviews(reviewsData);
         setCustomReviews(customReviewsData);
         setStatus('success');
+
+        // Anchor scroll position to top after DOM update
+        requestAnimationFrame(scrollToTop);
+        setTimeout(scrollToTop, 50);
         
         // Add to recently viewed if logged in (safely)
         if (currentUser && detailsData) {
