@@ -964,6 +964,11 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
                               </>
                             )}
                           </div>
+                          {ep.overview && (
+                            <p className="episode-card-overview">
+                              {ep.overview}
+                            </p>
+                          )}
                         </div>
                       </div>
                     ))}

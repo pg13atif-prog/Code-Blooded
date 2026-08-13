@@ -1777,3 +1777,20 @@
   color: #fbbf24;
   font-weight: 700;
 }
+
+.episode-card-overview {
+  margin: 0.25rem 0 0 0;
+  font-size: 0.84rem;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .episode-card-overview {
+    display: none !important;
+  }
+}
