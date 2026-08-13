@@ -113,8 +113,19 @@ function App() {
 
       const discoverMatch = hash.match(/^#discover\/(movies|tv|trending)/);
       if (discoverMatch) {
+        const queryPart = hash.includes('?') ? hash.split('?')[1] : '';
+        const searchParams = new URLSearchParams(queryPart);
+        const genreParam = searchParams.get('genre');
         setCurrentRoute('discover');
-        setCurrentParams({ tab: discoverMatch[1] });
+        setCurrentParams({ tab: discoverMatch[1], genre: genreParam ? Number(genreParam) || genreParam : null });
+        return;
+      }
+      if (hash.startsWith('#discover')) {
+        const queryPart = hash.includes('?') ? hash.split('?')[1] : '';
+        const searchParams = new URLSearchParams(queryPart);
+        const genreParam = searchParams.get('genre');
+        setCurrentRoute('discover');
+        setCurrentParams({ tab: 'movies', genre: genreParam ? Number(genreParam) || genreParam : null });
         return;
       }
 
@@ -319,7 +330,13 @@ function App() {
       case 'trending-tv':
       case 'trending-movies':
       case 'discover':
-        return <DiscoverPage activeTab={currentParams?.tab || 'movies'} />;
+        return (
+          <DiscoverPage 
+            key={`${currentParams?.tab || 'movies'}-${currentParams?.genre || 'all'}`}
+            activeTab={currentParams?.tab || 'movies'} 
+            initialGenre={currentParams?.genre} 
+          />
+        );
 
       case 'cineai':
         return <CineAiPage />;

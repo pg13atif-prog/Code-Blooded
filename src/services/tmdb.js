@@ -23,6 +23,30 @@ export const genres = {
   37: 'Western',
 };
 
+export const getGenreIdByName = (name) => {
+  if (!name) return null;
+  const clean = name.trim().toLowerCase();
+  const entry = Object.entries(genres).find(([_, gName]) => gName.toLowerCase() === clean);
+  if (entry) return Number(entry[0]);
+  if (clean.includes('action')) return 28;
+  if (clean.includes('comedy')) return 35;
+  if (clean.includes('drama')) return 18;
+  if (clean.includes('sci-fi') || clean.includes('science fiction')) return 878;
+  if (clean.includes('fantasy')) return 14;
+  if (clean.includes('horror')) return 27;
+  if (clean.includes('thriller')) return 53;
+  if (clean.includes('animation')) return 16;
+  if (clean.includes('crime')) return 80;
+  if (clean.includes('adventure')) return 12;
+  if (clean.includes('western')) return 37;
+  if (clean.includes('documentary')) return 99;
+  if (clean.includes('family')) return 10751;
+  if (clean.includes('mystery')) return 9648;
+  if (clean.includes('romance')) return 10749;
+  if (clean.includes('war')) return 10752;
+  return null;
+};
+
 const mapMovie = (movie) => ({
   id: movie.id,
   title: movie.title || movie.name,

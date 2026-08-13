@@ -11,7 +11,8 @@ import {
   getTvSeasonVideos,
   searchYouTubeVideoId,
   getExternalRatings,
-  getMediaStills
+  getMediaStills,
+  getGenreIdByName
 } from '../services/tmdb';
 import { 
   addToWatchlist, removeFromWatchlist, isInWatchlist, addRecentlyViewed,
@@ -92,6 +93,16 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
   const [sentFriends, setSentFriends] = useState({});
 
   const trailerMouseDownRef = useRef(null);
+
+  const handleGenreClick = (genreName) => {
+    const gId = getGenreIdByName(genreName);
+    const tabParam = mediaType === 'tv' ? 'tv' : 'movies';
+    if (gId) {
+      window.location.hash = `#discover/${tabParam}?genre=${gId}`;
+    } else {
+      window.location.hash = `#discover/${tabParam}`;
+    }
+  };
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -730,7 +741,7 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
               <h1 className="detail-title">{movie.title}</h1>
               {movie.tagline && <p className="detail-tagline">&ldquo;{movie.tagline}&rdquo;</p>}
 
-              {/* Clean Meta Line (Year • Runtime • Genres) */}
+              {/* Clean Meta Line (Year • Runtime) */}
               <div className="detail-meta-line">
                 <span>{movie.year}</span>
                 {movie.runtime && movie.runtime !== 'N/A' && (
@@ -739,20 +750,24 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
                     <span>{movie.runtime}</span>
                   </>
                 )}
-                {movie.genres && movie.genres.length > 0 && (
-                  <>
-                    <span className="dot-separator">•</span>
-                    <div className="genres-inline">
-                      {movie.genres.map((g, idx) => (
-                        <span key={g} className="genre-chip">
-                          {g}
-                          {idx < movie.genres.length - 1 && <span className="genre-dot">•</span>}
-                        </span>
-                      ))}
-                    </div>
-                  </>
-                )}
               </div>
+
+              {/* Modern Interactive Genre Tag Pills */}
+              {movie.genres && movie.genres.length > 0 && (
+                <div className="detail-genre-pills">
+                  {movie.genres.map((g) => (
+                    <button
+                      key={g}
+                      type="button"
+                      className="genre-tag-pill"
+                      onClick={() => handleGenreClick(g)}
+                      title={`Browse ${g} titles`}
+                    >
+                      {g}
+                    </button>
+                  ))}
+                </div>
+              )}
 
               {/* Dedicated Ratings Row */}
               <div className="detail-ratings-row">

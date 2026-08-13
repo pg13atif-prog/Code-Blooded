@@ -45,18 +45,18 @@ const DISPLAY_GENRES = [
   { id: 878, name: 'Sci-Fi' }
 ];
 
-const DiscoverPage = ({ activeTab = 'movies' }) => {
+const DiscoverPage = ({ activeTab = 'movies', initialGenre = null }) => {
   const [showFilters, setShowFilters] = useState(false);
   const [filterMediaType, setFilterMediaType] = useState(activeTab === 'tv' ? 'tv' : (activeTab === 'trending' ? 'trending' : 'movie'));
   const [trendingTimeWindow, setTrendingTimeWindow] = useState('day'); // 'day' | 'week'
-  const [selectedGenres, setSelectedGenres] = useState([]);
+  const [selectedGenres, setSelectedGenres] = useState(() => initialGenre ? [initialGenre] : []);
   const [selectedDecade, setSelectedDecade] = useState('');
   const [selectedYears, setSelectedYears] = useState([]);
   const [minRating, setMinRating] = useState(0);
   const [sortBy, setSortBy] = useState('popularity.desc');
 
   // --- Pending (Draft) Filter State ---
-  const [pendingGenres, setPendingGenres] = useState([]);
+  const [pendingGenres, setPendingGenres] = useState(() => initialGenre ? [initialGenre] : []);
   const [pendingDecade, setPendingDecade] = useState('');
   const [pendingYears, setPendingYears] = useState([]);
   const [pendingMinRating, setPendingMinRating] = useState(0);
