@@ -1,70 +1,40 @@
 /**
- * Generates a direct URL that lands the user straight on the official title landing page
- * on the target platform (e.g. landing directly on The Boys page on Prime Video) 
- * with ZERO search result pages and ZERO Google redirect notices.
+ * Returns the best URL to land the user on the official title page on the target platform.
+ * 
+ * Strategy: Use the TMDB watch provider link directly. TMDB's watch page contains
+ * JustWatch-powered affiliate deep links that redirect straight to the official title 
+ * landing page on each streaming platform (e.g. primevideo.com/detail/The-Boys/...).
+ * No search result pages, no Google redirect notices.
+ * 
+ * Fallback: If no TMDB link is available, open the platform's native search page
+ * pre-filled with the title so the user sees it as the top result.
  */
 export const getProviderUrl = (providerName, movieTitle, tmdbLink) => {
+  // Primary: Use the official TMDB watch link (deep-links to actual title pages)
+  if (tmdbLink) return tmdbLink;
+
+  // Fallback: platform native search (only if TMDB link is missing)
   const title = movieTitle ? movieTitle.trim() : '';
   const provider = providerName ? providerName.trim().toLowerCase() : '';
-  const encodedTitle = encodeURIComponent(`"${title}"`);
+  const q = encodeURIComponent(title);
 
-  if (!title && tmdbLink) return tmdbLink;
   if (!title) return '#';
 
-  let siteFilter = '';
+  if (provider.includes('netflix'))                              return `https://www.netflix.com/search?q=${q}`;
+  if (provider.includes('amazon') || provider.includes('prime')) return `https://www.primevideo.com/search?phrase=${q}`;
+  if (provider.includes('apple'))                                return `https://tv.apple.com/search?term=${q}`;
+  if (provider.includes('disney') || provider.includes('hotstar')) return `https://www.disneyplus.com/search?q=${q}`;
+  if (provider.includes('google play'))                          return `https://play.google.com/store/search?q=${q}&c=movies`;
+  if (provider.includes('youtube'))                              return `https://www.youtube.com/results?search_query=${encodeURIComponent(`${title} full movie`)}`;
+  if (provider.includes('hulu'))                                 return `https://www.hulu.com/search?q=${q}`;
+  if (provider.includes('max') || provider.includes('hbo'))      return `https://www.max.com/search?q=${q}`;
+  if (provider.includes('peacock'))                              return `https://www.peacocktv.com/search?q=${q}`;
+  if (provider.includes('paramount'))                            return `https://www.paramountplus.com/search/?q=${q}`;
+  if (provider.includes('crunchyroll'))                          return `https://www.crunchyroll.com/search?q=${q}`;
+  if (provider.includes('jio'))                                  return `https://www.jiocinema.com/search/${q}`;
+  if (provider.includes('zee'))                                  return `https://www.zee5.com/search?q=${q}`;
+  if (provider.includes('sony'))                                 return `https://www.sonyliv.com/search?q=${q}`;
 
-  if (provider.includes('netflix')) {
-    siteFilter = 'site:netflix.com/title OR site:netflix.com';
-  } else if (provider.includes('amazon') || provider.includes('prime')) {
-    siteFilter = 'site:primevideo.com OR site:amazon.com';
-  } else if (provider.includes('apple')) {
-    siteFilter = 'site:tv.apple.com';
-  } else if (provider.includes('disney') || provider.includes('hotstar')) {
-    siteFilter = 'site:disneyplus.com OR site:hotstar.com';
-  } else if (provider.includes('google play')) {
-    siteFilter = 'site:play.google.com/store/movies';
-  } else if (provider.includes('youtube')) {
-    siteFilter = 'site:youtube.com/watch OR site:youtube.com';
-  } else if (provider.includes('hulu')) {
-    siteFilter = 'site:hulu.com';
-  } else if (provider.includes('max') || provider.includes('hbo')) {
-    siteFilter = 'site:max.com OR site:hbomax.com';
-  } else if (provider.includes('peacock')) {
-    siteFilter = 'site:peacocktv.com';
-  } else if (provider.includes('paramount')) {
-    siteFilter = 'site:paramountplus.com';
-  } else if (provider.includes('vudu') || provider.includes('fandango')) {
-    siteFilter = 'site:vudu.com';
-  } else if (provider.includes('tubi')) {
-    siteFilter = 'site:tubitv.com';
-  } else if (provider.includes('pluto')) {
-    siteFilter = 'site:pluto.tv';
-  } else if (provider.includes('crunchyroll')) {
-    siteFilter = 'site:crunchyroll.com';
-  } else if (provider.includes('plex')) {
-    siteFilter = 'site:watch.plex.tv';
-  } else if (provider.includes('jio')) {
-    siteFilter = 'site:jiocinema.com';
-  } else if (provider.includes('zee5') || provider.includes('zee')) {
-    siteFilter = 'site:zee5.com';
-  } else if (provider.includes('sony')) {
-    siteFilter = 'site:sonyliv.com';
-  }
-
-  // 1. If we have a site filter, use DuckDuckGo !ducky bang to land directly on the top official title page
-  if (siteFilter) {
-    return `https://duckduckgo.com/?q=!ducky+${encodeURIComponent(`${siteFilter} ${encodedTitle}`)}`;
-  }
-
-  // 2. Generic direct destination bang for any unlisted provider
-  if (providerName) {
-    return `https://duckduckgo.com/?q=!ducky+${encodeURIComponent(`watch ${encodedTitle} on ${providerName} official`)}`;
-  }
-
-  // 3. Fallback to TMDB Watch Link if available
-  if (tmdbLink) {
-    return tmdbLink;
-  }
-
-  return '#';
+  return `https://www.google.com/search?q=${encodeURIComponent(`watch "${title}" on ${providerName}`)}`;
 };
+
