@@ -27,7 +27,7 @@ import { useAlert } from '../context/AlertContext';
 import MovieRow from '../components/MovieRow';
 import { MovieDetailSkeleton } from '../components/SkeletonLoader';
 import { checkAndUnlockAchievements, trackDetailView, incrementStat } from '../services/achievements';
-import { getProviderUrl } from '../utils/providerUrls';
+import { getProviderUrl, resolveProviderUrls } from '../utils/providerUrls';
 import './MovieDetail.css';
 const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
   const [movie, setMovie] = useState(null);
@@ -168,6 +168,24 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
         // Providers logic (filter by US for now if geolocation not available)
         const usProviders = providersData?.US || providersData?.GB || providersData?.CA || null;
         setWatchProviders(usProviders);
+
+        // AI URL pre-fetch: resolve direct platform URLs in the background
+        if (usProviders && detailsData) {
+          const allProviders = [
+            ...(usProviders.flatrate || []),
+            ...(usProviders.rent || []),
+            ...(usProviders.buy || [])
+          ];
+          const providerNames = [...new Set(allProviders.map(p => p.provider_name))];
+          if (providerNames.length > 0) {
+            resolveProviderUrls(detailsData.title || detailsData.name, mediaType, providerNames)
+              .then(() => {
+                // Force re-render so getProviderUrl picks up the cached AI results
+                setWatchProviders(prev => prev ? { ...prev } : prev);
+              })
+              .catch(err => console.warn('AI URL pre-fetch failed:', err.message));
+          }
+        }
         
         setRecommendations(recsData);
         setReviews(reviewsData);
