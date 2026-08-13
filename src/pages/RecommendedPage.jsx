@@ -108,7 +108,7 @@ const RecommendedPage = () => {
               onClick={() => window.location.hash = 'profile'}
               style={{ padding: '0.75rem 2rem', background: '#e50914', color: '#fff', border: 'none', borderRadius: '30px', fontSize: '1rem', fontWeight: 600, cursor: 'pointer' }}
             >
-              Sign In
+              Log in/Sign up
             </button>
           </div>
         )}

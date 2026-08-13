@@ -642,7 +642,7 @@ const Navbar = () => {
                 setIsAuthModalOpen(true);
                 setIsMobileMenuOpen(false);
               }}>
-                <span>Sign In / Register</span>
+                <span>Log in/Sign up</span>
               </button>
             </li>
           )}
@@ -708,7 +708,7 @@ const Navbar = () => {
               className="navbar__login-btn"
               onClick={() => setIsAuthModalOpen(true)}
             >
-              Sign In
+              Log in/Sign up
             </button>
           )}
         </div>

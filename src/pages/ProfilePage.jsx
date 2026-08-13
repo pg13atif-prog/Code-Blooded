@@ -334,7 +334,7 @@ const ProfilePage = () => {
           <h2 id="profile-guest-title" className="profile-guest-title">Welcome to CineScope</h2>
           <p className="profile-guest-subtitle">Sign in to view your personalized profile, save favorite movies, track watch time, and earn achievements.</p>
           <button className="profile-guest-cta" onClick={() => setIsAuthModalOpen(true)}>
-            Sign In / Register
+            Log in/Sign up
           </button>
         </section>
         <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />

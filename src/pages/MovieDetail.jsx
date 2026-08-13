@@ -1092,7 +1092,7 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
                         <h4 style={{ margin: 0, color: '#fff', fontSize: '1rem', fontWeight: 600 }}>Sign in to write a review</h4>
                         <p style={{ margin: '0.25rem 0 0', color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem' }}>Guest accounts cannot post reviews. Create a free account or sign in to share your rating.</p>
                       </div>
-                      <button className="btn-primary btn-sm" onClick={() => setIsAuthModalOpen(true)}>Sign In / Register</button>
+                      <button className="btn-primary btn-sm" onClick={() => setIsAuthModalOpen(true)}>Log in/Sign up</button>
                     </div>
                   ) : (
                     <form onSubmit={handleSubmitReview} className="write-review-form" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
