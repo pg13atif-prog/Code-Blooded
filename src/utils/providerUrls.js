@@ -6,7 +6,7 @@
  * the user lands directly on the official title landing page on Netflix, Prime Video, etc.
  */
 
-const serperApiKey = import.meta.env.VITE_SERPER_API_KEY || '5ecb5ca9c691e411847200535c5493fe89dd20da';
+const serperApiKey = import.meta.env.VITE_SERPER_API_KEY;
 const groqApiKey = import.meta.env.VITE_GROQ_API_KEY;
 const openRouterApiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
 
