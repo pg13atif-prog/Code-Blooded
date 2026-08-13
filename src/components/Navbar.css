@@ -1487,9 +1487,17 @@
   align-items: flex-start;
   justify-content: center;
   padding: 4.5rem 1.25rem 2rem;
-  overflow: hidden;
+  overflow-x: hidden !important;
+  overflow-y: auto;
+  overscroll-behavior-x: none !important;
+  overscroll-behavior-y: contain;
+  touch-action: pan-y !important;
   animation: searchOverlayFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
   box-sizing: border-box;
+  width: 100vw;
+  max-width: 100vw;
+  left: 0;
+  right: 0;
 }
 
 @keyframes searchOverlayFadeIn {
@@ -1499,7 +1507,7 @@
 
 .search-modal-container {
   width: 100%;
-  max-width: 620px;
+  max-width: min(620px, calc(100vw - 2rem));
   max-height: 82vh;
   background: 
     radial-gradient(ellipse at top left, rgba(255, 255, 255, 0.18) 0%, transparent 45%),
@@ -1517,7 +1525,13 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  overflow-x: hidden !important;
+  overscroll-behavior-x: none !important;
+  overscroll-behavior-y: contain;
+  touch-action: pan-y !important;
   animation: searchModalZoomIn 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+  margin: 0 auto;
 }
 
 @keyframes searchModalZoomIn {
@@ -1702,20 +1716,42 @@
 /* ── Scrollable Body Area ── */
 .search-modal-scrollable-body {
   flex: 1;
-  overflow-y: auto;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  overscroll-behavior-x: none !important;
+  overscroll-behavior-y: contain;
+  touch-action: pan-y !important;
   padding: 1.25rem 1.4rem 2rem;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
   display: flex;
   flex-direction: column;
   gap: 0.9rem;
   box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(229, 9, 20, 0.7) rgba(10, 14, 25, 0.5);
 }
 
 .search-modal-scrollable-body::-webkit-scrollbar {
-  display: none;
-  width: 0;
-  height: 0;
+  display: block !important;
+  width: 6px !important;
+  height: 0 !important;
+}
+
+.search-modal-scrollable-body::-webkit-scrollbar-track {
+  background: rgba(10, 14, 25, 0.5);
+  border-radius: 10px;
+}
+
+.search-modal-scrollable-body::-webkit-scrollbar-thumb {
+  background: rgba(229, 9, 20, 0.7);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.search-modal-scrollable-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 45, 55, 0.95);
+  box-shadow: 0 0 10px rgba(229, 9, 20, 0.5);
 }
 
 /* ── Live Suggestions Results List ── */
@@ -2333,11 +2369,14 @@
 /* Popular Grid */
 .search-popular-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.75rem;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 650px) {
   .search-popular-grid {
     grid-template-columns: 1fr;
   }
@@ -2353,6 +2392,11 @@
   border-radius: 14px;
   cursor: pointer;
   transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .search-popular-card:hover {
@@ -2375,7 +2419,9 @@
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
+  flex: 1;
   min-width: 0;
+  overflow: hidden;
 }
 
 .search-popular-title {
@@ -2383,17 +2429,29 @@
   font-weight: 700;
   color: #ffffff;
   margin: 0;
-  white-space: nowrap;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
+  word-break: break-word;
+  width: 100%;
 }
 
 .search-popular-meta {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  flex-wrap: wrap;
+  gap: 0.35rem;
   font-size: 0.76rem;
   color: rgba(255, 255, 255, 0.55);
+  min-width: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+.search-popular-meta span {
+  white-space: nowrap;
 }
 
 .search-popular-rating {
@@ -2435,21 +2493,40 @@
   .search-modal-overlay {
     padding: 0;
     align-items: stretch;
+    justify-content: center;
+    width: 100vw;
+    max-width: 100vw;
+    overflow-x: hidden !important;
+    left: 0;
+    right: 0;
   }
 
   .search-modal-container {
-    max-width: 100%;
+    width: 100vw;
+    max-width: 100vw;
     height: 100%;
     max-height: 100%;
     border-radius: 0;
     border: none;
+    margin: 0;
+    overflow-x: hidden !important;
+    left: 0;
+    right: 0;
   }
 
   .search-modal-fixed-header {
     padding: 1.2rem 1.1rem 0.9rem;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .search-modal-scrollable-body {
     padding: 1.1rem 1.1rem 3.5rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .search-popular-grid {
+    grid-template-columns: 1fr;
   }
 }

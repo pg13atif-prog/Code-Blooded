@@ -70,6 +70,28 @@ const Navbar = () => {
         .finally(() => setPopularLoading(false));
     }
   }, [isSearchModalOpen, popularPicks.length]);
+
+  const searchModalRef = useRef(null);
+
+  // Prevent horizontal trackpad swipe back gesture when interacting with search modal
+  useEffect(() => {
+    if (!isSearchModalOpen) return;
+
+    const modalOverlay = searchModalRef.current;
+    if (!modalOverlay) return;
+
+    const handleWheel = (e) => {
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+        e.preventDefault();
+      }
+    };
+
+    modalOverlay.addEventListener('wheel', handleWheel, { passive: false });
+    return () => {
+      modalOverlay.removeEventListener('wheel', handleWheel);
+    };
+  }, [isSearchModalOpen]);
+
   const [searchFilterType, setSearchFilterType] = useState('all');
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -793,7 +815,7 @@ const Navbar = () => {
 
       {/* ── Unified Spotlight Search Modal (Desktop & Mobile) ── */}
       {isSearchModalOpen && (
-        <div className="search-modal-overlay" onClick={() => setIsSearchModalOpen(false)}>
+        <div ref={searchModalRef} className="search-modal-overlay" onClick={() => setIsSearchModalOpen(false)}>
           <div className="search-modal-container" onClick={(e) => e.stopPropagation()}>
 
             {/* ── Fixed Top Header (Title + Filter Selector + Close Button + Search Input) ── */}
