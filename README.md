@@ -82,7 +82,7 @@ CineAI is CineScope's central intelligence engine, leveraging large language mod
   </td>
   <td width="50%">
     <h4 align="center">🤝 Friend Movie Match</h4>
-    <img src="screenshots/friend-match.png" alt="Movie Match" width="100%" />
+    <img src="screenshots/friendmatch.png" alt="Movie Match" width="100%" />
   </td>
 </tr>
 <tr>
