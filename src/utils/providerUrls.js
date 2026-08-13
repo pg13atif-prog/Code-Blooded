@@ -1,22 +1,40 @@
 /**
- * Dual Search API (Serper.dev & Tavily) + AI RAG-powered streaming URL resolver.
+ * Per-Title Alternating Search API Resolver (Serper <-> Tavily)
  * 
- * Alternates search APIs (Serper -> Tavily -> Serper -> Tavily) to resolve the exact
- * official movie/show landing page link for each streaming platform with fallback failovers.
+ * Behavior:
+ * - User opens Title #1 -> Assigns Serper API for provider clicks on this title
+ * - User opens Title #2 -> Assigns Tavily API for provider clicks on this title
+ * - User opens Title #3 -> Assigns Serper API...
+ * 
+ * - NO PREFETCHING: Search API is initiated ONLY when the user actually clicks a provider logo.
+ * - Opens the official title page directly in a new tab upon resolution.
  */
 
 const serperApiKey = import.meta.env.VITE_SERPER_API_KEY;
 const tavilyApiKey = import.meta.env.VITE_TAVILY_API_KEY;
 const groqApiKey = import.meta.env.VITE_GROQ_API_KEY;
-const openRouterApiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
 
-// Global request counter for alternating round-robin (Serper -> Tavily -> Serper -> Tavily)
-let searchCallCounter = 0;
+// Global counter for cycling search engine assignment per title open
+let titleOpenCounter = 0;
+const titleEngineMap = {};
 
 // In-memory cache: "title||provider" -> resolved official URL
 const urlCache = {};
 
 const cacheKey = (title, provider) => `${title.toLowerCase().trim()}||${provider.toLowerCase().trim()}`;
+
+/**
+ * Register/get assigned engine ('serper' or 'tavily') for a title ID
+ */
+export const getEngineForTitle = (titleId) => {
+  if (!titleId) return 'serper';
+  const key = String(titleId);
+  if (!titleEngineMap[key]) {
+    titleOpenCounter++;
+    titleEngineMap[key] = (titleOpenCounter % 2 === 1) ? 'serper' : 'tavily';
+  }
+  return titleEngineMap[key];
+};
 
 /**
  * Filter search result organic link for matching domain and non-search page
@@ -126,156 +144,98 @@ const fetchTavilyUrl = async (movieTitle, providerName) => {
 };
 
 /**
- * Alternating Round-Robin Search Handler: Serper -> Tavily -> Serper -> Tavily
+ * Synchronous / Static Fallback URL generator
  */
-const fetchSearchUrlAlternating = async (movieTitle, providerName) => {
-  searchCallCounter++;
-  const useSerperFirst = searchCallCounter % 2 === 1;
+export const getFallbackUrl = (providerName, movieTitle, tmdbLink) => {
+  if (tmdbLink) return tmdbLink;
 
-  if (useSerperFirst) {
-    // Serper first, Tavily fallback
-    let url = await fetchSerperUrl(movieTitle, providerName);
-    if (!url) {
-      url = await fetchTavilyUrl(movieTitle, providerName);
-    }
-    return url;
-  } else {
-    // Tavily first, Serper fallback
-    let url = await fetchTavilyUrl(movieTitle, providerName);
-    if (!url) {
-      url = await fetchSerperUrl(movieTitle, providerName);
-    }
-    return url;
-  }
+  const title = movieTitle ? movieTitle.trim() : '';
+  const provider = providerName ? providerName.trim().toLowerCase() : '';
+  const q = encodeURIComponent(title);
+  if (!title) return '#';
+
+  if (provider.includes('netflix'))                              return `https://www.netflix.com/search?q=${q}`;
+  if (provider.includes('amazon') || provider.includes('prime')) return `https://www.primevideo.com/search?phrase=${q}`;
+  if (provider.includes('apple'))                                return `https://tv.apple.com/search?term=${q}`;
+  if (provider.includes('disney') || provider.includes('hotstar')) return `https://www.disneyplus.com/search?q=${q}`;
+  if (provider.includes('google play'))                          return `https://play.google.com/store/search?q=${q}&c=movies`;
+  if (provider.includes('youtube'))                              return `https://www.youtube.com/results?search_query=${encodeURIComponent(`${title} full movie`)}`;
+  if (provider.includes('hulu'))                                 return `https://www.hulu.com/search?q=${q}`;
+  if (provider.includes('max') || provider.includes('hbo'))        return `https://www.max.com/search?q=${q}`;
+  if (provider.includes('peacock'))                              return `https://www.peacocktv.com/search?q=${q}`;
+  if (provider.includes('paramount'))                            return `https://www.paramountplus.com/search/?q=${q}`;
+  if (provider.includes('crunchyroll'))                          return `https://www.crunchyroll.com/search?q=${q}`;
+  if (provider.includes('jio'))                                  return `https://www.jiocinema.com/search/${q}`;
+  if (provider.includes('zee'))                                  return `https://www.zee5.com/search?q=${q}`;
+  if (provider.includes('sony'))                                 return `https://www.sonyliv.com/search?q=${q}`;
+
+  return `https://www.google.com/search?q=${encodeURIComponent(`watch "${title}" on ${providerName}`)}`;
 };
 
 /**
- * Ask the AI for direct platform URLs for any remaining unresolved providers.
- */
-const resolveWithAI = async (movieTitle, mediaType, providerNames) => {
-  if (providerNames.length === 0) return {};
-
-  const systemPrompt = `You are a streaming URL resolver. Return the exact official URL where users can watch or view details for the specified title on each platform.
-RULES:
-- Return ONLY a JSON object mapping each platform name to its direct URL.
-- Do NOT include markdown or text outside JSON.`;
-
-  const userPrompt = `Title: "${movieTitle}"
-Type: ${mediaType || 'movie'}
-Platforms: ${providerNames.join(', ')}
-Return JSON: {"Platform Name": "https://..."}`;
-
-  if (groqApiKey) {
-    try {
-      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${groqApiKey}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          model: "llama-3.3-70b-versatile",
-          messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: userPrompt }
-          ],
-          temperature: 0.1,
-          response_format: { type: "json_object" }
-        })
-      });
-      if (response.ok) {
-        const data = await response.json();
-        const text = data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim();
-        return JSON.parse(text);
-      }
-    } catch (e) {
-      console.warn('Groq URL resolver failed:', e.message);
-    }
-  }
-  return {};
-};
-
-/**
- * Resolves direct official URLs for all requested providers using Alternating Serper/Tavily search APIs
- */
-export const resolveProviderUrls = async (movieTitle, mediaType, providerNames = []) => {
-  if (!movieTitle || providerNames.length === 0) return {};
-
-  const uncached = providerNames.filter(p => !urlCache[cacheKey(movieTitle, p)]);
-  if (uncached.length === 0) {
-    const result = {};
-    providerNames.forEach(p => { result[p] = urlCache[cacheKey(movieTitle, p)]; });
-    return result;
-  }
-
-  // Step 1: Query Alternating Search APIs (Serper -> Tavily -> Serper -> Tavily) in parallel for each uncached provider
-  const searchPromises = uncached.map(async (provider) => {
-    const url = await fetchSearchUrlAlternating(movieTitle, provider);
-    if (url) {
-      urlCache[cacheKey(movieTitle, provider)] = url;
-      return { provider, url };
-    }
-    return { provider, url: null };
-  });
-
-  const searchResults = await Promise.all(searchPromises);
-  const unresolved = searchResults.filter(r => !r.url).map(r => r.provider);
-
-  // Step 2: For any remaining unresolved providers, fallback to AI resolution
-  if (unresolved.length > 0) {
-    const aiResults = await resolveWithAI(movieTitle, mediaType, unresolved);
-    unresolved.forEach(p => {
-      const aiKey = Object.keys(aiResults).find(k => k.toLowerCase().trim() === p.toLowerCase().trim());
-      const url = aiKey ? aiResults[aiKey] : null;
-      if (url && typeof url === 'string' && url.startsWith('http') && !url.includes('/search')) {
-        urlCache[cacheKey(movieTitle, p)] = url;
-      }
-    });
-  }
-
-  const finalMap = {};
-  providerNames.forEach(p => {
-    finalMap[p] = urlCache[cacheKey(movieTitle, p)] || null;
-  });
-  return finalMap;
-};
-
-/**
- * Synchronous getter. Returns cached official URL, or falls back to platform search / TMDB link.
+ * Synchronous URL getter
  */
 export const getProviderUrl = (providerName, movieTitle, tmdbLink) => {
   const title = movieTitle ? movieTitle.trim() : '';
   const provider = providerName ? providerName.trim() : '';
-
-  // 1. Return cached resolved direct official URL if available
   const cached = urlCache[cacheKey(title, provider)];
   if (cached) return cached;
-
-  // 2. Fallback to TMDB watch link
-  if (tmdbLink) return tmdbLink;
-
-  // 3. Last resort: platform native search
-  const q = encodeURIComponent(title);
-  const pLower = provider.toLowerCase();
-  if (!title) return '#';
-
-  if (pLower.includes('netflix'))                              return `https://www.netflix.com/search?q=${q}`;
-  if (pLower.includes('amazon') || pLower.includes('prime'))   return `https://www.primevideo.com/search?phrase=${q}`;
-  if (pLower.includes('apple'))                                return `https://tv.apple.com/search?term=${q}`;
-  if (pLower.includes('disney') || pLower.includes('hotstar')) return `https://www.disneyplus.com/search?q=${q}`;
-  if (pLower.includes('google play'))                          return `https://play.google.com/store/search?q=${q}&c=movies`;
-  if (pLower.includes('youtube'))                              return `https://www.youtube.com/results?search_query=${encodeURIComponent(`${title} full movie`)}`;
-  if (pLower.includes('hulu'))                                 return `https://www.hulu.com/search?q=${q}`;
-  if (pLower.includes('max') || pLower.includes('hbo'))        return `https://www.max.com/search?q=${q}`;
-  if (pLower.includes('peacock'))                              return `https://www.peacocktv.com/search?q=${q}`;
-  if (pLower.includes('paramount'))                            return `https://www.paramountplus.com/search/?q=${q}`;
-  if (pLower.includes('crunchyroll'))                          return `https://www.crunchyroll.com/search?q=${q}`;
-  if (pLower.includes('jio'))                                  return `https://www.jiocinema.com/search/${q}`;
-  if (pLower.includes('zee'))                                  return `https://www.zee5.com/search?q=${q}`;
-  if (pLower.includes('sony'))                                 return `https://www.sonyliv.com/search?q=${q}`;
-
-  return `https://www.google.com/search?q=${encodeURIComponent(`watch "${title}" on ${providerName}`)}`;
+  return getFallbackUrl(providerName, movieTitle, tmdbLink);
 };
+
+/**
+ * On-Click Provider Click Handler: Initiates search ONLY when clicked, cycling Serper <-> Tavily per title!
+ */
+export const handleProviderClick = async (e, providerName, movieTitle, tmdbLink, titleId) => {
+  if (e && e.preventDefault) e.preventDefault();
+
+  const title = movieTitle ? movieTitle.trim() : '';
+  const provider = providerName ? providerName.trim() : '';
+  if (!title) return;
+
+  const key = cacheKey(title, provider);
+  if (urlCache[key]) {
+    window.open(urlCache[key], '_blank', 'noopener,noreferrer');
+    return;
+  }
+
+  // Open blank tab immediately to satisfy browser popup policies
+  const newTab = window.open('about:blank', '_blank');
+
+  try {
+    const engine = getEngineForTitle(titleId || title);
+    let resolvedUrl = null;
+
+    if (engine === 'serper') {
+      resolvedUrl = await fetchSerperUrl(title, provider);
+      if (!resolvedUrl) resolvedUrl = await fetchTavilyUrl(title, provider);
+    } else {
+      resolvedUrl = await fetchTavilyUrl(title, provider);
+      if (!resolvedUrl) resolvedUrl = await fetchSerperUrl(title, provider);
+    }
+
+    if (!resolvedUrl) {
+      resolvedUrl = getFallbackUrl(provider, title, tmdbLink);
+    }
+
+    urlCache[key] = resolvedUrl;
+
+    if (newTab) {
+      newTab.location.href = resolvedUrl;
+    } else {
+      window.open(resolvedUrl, '_blank', 'noopener,noreferrer');
+    }
+  } catch (err) {
+    console.error('Error in on-click provider search:', err);
+    const fallback = getFallbackUrl(provider, title, tmdbLink);
+    if (newTab) {
+      newTab.location.href = fallback;
+    } else {
+      window.open(fallback, '_blank', 'noopener,noreferrer');
+    }
+  }
+};
+
 
 
 

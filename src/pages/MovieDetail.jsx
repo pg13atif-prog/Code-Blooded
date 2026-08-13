@@ -27,7 +27,7 @@ import { useAlert } from '../context/AlertContext';
 import MovieRow from '../components/MovieRow';
 import { MovieDetailSkeleton } from '../components/SkeletonLoader';
 import { checkAndUnlockAchievements, trackDetailView, incrementStat } from '../services/achievements';
-import { getProviderUrl, resolveProviderUrls } from '../utils/providerUrls';
+import { getProviderUrl, handleProviderClick, getEngineForTitle } from '../utils/providerUrls';
 import './MovieDetail.css';
 const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
   const [movie, setMovie] = useState(null);
@@ -165,27 +165,11 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
             .catch(() => {});
         }
 
-        // Providers logic (filter by US for now if geolocation not available)
         const usProviders = providersData?.US || providersData?.GB || providersData?.CA || null;
         setWatchProviders(usProviders);
-
-        // AI URL pre-fetch: resolve direct platform URLs in the background
-        if (usProviders && detailsData) {
-          const allProviders = [
-            ...(usProviders.flatrate || []),
-            ...(usProviders.rent || []),
-            ...(usProviders.buy || [])
-          ];
-          const providerNames = [...new Set(allProviders.map(p => p.provider_name))];
-          if (providerNames.length > 0) {
-            resolveProviderUrls(detailsData.title || detailsData.name, mediaType, providerNames)
-              .then(() => {
-                // Force re-render so getProviderUrl picks up the cached AI results
-                setWatchProviders(prev => prev ? { ...prev } : prev);
-              })
-              .catch(err => console.warn('AI URL pre-fetch failed:', err.message));
-          }
-        }
+        
+        // Register alternating search engine assignment for this title (Title #1 -> Serper, Title #2 -> Tavily, etc.)
+        getEngineForTitle(movieId);
         
         setRecommendations(recsData);
         setReviews(reviewsData);
@@ -577,6 +561,7 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
                         rel="noopener noreferrer"
                         className="provider-logo-link"
                         title={`Watch ${movie.title || movie.name} on ${p.provider_name}`}
+                        onClick={(e) => handleProviderClick(e, p.provider_name, movie.title || movie.name, watchProviders.link, movieId)}
                       >
                         <img src={`https://image.tmdb.org/t/p/w200${p.logo_path}`} alt={p.provider_name} className="provider-logo" />
                       </a>
@@ -599,6 +584,7 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
                         rel="noopener noreferrer"
                         className="provider-logo-link"
                         title={`Rent ${movie.title || movie.name} on ${p.provider_name}`}
+                        onClick={(e) => handleProviderClick(e, p.provider_name, movie.title || movie.name, watchProviders.link, movieId)}
                       >
                         <img src={`https://image.tmdb.org/t/p/w200${p.logo_path}`} alt={p.provider_name} className="provider-logo" />
                       </a>
@@ -621,6 +607,7 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
                         rel="noopener noreferrer"
                         className="provider-logo-link"
                         title={`Buy ${movie.title || movie.name} on ${p.provider_name}`}
+                        onClick={(e) => handleProviderClick(e, p.provider_name, movie.title || movie.name, watchProviders.link, movieId)}
                       >
                         <img src={`https://image.tmdb.org/t/p/w200${p.logo_path}`} alt={p.provider_name} className="provider-logo" />
                       </a>
