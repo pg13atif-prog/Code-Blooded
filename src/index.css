@@ -9,12 +9,18 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-html, body {
+html {
+  background-color: #080c14;
+  color: #ffffff;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+body {
   background-color: #080c14;
   color: #ffffff;
   min-height: 100vh;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: visible;
 }
 
 /* ── Custom CineScope Scrollbars ────────────────────────────────────────── */
