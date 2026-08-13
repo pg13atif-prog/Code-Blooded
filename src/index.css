@@ -9,6 +9,14 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+html, body {
+  background-color: #080c14;
+  color: #ffffff;
+  min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
 /* ── Custom CineScope Scrollbars ────────────────────────────────────────── */
 ::-webkit-scrollbar {
   width: 7px;
