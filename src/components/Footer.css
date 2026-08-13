@@ -202,35 +202,6 @@
   white-space: nowrap;
 }
 
-/* ── Divider ────────────────────────────────────────────────────────────── */
-.footer-divider {
-  width: 100%;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-/* ── Bottom Section ─────────────────────────────────────────────────────── */
-.footer-bottom-bar {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 1.5rem;
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.5);
-  flex-wrap: wrap;
-}
-
-.footer-copyright {
-  font-size: 0.85rem;
-  margin: 0;
-  text-align: left;
-}
-
-.footer-copyright strong {
-  color: rgba(255, 255, 255, 0.85);
-  font-weight: 600;
-}
-
 /* ── Responsive Layout (Mobile Size Optimization) ─────────────────────────── */
 @media (max-width: 1100px) {
   .footer-grid {
@@ -241,7 +212,7 @@
 
 @media (max-width: 768px) {
   .cinescope-footer {
-    padding: 2rem 1.15rem 5.5rem 1.15rem;
+    padding: 2rem 1.15rem 3.5rem 1.15rem;
     margin-top: 0 !important;
   }
 
@@ -258,35 +229,40 @@
 
   /* Col 1: Brand spans full width */
   .footer-col-brand {
+    order: 1;
     grid-column: 1 / -1;
     gap: 0.5rem;
   }
 
   /* Col 2 & Col 3: Explore and CineAI Suite share 50-50 space in the same row */
   .footer-col-explore {
+    order: 2;
     grid-column: 1 / 2;
     min-width: 0;
   }
 
   .footer-col-cineai {
+    order: 3;
     grid-column: 2 / 3;
     min-width: 0;
   }
 
   /* Col 4: Team Code-Blooded spans full width */
   .footer-col-team {
+    order: 4;
     grid-column: 1 / -1;
     margin-top: 0.25rem;
   }
 
-  /* Col 5: Built For VibeForge 1.0 centered horizontally */
+  /* Col 5: Built For VibeForge 1.0 at the VERY BOTTOM and centered */
   .footer-col-event {
+    order: 5;
     grid-column: 1 / -1;
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
-    margin-top: 0.5rem;
+    margin-top: 0.75rem;
   }
 
   .vibeforge-box {
@@ -342,13 +318,6 @@
   .vibeforge-title {
     font-size: 0.98rem;
   }
-
-  .footer-bottom-bar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-    font-size: 0.78rem;
-  }
 }
 
 @media (max-width: 480px) {
@@ -358,27 +327,33 @@
   }
 
   .footer-col-brand {
+    order: 1;
     grid-column: 1 / -1;
   }
 
   .footer-col-explore {
+    order: 2;
     grid-column: 1 / 2;
   }
 
   .footer-col-cineai {
+    order: 3;
     grid-column: 2 / 3;
   }
 
   .footer-col-team {
+    order: 4;
     grid-column: 1 / -1;
   }
 
   .footer-col-event {
+    order: 5;
     grid-column: 1 / -1;
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
+    margin-top: 0.5rem;
   }
 
   .vibeforge-box {
@@ -389,6 +364,6 @@
   }
 
   .cinescope-footer {
-    padding: 1.75rem 1rem 5.5rem 1rem;
+    padding: 1.75rem 1rem 3.5rem 1rem;
   }
 }

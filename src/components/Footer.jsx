@@ -32,7 +32,7 @@ const Footer = () => {
             <h4 className="footer-heading">Explore</h4>
             <ul className="footer-links">
               <li><a href="#" onClick={(e) => handleNavClick(e, '')}>Home</a></li>
-              <li><a href="#discover/movies" onClick={(e) => handleNavClick(e, '#discover/movies')}>Movies Catalog</a></li>
+              <li><a href="#discover/movies" onClick={(e) => handleNavClick(e, '#discover/movies')}>Movies</a></li>
               <li><a href="#discover/tv" onClick={(e) => handleNavClick(e, '#discover/tv')}>TV Series</a></li>
               <li><a href="#discover/trending" onClick={(e) => handleNavClick(e, '#discover/trending')}>Trending Now</a></li>
             </ul>
@@ -66,16 +66,6 @@ const Footer = () => {
               <span className="vibeforge-title">VibeForge 1.0</span>
             </div>
           </div>
-        </div>
-
-        {/* Horizontal Divider Line */}
-        <div className="footer-divider" />
-
-        {/* Bottom Bar */}
-        <div className="footer-bottom-bar">
-          <p className="footer-copyright">
-            © 2026 <strong>CineScope</strong> · <strong>Team Code-Blooded</strong> · <strong>VibeForge 1.0</strong>
-          </p>
         </div>
       </div>
     </footer>
