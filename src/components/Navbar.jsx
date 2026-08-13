@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useAlert } from '../context/AlertContext';
@@ -815,7 +816,7 @@ const Navbar = () => {
       })()}
 
       {/* ── Unified Spotlight Search Modal (Desktop & Mobile) ── */}
-      {isSearchModalOpen && (
+      {isSearchModalOpen && createPortal((
         <div ref={searchModalRef} className="search-modal-overlay" onClick={() => setIsSearchModalOpen(false)}>
           <div className="search-modal-container" onClick={(e) => e.stopPropagation()}>
 
@@ -1083,7 +1084,7 @@ const Navbar = () => {
 
           </div>
         </div>
-      )}
+      ), document.body)}
 
       <AuthModal
         isOpen={isAuthModalOpen}
