@@ -173,8 +173,7 @@ const ResetPasswordPage = ({ oobCode: propOobCode, onComplete }) => {
                   </button>
                 </div>
 
-                {newPassword.length > 0 && (
-                  <div className="pwd-strength-container">
+                <div className="pwd-strength-container">
                     <div className="pwd-strength-title">Password Strength Requirements</div>
                     <div className={`pwd-rule-item ${pwdStrength.rules.hasMinLength ? 'valid' : ''}`}>
                       <span className="pwd-rule-icon">{pwdStrength.rules.hasMinLength ? '✓' : '•'}</span>
@@ -197,7 +196,6 @@ const ResetPasswordPage = ({ oobCode: propOobCode, onComplete }) => {
                       <span>At least 1 special character (!@#$%^&*)</span>
                     </div>
                   </div>
-                )}
               </div>
 
               <div className="reset-form-group">

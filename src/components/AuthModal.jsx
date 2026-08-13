@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { checkPasswordStrength, formatDisplayName, MAX_DISPLAY_NAME_LENGTH } from '../utils/authValidation';
+import { checkPasswordStrength, formatDisplayName, validateEmail, MAX_DISPLAY_NAME_LENGTH } from '../utils/authValidation';
 import { updateUserProfile } from '../services/friends';
 import './AuthModal.css';
 
@@ -55,6 +55,13 @@ const AuthModal = ({ isOpen, onClose }) => {
     e.preventDefault();
     setError('');
     setSuccessMsg('');
+
+    // Validate email format and domain
+    const emailVal = validateEmail(email);
+    if (!emailVal.isValid) {
+      setError(emailVal.message);
+      return;
+    }
 
     if (mode === 'signup') {
       if (displayName && displayName.trim().length > MAX_DISPLAY_NAME_LENGTH) {
@@ -211,7 +218,7 @@ const AuthModal = ({ isOpen, onClose }) => {
                 </button>
               </div>
 
-              {mode === 'signup' && password.length > 0 && (
+              {mode === 'signup' && (
                 <div className="pwd-strength-container">
                   <div className="pwd-strength-title">Password Strength Requirements</div>
                   <div className={`pwd-rule-item ${pwdStrength.rules.hasMinLength ? 'valid' : ''}`}>

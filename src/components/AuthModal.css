@@ -128,24 +128,33 @@
 
 /* ─── Inputs ─── */
 .form-group input {
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #1a1a1a;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #ffffff;
   padding: 0.78rem 1rem;
   border-radius: 10px;
   outline: none;
   font-size: 0.92rem;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
 }
 
 .form-group input::placeholder {
-  color: #a3a3a3;
+  color: rgba(255, 255, 255, 0.45);
 }
 
 .form-group input:focus {
-  border-color: rgba(var(--auth-accent-rgb), 0.5);
-  box-shadow: 0 0 16px rgba(var(--auth-accent-rgb), 0.25);
-  color: white;
+  background: rgba(20, 28, 48, 0.92);
+  border-color: rgba(var(--auth-accent-rgb), 0.6);
+  box-shadow: 0 0 16px rgba(var(--auth-accent-rgb), 0.3);
+  color: #ffffff;
+}
+
+.form-group input:-webkit-autofill,
+.form-group input:-webkit-autofill:hover, 
+.form-group input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #ffffff !important;
+  -webkit-box-shadow: 0 0 0px 1000px #0f172a inset !important;
+  transition: background-color 5000s ease-in-out 0s;
 }
 
 /* ─── Password Strength Checklist ─── */
