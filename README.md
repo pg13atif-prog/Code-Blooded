@@ -44,6 +44,7 @@ CineAI is CineScope's central intelligence engine, leveraging large language mod
 ### 🎬 Content Discovery & Search
 * **Spotlight Search Overlay**: Instant command-style search (`Ctrl+K` / `Cmd+K`) for titles.
 * **Catalog Explorer**: Browse trending movies, TV series, season/episode guides, and official YouTube trailers.
+* **Direct OTT Platform Deep-Linking**: Dual Search Engine Rotation (Serper Google Search API & Tavily Search API) + AI RAG resolution automatically finds and opens the exact official movie/show landing page on Netflix, Prime Video, Apple TV, Disney+, etc., with zero search result pages and zero redirect notices.
 * **Person Profiles**: Complete filmographies, biographies, and media breakdowns for directors and actors.
 
 ### 🤝 Friends & Social Network
@@ -115,7 +116,7 @@ Firebase Realtime Database and Authentication power CineScope's backend state an
 | :--- | :--- |
 | **Frontend** | React 19, Vite 8, Framer Motion 12, Vanilla CSS3 (Liquid Glassmorphism) |
 | **Backend & Data** | Firebase Realtime Database, Firebase Authentication |
-| **APIs & AI** | TMDB API, Groq LLaMA / OpenRouter AI |
+| **APIs & AI Search** | TMDB API, Serper Google Search API, Tavily Search API, Groq LLaMA / OpenRouter AI |
 | **Deployment** | Vercel (Single Page App rewrites & serverless API proxy) |
 
 ---
@@ -172,6 +173,10 @@ VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id
 # AI API Keys
 VITE_GROQ_API_KEY=your_groq_api_key
 VITE_OPENROUTER_API_KEY=your_openrouter_api_key
+
+# OTT Search API Keys (Alternating Serper & Tavily Rotation)
+VITE_SERPER_API_KEY=your_serper_api_key
+VITE_TAVILY_API_KEY=your_tavily_api_key
 ```
 
 > ⚠️ **Security Note**: Never commit your `.env` file or secret keys to the repository. Frontend `VITE_*` variables are bundled into the client build.
