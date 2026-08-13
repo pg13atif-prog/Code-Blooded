@@ -207,11 +207,7 @@ const AiDiscoveryPage = () => {
   };
 
   const handleBack = () => {
-    if (window.history.length > 2) {
-      window.history.back();
-    } else {
-      window.location.hash = '#cineai';
-    }
+    window.location.hash = '#cineai';
   };
 
   return (
