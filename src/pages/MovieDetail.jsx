@@ -935,25 +935,25 @@ const MovieDetail = ({ movieId, mediaType = 'movie', onBack }) => {
                         key={ep.id} 
                         className="episode-card" 
                         onClick={() => setSelectedEpisode(ep)}
-                        style={{ display: 'flex', gap: '1rem', background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '12px', cursor: 'pointer', transition: 'background 0.2s' }}
-                        onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-                        onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
                       >
                         {ep.still_path ? (
-                           <img src={`https://image.tmdb.org/t/p/w300${ep.still_path}`} alt={ep.name} style={{ width: '160px', height: '90px', objectFit: 'cover', borderRadius: '8px', flexShrink: 0 }} />
+                           <img src={`https://image.tmdb.org/t/p/w300${ep.still_path}`} alt={ep.name} className="episode-card-thumb" />
                         ) : (
-                           <div style={{ width: '160px', height: '90px', background: 'rgba(255,255,255,0.1)', borderRadius: '8px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>No Image</div>
+                           <div className="episode-card-no-thumb">No Image</div>
                         )}
-                        <div>
-                          <h4 style={{ margin: '0 0 4px 0', fontSize: '1.1rem' }}>{ep.episode_number}. {ep.name}</h4>
-                          <div style={{ display: 'flex', gap: '1rem', fontSize: '0.85rem', color: '#aaa', marginBottom: '8px' }}>
+                        <div className="episode-card-info">
+                          <h4 className="episode-card-title">{ep.episode_number}. {ep.name}</h4>
+                          <div className="episode-card-meta">
                             <span>{ep.air_date ? new Date(ep.air_date).getFullYear() : '—'}</span>
-                            <span>{ep.runtime || 45}m</span>
-                            <span>★ {ep.vote_average?.toFixed(1)}</span>
+                            <span className="episode-meta-dot">•</span>
+                            <span>{ep.runtime ? `${ep.runtime}m` : '45m'}</span>
+                            {ep.vote_average > 0 && (
+                              <>
+                                <span className="episode-meta-dot">•</span>
+                                <span className="episode-meta-rating">★ {ep.vote_average.toFixed(1)}</span>
+                              </>
+                            )}
                           </div>
-                          <p style={{ margin: 0, fontSize: '0.9rem', color: '#ccc', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                            {ep.overview}
-                          </p>
                         </div>
                       </div>
                     ))}

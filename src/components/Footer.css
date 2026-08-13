@@ -252,7 +252,7 @@
   font-weight: 600;
 }
 
-/* ── Responsive Layout ─────────────────────────────────────────────────── */
+/* ── Responsive Layout (Mobile Size Optimization) ─────────────────────────── */
 @media (max-width: 1100px) {
   .footer-grid {
     grid-template-columns: 1.5fr 1fr 1fr;
@@ -262,28 +262,92 @@
 
 @media (max-width: 768px) {
   .cinescope-footer {
-    padding: 3rem 1.5rem 6.5rem 1.5rem;
+    padding: 2rem 1.15rem 5.5rem 1.15rem;
     margin-top: 0 !important;
+  }
+
+  .footer-wrapper {
+    gap: 1.75rem;
   }
 
   .footer-grid {
     grid-template-columns: 1fr 1fr;
-    gap: 2rem;
+    gap: 1.5rem 1.25rem;
   }
 
   .footer-col-brand {
     grid-column: 1 / -1;
+    gap: 0.5rem;
+  }
+
+  .footer-logo {
+    font-size: 1.5rem;
+  }
+
+  .footer-tagline {
+    font-size: 0.88rem;
+  }
+
+  .footer-about {
+    font-size: 0.8rem;
+    line-height: 1.45;
+  }
+
+  .footer-heading {
+    font-size: 0.82rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.35rem;
+  }
+
+  .footer-links {
+    gap: 0.45rem;
+  }
+
+  .footer-links li a {
+    font-size: 0.84rem;
+  }
+
+  .footer-members-list {
+    gap: 0.45rem;
+  }
+
+  .footer-members-list li {
+    font-size: 0.84rem;
+  }
+
+  .vibeforge-box {
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+  }
+
+  .vibeforge-prefix {
+    font-size: 0.7rem;
+  }
+
+  .vibeforge-title {
+    font-size: 0.98rem;
   }
 
   .footer-bottom-bar {
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.75rem;
+    gap: 0.5rem;
+    font-size: 0.78rem;
+  }
+
+  .footer-bottom-links {
+    gap: 0.5rem;
+    font-size: 0.78rem;
   }
 }
 
 @media (max-width: 480px) {
   .footer-grid {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .cinescope-footer {
+    padding: 1.75rem 1rem 5.5rem 1rem;
   }
 }
