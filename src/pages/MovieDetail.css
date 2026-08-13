@@ -1,7 +1,7 @@
 .movie-detail-page {
   position: relative;
   min-height: 100vh;
-  background-color: #0b0d14;
+  background-color: #080c14;
   color: #e2e8f0;
   padding-bottom: 2rem;
   margin-bottom: 0;
@@ -141,7 +141,7 @@
   height: 55vh;
   min-height: 380px;
   max-height: 600px;
-  background: #0f172a;
+  background: #080c14;
 }
 
 .detail-hero-backdrop {
@@ -156,7 +156,7 @@
 .detail-hero-placeholder {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  background: linear-gradient(135deg, #1e293b 0%, #080c14 100%);
 }
 
 .detail-hero-gradient {
@@ -164,9 +164,9 @@
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(11, 13, 20, 0.2) 0%,
-    rgba(11, 13, 20, 0.8) 70%,
-    #0b0d14 100%
+    rgba(8, 12, 20, 0.2) 0%,
+    rgba(8, 12, 20, 0.75) 60%,
+    #080c14 100%
   );
 }
 
@@ -176,7 +176,7 @@
   background: radial-gradient(
     ellipse at center,
     transparent 40%,
-    rgba(11, 13, 20, 0.7) 100%
+    rgba(8, 12, 20, 0.75) 100%
   );
 }
 

@@ -33,10 +33,10 @@
   position: absolute;
   inset: 0;
   z-index: 1;
-  /* Stronger gradients for cinematic feel and readability */
+  /* Multi-stop smooth cinematic gradients */
   background:
-    linear-gradient(to top, var(--color-bg) 0%, rgba(10, 10, 10, 0.8) 20%, transparent 70%),
-    linear-gradient(to right, rgba(10, 10, 10, 0.95) 0%, rgba(10, 10, 10, 0.6) 40%, transparent 75%);
+    linear-gradient(to top, #080c14 0%, rgba(8, 12, 20, 0.95) 15%, rgba(8, 12, 20, 0.6) 45%, transparent 80%),
+    linear-gradient(to right, rgba(8, 12, 20, 0.95) 0%, rgba(8, 12, 20, 0.6) 40%, transparent 75%);
 }
 
 /* ---------- Content ---------- */
@@ -352,11 +352,18 @@
 /* ---------- Bottom Vignette ---------- */
 .hero__vignette {
   position: absolute;
-  bottom: 0;
+  bottom: -2px;
   left: 0;
   right: 0;
-  height: 120px;
-  background: linear-gradient(to top, var(--color-bg) 0%, transparent 100%);
+  height: 220px;
+  background: linear-gradient(
+    to top,
+    #080c14 0%,
+    rgba(8, 12, 20, 0.95) 25%,
+    rgba(8, 12, 20, 0.6) 60%,
+    rgba(8, 12, 20, 0.15) 85%,
+    transparent 100%
+  );
   z-index: 1;
   pointer-events: none;
 }
