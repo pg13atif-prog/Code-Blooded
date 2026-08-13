@@ -1,13 +1,13 @@
-/* ── CineScope Footer Component Styling ──────────────────────────────── */
+/* ── Wide Multi-Column CineScope Footer ───────────────────────────────── */
 
 .cinescope-footer {
   position: relative;
   width: 100%;
-  background: linear-gradient(180deg, rgba(8, 11, 18, 0) 0%, rgba(6, 8, 14, 0.95) 30%, #04060a 100%);
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
-  margin-top: 4rem;
-  padding: 3.5rem 1.5rem 2rem 1.5rem;
-  color: #b3b3b3;
+  background: #090c15;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: 5rem;
+  padding: 4.5rem 3rem 2rem 3rem;
+  color: #a0a5b5;
   font-family: var(--font-body, 'Inter', sans-serif);
   z-index: 10;
 }
@@ -16,29 +16,27 @@
   content: '';
   position: absolute;
   top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60%;
-  max-width: 800px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent 0%, rgba(229, 9, 20, 0.6) 50%, transparent 100%);
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, rgba(229, 9, 20, 0.7) 30%, rgba(229, 9, 20, 0.9) 50%, rgba(229, 9, 20, 0.7) 70%, transparent 100%);
   pointer-events: none;
 }
 
-.footer-container {
-  max-width: 1140px;
+.footer-wrapper {
+  max-width: var(--content-max-width, 1400px);
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
+  gap: 3rem;
 }
 
-/* ── Main Grid Layout ───────────────────────────────────────────── */
+/* ── 5-Column Grid Layout ───────────────────────────────────────────────── */
 .footer-grid {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1.4fr;
-  gap: 3.5rem;
-  align-items: start;
+  grid-template-columns: 1.5fr 1fr 1.1fr 1.2fr 1fr;
+  gap: 3rem;
+  align-items: flex-start;
 }
 
 .footer-col {
@@ -57,10 +55,11 @@
   text-decoration: none;
   font-family: var(--font-logo, 'Cinzel', serif);
   font-weight: 700;
-  font-size: 1.75rem;
+  font-size: 2rem;
   letter-spacing: -0.5px;
-  line-height: 1.2;
+  line-height: 1;
   transition: transform 0.2s ease;
+  width: fit-content;
 }
 
 .footer-logo:hover {
@@ -68,36 +67,30 @@
 }
 
 .footer-tagline {
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 600;
   color: #ffffff;
   letter-spacing: 0.01em;
 }
 
-.footer-description {
+.footer-about {
   font-size: 0.85rem;
-  line-height: 1.55;
+  line-height: 1.6;
   color: rgba(255, 255, 255, 0.5);
   max-width: 320px;
 }
 
-/* Column 2: Navigation */
-.footer-col-nav {
-  gap: 1rem;
-}
-
+/* Headings across all columns */
 .footer-heading {
   font-family: var(--font-heading, 'Outfit', sans-serif);
-  font-size: 0.85rem;
+  font-size: 0.92rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.06em;
   color: #ffffff;
-  height: 28px;
-  display: flex;
-  align-items: center;
+  margin-bottom: 1.25rem;
   position: relative;
-  margin-bottom: 0.25rem;
+  padding-bottom: 0.5rem;
 }
 
 .footer-heading::after {
@@ -105,95 +98,103 @@
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 22px;
+  width: 24px;
   height: 2px;
   background: var(--color-accent, #e50914);
   border-radius: 2px;
 }
 
+/* Navigation Links */
 .footer-links {
   list-style: none;
   padding: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.55rem;
+  gap: 0.7rem;
 }
 
 .footer-links li a {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.65);
   text-decoration: none;
-  font-size: 0.88rem;
-  transition: color 0.2s ease, transform 0.2s ease;
+  font-size: 0.9rem;
+  font-weight: 400;
+  transition: color 0.2s ease, padding-left 0.2s ease;
   display: inline-block;
 }
 
 .footer-links li a:hover {
   color: #ffffff;
-  transform: translateX(3px);
+  padding-left: 4px;
 }
 
-/* Column 3: Team & Hackathon */
-.footer-col-team {
-  gap: 1rem;
-}
-
-.footer-team-info {
+/* Team Members List */
+.footer-members-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.65rem;
 }
 
-.footer-team-name {
-  font-size: 0.92rem;
-  color: rgba(255, 255, 255, 0.75);
-}
-
-.footer-team-name strong {
-  color: #ffffff;
-  font-weight: 700;
-}
-
-.footer-members-list {
+.footer-members-list li {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 0.5rem 0.9rem;
-  border-radius: 12px;
-  width: fit-content;
-  backdrop-filter: blur(8px);
+  gap: 0.5rem;
+  font-size: 0.92rem;
+  color: rgba(255, 255, 255, 0.85);
 }
 
-.member-name {
-  font-size: 0.9rem;
+.member-bullet {
+  color: var(--color-accent, #e50914);
+  font-size: 0.85rem;
+}
+
+.member-label {
   font-weight: 600;
   color: #ffffff;
 }
 
-.member-sep {
-  color: var(--color-accent, #e50914);
-  font-weight: 700;
-  font-size: 1rem;
+/* Hackathon Box */
+.footer-event-box {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 0.85rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  width: fit-content;
+  backdrop-filter: blur(8px);
 }
 
-.footer-hackathon-tag {
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.6);
-  margin-top: 0.15rem;
+.event-built-for {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: 600;
 }
 
-.hackathon-name {
-  color: var(--color-accent, #e50914);
+.event-name {
+  font-size: 1.05rem;
   font-weight: 700;
+  color: var(--color-accent, #e50914);
+  letter-spacing: -0.2px;
+}
+
+.event-year {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
 }
 
 /* ── Divider ────────────────────────────────────────────────────────────── */
 .footer-divider {
   width: 100%;
   height: 1px;
-  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.08) 15%, rgba(255, 255, 255, 0.08) 85%, transparent 100%);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 /* ── Bottom Section ─────────────────────────────────────────────────────── */
@@ -201,43 +202,76 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1rem;
-  font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.45);
+  gap: 1.5rem;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+  flex-wrap: wrap;
 }
 
-.brand-accent {
+.footer-bottom-links {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.footer-bottom-links a {
+  color: rgba(255, 255, 255, 0.65);
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: color 0.2s ease;
+}
+
+.footer-bottom-links a:hover {
+  color: #ffffff;
+}
+
+.bar-sep {
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 0.75rem;
+}
+
+.footer-copyright {
+  font-size: 0.85rem;
+}
+
+.footer-copyright strong {
   color: rgba(255, 255, 255, 0.85);
   font-weight: 600;
 }
 
-.footer-credit strong {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-/* ── Responsive ─────────────────────────────────────────────────────────── */
-@media (max-width: 900px) {
+/* ── Responsive Layout ─────────────────────────────────────────────────── */
+@media (max-width: 1100px) {
   .footer-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1.5fr 1fr 1fr;
     gap: 2.5rem;
   }
+}
+
+@media (max-width: 768px) {
+  .cinescope-footer {
+    padding: 3rem 1.5rem 6.5rem 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
   .footer-col-brand {
     grid-column: 1 / -1;
   }
-}
 
-@media (max-width: 600px) {
-  .cinescope-footer {
-    padding: 2.5rem 1.25rem 6.5rem 1.25rem;
-    margin-top: 2rem;
-  }
-  .footer-grid {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
   .footer-bottom-bar {
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.4rem;
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
   }
 }
