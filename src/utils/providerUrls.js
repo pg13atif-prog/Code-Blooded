@@ -1,31 +1,138 @@
 /**
- * AI RAG-powered streaming URL resolver.
+ * Serper.dev Google Search API & AI RAG-powered streaming URL resolver.
  * 
- * When a movie detail page loads, resolveProviderUrls() asks the LLM to return the
- * exact official URL for a title on each streaming platform (e.g.
- * https://www.primevideo.com/detail/The-Boys/0KIMYI69TNQ5RJ81MRMGDU050K).
- * 
- * Results are cached in memory so we never ask twice for the same title+provider.
- * getProviderUrl() returns the cached AI result, or a platform search fallback.
+ * Fetches the exact official movie/show page link directly via Serper Google Search API
+ * when a user views watch providers, caching the results so when clicked,
+ * the user lands directly on the official title landing page on Netflix, Prime Video, etc.
  */
 
+const serperApiKey = import.meta.env.VITE_SERPER_API_KEY || '5ecb5ca9c691e411847200535c5493fe89dd20da';
 const groqApiKey = import.meta.env.VITE_GROQ_API_KEY;
 const openRouterApiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
 
-// In-memory cache: "title||provider" -> resolved URL
+// In-memory cache: "title||provider" -> resolved official URL
 const urlCache = {};
 
 const cacheKey = (title, provider) => `${title.toLowerCase().trim()}||${provider.toLowerCase().trim()}`;
 
 /**
- * Ask the AI for direct platform URLs for a given title + list of providers.
- * Called once when watch providers load on a detail page.
- * Returns { "Provider Name": "https://..." } map.
+ * Fetch official direct title URL using Serper.dev Google Search API
+ */
+const fetchSerperUrl = async (movieTitle, providerName) => {
+  if (!serperApiKey) return null;
+  const query = `watch "${movieTitle}" on ${providerName} official`;
+  
+  try {
+    const res = await fetch("https://google.serper.dev/search", {
+      method: "POST",
+      headers: {
+        "X-API-KEY": serperApiKey,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        q: query,
+        num: 5
+      })
+    });
+    
+    if (res.ok) {
+      const data = await res.json();
+      if (data.organic && data.organic.length > 0) {
+        const providerLower = providerName.toLowerCase();
+        
+        // 1. Try to find the top result matching the target domain
+        for (const item of data.organic) {
+          const link = item.link;
+          if (!link) continue;
+          const linkLower = link.toLowerCase();
+          
+          if (linkLower.includes('/search') || linkLower.includes('/browse?') || linkLower.includes('wikipedia.org') || linkLower.includes('imdb.com')) {
+            continue;
+          }
+          
+          if (providerLower.includes('netflix') && linkLower.includes('netflix.com')) return link;
+          if ((providerLower.includes('amazon') || providerLower.includes('prime')) && (linkLower.includes('primevideo.com') || linkLower.includes('amazon.com'))) return link;
+          if (providerLower.includes('apple') && linkLower.includes('apple.com')) return link;
+          if ((providerLower.includes('disney') || providerLower.includes('hotstar')) && (linkLower.includes('disneyplus.com') || linkLower.includes('hotstar.com'))) return link;
+          if (providerLower.includes('hulu') && linkLower.includes('hulu.com')) return link;
+          if ((providerLower.includes('max') || providerLower.includes('hbo')) && (linkLower.includes('max.com') || linkLower.includes('hbomax.com'))) return link;
+          if (providerLower.includes('peacock') && linkLower.includes('peacocktv.com')) return link;
+          if (providerLower.includes('paramount') && linkLower.includes('paramountplus.com')) return link;
+          if (providerLower.includes('google play') && linkLower.includes('play.google.com')) return link;
+          if (providerLower.includes('youtube') && linkLower.includes('youtube.com')) return link;
+          if (providerLower.includes('crunchyroll') && linkLower.includes('crunchyroll.com')) return link;
+          if (providerLower.includes('jio') && linkLower.includes('jiocinema.com')) return link;
+          if (providerLower.includes('zee') && linkLower.includes('zee5.com')) return link;
+          if (providerLower.includes('sony') && linkLower.includes('sonyliv.com')) return link;
+          if (providerLower.includes('vudu') && linkLower.includes('vudu.com')) return link;
+          if (providerLower.includes('tubi') && linkLower.includes('tubitv.com')) return link;
+          if (providerLower.includes('pluto') && linkLower.includes('pluto.tv')) return link;
+          if (providerLower.includes('plex') && linkLower.includes('plex.tv')) return link;
+        }
+        
+        // 2. Fallback to position 1 organic link if non-search
+        const topLink = data.organic[0].link;
+        if (topLink && !topLink.toLowerCase().includes('/search')) return topLink;
+      }
+    }
+  } catch (err) {
+    console.warn(`Serper API error for ${providerName}:`, err.message);
+  }
+  return null;
+};
+
+/**
+ * Ask the AI for direct platform URLs for any remaining unresolved providers.
+ */
+const resolveWithAI = async (movieTitle, mediaType, providerNames) => {
+  if (providerNames.length === 0) return {};
+  
+  const systemPrompt = `You are a streaming URL resolver. Return the exact official URL where users can watch or view details for the specified title on each platform.
+RULES:
+- Return ONLY a JSON object mapping each platform name to its direct URL.
+- Do NOT include markdown or text outside JSON.`;
+
+  const userPrompt = `Title: "${movieTitle}"
+Type: ${mediaType || 'movie'}
+Platforms: ${providerNames.join(', ')}
+Return JSON: {"Platform Name": "https://..."}`;
+
+  if (groqApiKey) {
+    try {
+      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${groqApiKey}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userPrompt }
+          ],
+          temperature: 0.1,
+          response_format: { type: "json_object" }
+        })
+      });
+      if (response.ok) {
+        const data = await response.json();
+        const text = data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim();
+        return JSON.parse(text);
+      }
+    } catch (e) {
+      console.warn('Groq URL resolver failed:', e.message);
+    }
+  }
+  return {};
+};
+
+/**
+ * Resolves direct official URLs for all requested providers using Serper Google Search API
  */
 export const resolveProviderUrls = async (movieTitle, mediaType, providerNames = []) => {
   if (!movieTitle || providerNames.length === 0) return {};
 
-  // Check if all are already cached
   const uncached = providerNames.filter(p => !urlCache[cacheKey(movieTitle, p)]);
   if (uncached.length === 0) {
     const result = {};
@@ -33,124 +140,46 @@ export const resolveProviderUrls = async (movieTitle, mediaType, providerNames =
     return result;
   }
 
-  const systemPrompt = `You are a streaming URL resolver. Given a movie/TV show title and a list of streaming platforms, return the exact official URL where users can watch or view details for that title on each platform.
+  // Step 1: Query Serper Google Search API in parallel for each uncached provider
+  const serperPromises = uncached.map(async (provider) => {
+    const url = await fetchSerperUrl(movieTitle, provider);
+    if (url) {
+      urlCache[cacheKey(movieTitle, provider)] = url;
+      return { provider, url };
+    }
+    return { provider, url: null };
+  });
 
-RULES:
-- Return ONLY a JSON object mapping each platform name to its direct URL.
-- URLs must be real, functional deep links to the specific title page (NOT search pages, NOT homepage).
-- For Netflix: use https://www.netflix.com/title/{id} format
-- For Amazon Prime Video: use https://www.primevideo.com/detail/{title-slug}/{id} format  
-- For Apple TV: use https://tv.apple.com/{region}/show/{title-slug} or /movie/{title-slug} format
-- For Disney+: use https://www.disneyplus.com/{region}/movies/{slug}/{id} or /series/{slug}/{id} format
-- For YouTube: use https://www.youtube.com/watch?v={id} or playlist link format
-- For other platforms: use the most specific title page URL you know
-- If you genuinely don't know the exact URL for a platform, set the value to null
-- Do NOT make up or guess URLs. Only return URLs you are confident are correct.
-- Do NOT include any explanation, markdown, or text outside the JSON.`;
+  const serperResults = await Promise.all(serperPromises);
+  const unresolved = serperResults.filter(r => !r.url).map(r => r.provider);
 
-  const userPrompt = `Title: "${movieTitle}"
-Type: ${mediaType || 'movie'}
-Platforms: ${uncached.join(', ')}
-
-Return the direct URL for this title on each platform as a JSON object. Example format:
-{"Amazon Prime Video": "https://www.primevideo.com/detail/The-Boys/0KIMYI69TNQ5RJ81MRMGDU050K", "Netflix": null}`;
-
-  try {
-    let aiResult = null;
-
-    // Try Groq first (fastest)
-    if (groqApiKey) {
-      try {
-        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${groqApiKey}`,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            model: "llama-3.3-70b-versatile",
-            messages: [
-              { role: "system", content: systemPrompt },
-              { role: "user", content: userPrompt }
-            ],
-            temperature: 0.1,
-            response_format: { type: "json_object" }
-          })
-        });
-        if (response.ok) {
-          const data = await response.json();
-          const text = data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim();
-          aiResult = JSON.parse(text);
-        }
-      } catch (e) {
-        console.warn('Groq URL resolver failed:', e.message);
+  // Step 2: For any remaining unresolved providers, fallback to AI resolution
+  if (unresolved.length > 0) {
+    const aiResults = await resolveWithAI(movieTitle, mediaType, unresolved);
+    unresolved.forEach(p => {
+      const aiKey = Object.keys(aiResults).find(k => k.toLowerCase().trim() === p.toLowerCase().trim());
+      const url = aiKey ? aiResults[aiKey] : null;
+      if (url && typeof url === 'string' && url.startsWith('http') && !url.includes('/search')) {
+        urlCache[cacheKey(movieTitle, p)] = url;
       }
-    }
-
-    // Fallback to OpenRouter
-    if (!aiResult && openRouterApiKey) {
-      try {
-        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${openRouterApiKey}`,
-            "Content-Type": "application/json",
-            "HTTP-Referer": window.location.origin,
-            "X-Title": "CineScope"
-          },
-          body: JSON.stringify({
-            model: "openai/gpt-oss-120b",
-            messages: [
-              { role: "system", content: systemPrompt },
-              { role: "user", content: userPrompt }
-            ],
-            temperature: 0.1,
-            response_format: { type: "json_object" }
-          })
-        });
-        if (response.ok) {
-          const data = await response.json();
-          const text = data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim();
-          aiResult = JSON.parse(text);
-        }
-      } catch (e) {
-        console.warn('OpenRouter URL resolver failed:', e.message);
-      }
-    }
-
-    // Cache the results
-    if (aiResult) {
-      const finalResult = {};
-      providerNames.forEach(p => {
-        // Find the AI result (case-insensitive match)
-        const aiKey = Object.keys(aiResult).find(k => k.toLowerCase().trim() === p.toLowerCase().trim());
-        const url = aiKey ? aiResult[aiKey] : null;
-        
-        // Only cache if it looks like a valid URL (not a search page)
-        if (url && typeof url === 'string' && url.startsWith('http') && !url.includes('/search')) {
-          urlCache[cacheKey(movieTitle, p)] = url;
-          finalResult[p] = url;
-        } else {
-          finalResult[p] = null;
-        }
-      });
-      return finalResult;
-    }
-  } catch (err) {
-    console.warn('AI URL resolution failed entirely:', err.message);
+    });
   }
 
-  return {};
+  const finalMap = {};
+  providerNames.forEach(p => {
+    finalMap[p] = urlCache[cacheKey(movieTitle, p)] || null;
+  });
+  return finalMap;
 };
 
 /**
- * Synchronous getter. Returns cached AI URL, or falls back to platform search / TMDB link.
+ * Synchronous getter. Returns cached Serper/AI official URL, or falls back to platform search / TMDB link.
  */
 export const getProviderUrl = (providerName, movieTitle, tmdbLink) => {
   const title = movieTitle ? movieTitle.trim() : '';
   const provider = providerName ? providerName.trim() : '';
 
-  // 1. Return cached AI-resolved direct URL if available
+  // 1. Return cached Serper/AI-resolved direct official URL if available
   const cached = urlCache[cacheKey(title, provider)];
   if (cached) return cached;
 
@@ -179,5 +208,6 @@ export const getProviderUrl = (providerName, movieTitle, tmdbLink) => {
 
   return `https://www.google.com/search?q=${encodeURIComponent(`watch "${title}" on ${providerName}`)}`;
 };
+
 
 
