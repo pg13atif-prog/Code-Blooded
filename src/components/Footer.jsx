@@ -51,7 +51,7 @@ const Footer = () => {
 
           {/* Column 4: Team Code-Blooded */}
           <div className="footer-col">
-            <h4 className="footer-heading">Built by Team Code-Blooded</h4>
+            <h4 className="footer-heading">Team Code-Blooded</h4>
             <ul className="footer-members-list">
               <li><span className="member-bullet">▸</span> <span className="member-label">Atif</span></li>
               <li><span className="member-bullet">▸</span> <span className="member-label">Asif</span></li>
@@ -59,13 +59,11 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Column 5: Hackathon Event Details */}
-          <div className="footer-col">
-            <h4 className="footer-heading">Hackathon</h4>
-            <div className="footer-event-box">
-              <p className="event-built-for">Built for</p>
-              <p className="event-name">VibeForge 1.0</p>
-              <p className="event-year">2026</p>
+          {/* Column 5: Built For VibeForge 1.0 Rectangular Box */}
+          <div className="footer-col footer-col-event">
+            <div className="vibeforge-box">
+              <span className="vibeforge-prefix">Built For</span>
+              <span className="vibeforge-title">VibeForge 1.0</span>
             </div>
           </div>
         </div>
@@ -73,7 +71,7 @@ const Footer = () => {
         {/* Horizontal Divider Line */}
         <div className="footer-divider" />
 
-        {/* Bottom Bar matching Reference Format */}
+        {/* Bottom Bar */}
         <div className="footer-bottom-bar">
           <div className="footer-bottom-links">
             <a href="#" onClick={(e) => handleNavClick(e, '')}>CineScope</a>
@@ -85,7 +83,7 @@ const Footer = () => {
             <a href="#social" onClick={(e) => handleNavClick(e, '#social')}>Social Movie Match</a>
           </div>
           <p className="footer-copyright">
-            © 2026 <strong>CineScope</strong>. Built by <strong>Team Code-Blooded</strong> for <strong>VibeForge 1.0</strong>. All Rights Reserved.
+            © 2026 <strong>CineScope</strong> · <strong>Team Code-Blooded</strong> · <strong>VibeForge 1.0</strong>
           </p>
         </div>
       </div>
