@@ -73,15 +73,6 @@ const Footer = () => {
 
         {/* Bottom Bar */}
         <div className="footer-bottom-bar">
-          <div className="footer-bottom-links">
-            <a href="#" onClick={(e) => handleNavClick(e, '')}>CineScope</a>
-            <span className="bar-sep">|</span>
-            <a href="#discover/movies" onClick={(e) => handleNavClick(e, '#discover/movies')}>Browse Movies</a>
-            <span className="bar-sep">|</span>
-            <a href="#cineai" onClick={(e) => handleNavClick(e, '#cineai')}>CineAI Intelligence</a>
-            <span className="bar-sep">|</span>
-            <a href="#social" onClick={(e) => handleNavClick(e, '#social')}>Social Movie Match</a>
-          </div>
           <p className="footer-copyright">
             © 2026 <strong>CineScope</strong> · <strong>Team Code-Blooded</strong> · <strong>VibeForge 1.0</strong>
           </p>
