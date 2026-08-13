@@ -186,6 +186,10 @@ export const getProviderUrl = (providerName, movieTitle, tmdbLink) => {
 /**
  * On-Click Provider Click Handler: Initiates search ONLY when clicked, cycling Serper <-> Tavily per title!
  */
+/**
+ * On-Click Provider Click Handler: Initiates search ONLY when clicked, cycling Serper <-> Tavily per title!
+ * Shows a dark animated connecting screen in the opened tab while resolving the official URL.
+ */
 export const handleProviderClick = async (e, providerName, movieTitle, tmdbLink, titleId) => {
   if (e && e.preventDefault) e.preventDefault();
 
@@ -199,8 +203,105 @@ export const handleProviderClick = async (e, providerName, movieTitle, tmdbLink,
     return;
   }
 
-  // Open blank tab immediately to satisfy browser popup policies
-  const newTab = window.open('about:blank', '_blank');
+  // Open a new tab and render a dark animated connecting screen immediately (no white blank page!)
+  const newTab = window.open('', '_blank');
+  if (newTab && newTab.document) {
+    try {
+      newTab.document.write(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Connecting to ${provider}... | CineScope</title>
+          <style>
+            body {
+              background-color: #080c14;
+              color: #ffffff;
+              margin: 0;
+              padding: 0;
+              font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              height: 100vh;
+              overflow: hidden;
+            }
+            .loader-box {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              text-align: center;
+              padding: 32px 36px;
+              background: rgba(19, 28, 46, 0.7);
+              border: 1px solid rgba(255, 255, 255, 0.1);
+              border-radius: 20px;
+              box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+              backdrop-filter: blur(16px);
+            }
+            .ring-wrap {
+              position: relative;
+              width: 72px;
+              height: 72px;
+              margin-bottom: 20px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            }
+            .spinner {
+              position: absolute;
+              inset: 0;
+              border-radius: 50%;
+              border: 3px solid rgba(229, 9, 20, 0.15);
+              border-top-color: #e50914;
+              animation: spin 0.9s cubic-bezier(0.55, 0.15, 0.45, 0.85) infinite;
+              box-shadow: 0 0 20px rgba(229, 9, 20, 0.4);
+            }
+            .icon {
+              width: 36px;
+              height: 36px;
+              border-radius: 50%;
+              animation: pulse 1.6s ease-in-out infinite;
+            }
+            .status-text {
+              font-size: 17px;
+              font-weight: 700;
+              margin-bottom: 6px;
+              background: linear-gradient(135deg, #ffffff 0%, #a0aab8 100%);
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+            }
+            .sub-text {
+              font-size: 13px;
+              color: rgba(255, 255, 255, 0.55);
+              max-width: 280px;
+              line-height: 1.4;
+            }
+            @keyframes spin { to { transform: rotate(360deg); } }
+            @keyframes pulse {
+              0%, 100% { transform: scale(0.92); opacity: 0.8; }
+              50% { transform: scale(1.08); opacity: 1; filter: drop-shadow(0 0 10px rgba(229, 9, 20, 0.8)); }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="loader-box">
+            <div class="ring-wrap">
+              <div class="spinner"></div>
+              <img src="/favicon.png" alt="CineScope" class="icon" onError="this.style.display='none'" />
+            </div>
+            <div class="status-text">Connecting to ${provider}...</div>
+            <div class="sub-text">Locating official title page for "${title}"</div>
+          </div>
+        </body>
+        </html>
+      `);
+      newTab.document.close();
+    } catch (e) {
+      console.warn('Could not write preloader to new tab:', e);
+    }
+  }
 
   try {
     const engine = getEngineForTitle(titleId || title);
