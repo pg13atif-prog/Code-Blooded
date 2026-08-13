@@ -1477,9 +1477,9 @@
 .search-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(4, 6, 12, 0.45);
-  backdrop-filter: blur(96px) saturate(250%);
-  -webkit-backdrop-filter: blur(96px) saturate(250%);
+  background: rgba(4, 6, 12, 0.65);
+  backdrop-filter: blur(150px) saturate(200%);
+  -webkit-backdrop-filter: blur(150px) saturate(200%);
   z-index: 2500;
   display: flex;
   align-items: flex-start;
@@ -1508,10 +1508,10 @@
   max-width: min(680px, calc(100vw - 2rem));
   max-height: 82vh;
   background: 
-    radial-gradient(ellipse at top left, rgba(255, 255, 255, 0.12) 0%, transparent 45%),
-    linear-gradient(145deg, rgba(22, 28, 44, 0.45) 0%, rgba(8, 11, 20, 0.65) 100%);
-  backdrop-filter: blur(96px) saturate(220%) brightness(1.1);
-  -webkit-backdrop-filter: blur(96px) saturate(220%) brightness(1.1);
+    radial-gradient(ellipse at top left, rgba(255, 255, 255, 0.15) 0%, transparent 45%),
+    linear-gradient(145deg, rgba(16, 21, 35, 0.75) 0%, rgba(6, 9, 16, 0.88) 100%);
+  backdrop-filter: blur(150px) saturate(180%) brightness(1.05);
+  -webkit-backdrop-filter: blur(150px) saturate(180%) brightness(1.05);
   border: 1.5px solid rgba(255, 255, 255, 0.2);
   border-radius: 26px;
   box-shadow: 0 32px 80px rgba(0, 0, 0, 0.85);
