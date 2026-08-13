@@ -3,6 +3,10 @@
   padding-top: var(--space-lg);
 }
 
+.movie-row-container:last-child {
+  margin-bottom: 1.5rem;
+}
+
 .row-header {
   display: flex;
   align-items: flex-end;

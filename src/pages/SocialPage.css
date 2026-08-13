@@ -1,5 +1,6 @@
 .social-page {
-  padding: 120px 2.5rem 6rem;
+  padding: 120px 2.5rem 2rem;
+  margin-bottom: 0;
   min-height: 100vh;
   box-sizing: border-box;
 }

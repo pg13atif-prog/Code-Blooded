@@ -1,6 +1,6 @@
 /* ── Shared legacy classes (kept to avoid breaking anything) ───────── */
 .dashboard-page {
-  padding: 100px 4% 4rem;
+  padding: 100px 4% 2rem;
   min-height: 100vh;
   background-color: #0b0d14;
   color: #e2e8f0;
