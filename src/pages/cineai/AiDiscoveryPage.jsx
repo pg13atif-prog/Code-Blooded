@@ -120,11 +120,19 @@ const AiDiscoveryPage = () => {
   useEffect(() => {
     if (!selectedRationaleModal) return;
 
+    const scrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
     document.body.style.overflow = 'hidden';
 
     const preventTouch = (e) => {
       const modalBox = document.querySelector('.modal-content');
-      if (!modalBox || !modalBox.contains(e.target)) {
+      if (!modalBox) {
+        e.preventDefault();
+        return;
+      }
+      if (modalBox.scrollHeight <= modalBox.clientHeight || !modalBox.contains(e.target)) {
         e.preventDefault();
       }
     };
@@ -132,8 +140,12 @@ const AiDiscoveryPage = () => {
     window.addEventListener('touchmove', preventTouch, { passive: false });
 
     return () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
       document.body.style.overflow = '';
       window.removeEventListener('touchmove', preventTouch);
+      window.scrollTo(0, scrollY);
     };
   }, [selectedRationaleModal]);
 
