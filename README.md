@@ -215,15 +215,16 @@ Code-Blooded/
 
 ---
 
-## 👥 Team & Hackathon
+## 👥 Team & Credits
 
-* **Built for**: Hackathon Project
-* **Repository**: Code-Blooded
+* **Built for**: VibeForge 1.0
+* **Repository**: [Code-Blooded](https://github.com/pg13atif-prog/Code-Blooded.git)
 
-**Team Members**
-* **Atif**
-* **Asif**
-* **Swastik**
+### 🏆 Team Code-Blooded & Contributions
+
+* 🧑‍💻 **Atif** — Integration & Version Control
+* 🛠️ **Asif** — Backend & Database Management
+* 🎨 **Swastik** — UI/UX Design & Layout
 
 ---
 
