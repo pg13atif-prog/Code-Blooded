@@ -118,13 +118,22 @@ const AiDiscoveryPage = () => {
   }, [displayedSuggestion, isTyping, suggestionIndex, dynamicSuggestions]);
 
   useEffect(() => {
-    if (selectedRationaleModal) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
+    if (!selectedRationaleModal) return;
+
+    document.body.style.overflow = 'hidden';
+
+    const preventTouch = (e) => {
+      const modalBox = document.querySelector('.modal-content');
+      if (!modalBox || !modalBox.contains(e.target)) {
+        e.preventDefault();
+      }
+    };
+
+    window.addEventListener('touchmove', preventTouch, { passive: false });
+
     return () => {
       document.body.style.overflow = '';
+      window.removeEventListener('touchmove', preventTouch);
     };
   }, [selectedRationaleModal]);
 
@@ -382,7 +391,11 @@ const AiDiscoveryPage = () => {
 
       {/* Rationale Modal */}
       {selectedRationaleModal && (
-        <div className="modal-overlay" onClick={() => setSelectedRationaleModal(null)}>
+        <div 
+          className="modal-overlay" 
+          onClick={() => setSelectedRationaleModal(null)}
+          style={{ overscrollBehavior: 'contain', touchAction: 'none' }}
+        >
           <div 
             className="modal-content glass-panel" 
             style={{ maxWidth: '500px', width: '90%', padding: '2rem', position: 'relative' }} 
