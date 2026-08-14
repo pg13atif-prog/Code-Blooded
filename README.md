@@ -1,6 +1,6 @@
 # 🎬 CineScope
 
-### *Search Less. Watch Better.*
+### *Discover your next favourite*
 
 CineScope is an intelligent media discovery platform that combines TMDB content browsing, AI reasoning (Groq / OpenRouter), and real-time social movie matching to eliminate choice paralysis.
 
@@ -219,6 +219,11 @@ Code-Blooded/
 
 * **Built for**: Hackathon Project
 * **Repository**: Code-Blooded
+
+**Team Members**
+* **Atif**
+* **Asif**
+* **Swastik**
 
 ---
 
