@@ -110,7 +110,7 @@ export default function Dashboard({
       {/* ── Middle Area: Chart + Stats ──────────────────────── */}
       <div className="aai-dashboard-middle-row">
         <div className="aai-chart-wrapper">
-          <EngagementChart />
+          <EngagementChart activeScene={activeScene} />
         </div>
         <div className="aai-stats-col">
           <StatWidget 

@@ -409,5 +409,173 @@ export const geminiService = {
         description: 'Spatial and motivational understanding across simulated audience.'
       }
     };
+  },
+
+  /**
+   * Generate real-time audience engagement data for the chart
+   * @param {Object} scene 
+   * @returns {Array} Data points for EngagementChart
+   */
+  async generateEngagementChartData(scene) {
+    const apiKeyData = apiKeyService.getApiKey();
+    if (!apiKeyData || !apiKeyData.key) {
+      // Fallback if no API key
+      return [
+        { label: 'Intro', values: [38, 30] },
+        { label: 'Setup', values: [62, 45] },
+        { label: 'Midpoint', values: [62, 55] },
+        { label: 'Climax', values: [20, 42] },
+        { label: 'Falling Action', values: [52, 62] },
+        { label: 'Resolution', values: [62, 70] },
+        { label: 'End', values: [92, 80] },
+      ];
+    }
+
+    const { provider, key } = apiKeyData;
+    const content = scene?.content || scene?.scriptContent || 'Standard dramatic scene with tension and resolution.';
+    const systemInstruction = `You are a script analysis engine. 
+Analyze the pacing and emotional trajectory of the provided scene.
+Output exactly 7 data points (Intro, Setup, Midpoint, Climax, Falling Action, Resolution, End).
+For each data point, provide an engagement score (0-100) for both "Target Audience" and "Broad Audience".`;
+    
+    const userPrompt = `SCENE CONTENT: ${content}
+
+Analyze the scene and return a JSON object with a 'data' array containing exactly 7 elements.
+Each element must have:
+- 'label': String (Intro, Setup, Midpoint, Climax, Falling Action, Resolution, End)
+- 'values': Array of 2 integers [TargetAudienceScore, BroadAudienceScore]`;
+
+    const CHART_SCHEMA = {
+      type: 'OBJECT',
+      properties: {
+        data: {
+          type: 'ARRAY',
+          items: {
+            type: 'OBJECT',
+            properties: {
+              label: { type: 'STRING' },
+              values: { type: 'ARRAY', items: { type: 'INTEGER' } }
+            },
+            required: ['label', 'values']
+          }
+        }
+      },
+      required: ['data']
+    };
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 20000);
+
+    try {
+      if (provider === 'groq') {
+        const response = await fetch(GROQ_API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${key}`
+          },
+          body: JSON.stringify({
+            model: 'llama-3.3-70b-versatile',
+            messages: [
+              {
+                role: 'system',
+                content: `${systemInstruction}\n\nIMPORTANT: Return valid JSON matching schema:\n${JSON.stringify(CHART_SCHEMA, null, 2)}`
+              },
+              { role: 'user', content: userPrompt }
+            ],
+            response_format: { type: 'json_object' },
+            temperature: 0.7,
+            max_tokens: 650
+          }),
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        if (!response.ok) throw new Error('Failed to generate chart data via Groq');
+        const raw = await response.json();
+        const text = raw?.choices?.[0]?.message?.content || '';
+        const result = JSON.parse(text);
+        if (result.data && result.data.length === 7) return result.data;
+        throw new Error('Invalid chart data format from Groq');
+      }
+
+      if (provider === 'openrouter') {
+        const response = await fetch(OPENROUTER_API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${key}`,
+            'HTTP-Referer': 'https://audienceai.app',
+            'X-Title': 'AudienceAI'
+          },
+          body: JSON.stringify({
+            model: 'google/gemini-2.5-flash',
+            messages: [
+              {
+                role: 'system',
+                content: `${systemInstruction}\n\nIMPORTANT: Return valid JSON matching schema:\n${JSON.stringify(CHART_SCHEMA, null, 2)}`
+              },
+              { role: 'user', content: userPrompt }
+            ],
+            response_format: { type: 'json_object' },
+            temperature: 0.7,
+            max_tokens: 650
+          }),
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        if (!response.ok) throw new Error('Failed to generate chart data via OpenRouter');
+        const raw = await response.json();
+        const text = raw?.choices?.[0]?.message?.content || '';
+        const result = JSON.parse(text);
+        if (result.data && result.data.length === 7) return result.data;
+        throw new Error('Invalid chart data format from OpenRouter');
+      }
+
+      // Default: Google Gemini Direct
+      const requestBody = {
+        systemInstruction: { parts: [{ text: systemInstruction }] },
+        contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
+        generationConfig: {
+          responseMimeType: 'application/json',
+          responseSchema: CHART_SCHEMA,
+          temperature: 0.5,
+        }
+      };
+
+      const response = await fetch(`${GEMINI_API_URL}?key=${encodeURIComponent(key)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody),
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
+      if (!response.ok) throw new Error('Failed to generate chart data via Gemini');
+
+      const raw = await response.json();
+      const text = raw.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!text) throw new Error('Empty response');
+
+      const result = JSON.parse(text);
+      if (result.data && Array.isArray(result.data) && result.data.length === 7) {
+        return result.data;
+      } else {
+        throw new Error('Invalid chart data format');
+      }
+    } catch (err) {
+      console.error('Error generating chart data:', err);
+      // Fallback data if generation fails
+      return [
+        { label: 'Intro', values: [40, 35] },
+        { label: 'Setup', values: [55, 45] },
+        { label: 'Midpoint', values: [70, 60] },
+        { label: 'Climax', values: [95, 80] },
+        { label: 'Falling Action', values: [60, 65] },
+        { label: 'Resolution', values: [75, 75] },
+        { label: 'End', values: [85, 80] },
+      ];
+    }
   }
 };
