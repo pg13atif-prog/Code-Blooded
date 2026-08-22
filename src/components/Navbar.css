@@ -83,7 +83,7 @@
 .navbar__nav {
   display: flex;
   align-items: center;
-  gap: 2.75rem; /* 44px between items */
+  gap: 1.85rem; /* 44px between items */
   justify-content: center;
   list-style: none;
   margin: 0;
@@ -2537,3 +2537,4 @@
     box-sizing: border-box !important;
   }
 }
+

@@ -602,6 +602,12 @@ const Navbar = () => {
             className="navbar__link--cineai"
           />
           <NavItem
+            id="audience"
+            label="AudienceAI"
+            hash="#audience"
+            isActive={currentPath.startsWith('#audience') || currentPath.startsWith('#simulator')}
+          />
+          <NavItem
             id="friends"
             label="Friends"
             hash="#friends"
@@ -1263,5 +1269,7 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
+
 
 

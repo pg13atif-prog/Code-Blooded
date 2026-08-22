@@ -6,9 +6,7 @@
   padding: 0 24px;
   border-bottom: 1px solid var(--border-subtle);
   background: var(--bg-surface);
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  position: relative; top: auto; z-index: 10;
 }
 
 .navbar-left {
@@ -251,3 +249,4 @@
     display: none;
   }
 }
+
