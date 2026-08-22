@@ -446,11 +446,7 @@ function App() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
         >
-<<<<<<< HEAD
-          {!['audience', 'audienceai', 'simulator'].includes(currentRoute) && <Navbar />}
-=======
           <Navbar currentRoute={currentRoute} />
->>>>>>> 317d1e7 (fix(navbar): guarantee navbar auto-hide on AudienceAI with hover sensor & round off hard square corners)
           <AnimatePresence mode="wait">
             <motion.div
               key={currentRoute + (currentParams ? JSON.stringify(currentParams) : '')}
