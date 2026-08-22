@@ -26,6 +26,7 @@ import FriendsPage from "./pages/FriendsPage";
 import UserListPage from "./pages/UserListPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import PersonDetailPage from "./pages/PersonDetailPage";
+import AudienceAIPage from "./pages/AudienceAI/AudienceAIPage";
 
 // CineAI Tools
 import MoviePlanner from "./pages/cineai/MoviePlanner";
@@ -173,6 +174,12 @@ function App() {
         case '#discover':
           setCurrentRoute('discover');
           setCurrentParams({ tab: 'movies' });
+          break;
+        case '#audience':
+        case '#audienceai':
+        case '#simulator':
+          setCurrentRoute('audience');
+          setCurrentParams(null);
           break;
         case '#cineai':
           setCurrentRoute('cineai');
@@ -520,3 +527,4 @@ const AchievementToasts = () => {
 };
 
 export default App;
+
