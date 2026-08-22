@@ -74,7 +74,7 @@
   /* Layout Dimensions */
   --sidebar-width: 220px;
   --sidebar-collapsed-width: 56px;
-  --topbar-height: 64px;
+  --navbar-offset: 72px;
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 16px;
@@ -90,7 +90,8 @@
 .aai-layout {
   display: flex;
   width: 100%;
-  min-height: calc(100vh - 68px);
+  min-height: calc(100vh - var(--navbar-offset, 72px));
+  padding-top: var(--navbar-offset, 72px);
   background: var(--bg-canvas, #08090d);
   color: var(--text-primary, #f8fafc);
   font-family: var(--font-sans);
@@ -98,6 +99,7 @@
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  box-sizing: border-box;
 }
 
 .aai-layout *,
@@ -139,9 +141,9 @@
 /* ── Sidebar ─────────────────────────────────────────────────────────────── */
 .aai-sidebar {
   width: 220px;
-  height: calc(100vh - 68px);
+  height: calc(100vh - var(--navbar-offset, 72px));
   position: sticky;
-  top: 68px;
+  top: var(--navbar-offset, 72px);
   display: flex;
   flex-direction: column;
   background: rgba(12, 14, 22, 0.95);
@@ -150,7 +152,8 @@
   flex-shrink: 0;
   transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   z-index: 30;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .aai-sidebar--collapsed {
@@ -377,12 +380,14 @@
 /* ── Main Content Area ────────────────────────────────────────────────────── */
 .aai-main {
   flex: 1;
-  padding: 28px 36px 48px;
-  max-width: 1400px;
+  padding: 24px 36px 60px;
+  max-width: 1440px;
   width: 100%;
   margin: 0 auto;
   box-sizing: border-box;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
   animation: audienceaiFadeIn 0.25s ease-out;
 }
 
@@ -482,10 +487,16 @@
 
 /* ── Responsive ──────────────────────────────────────────────────────────── */
 @media (max-width: 900px) {
+  .aai-layout {
+    padding-top: 60px;
+  }
+
   .aai-sidebar {
     width: 56px;
     padding: 14px 8px;
     align-items: center;
+    top: 60px;
+    height: calc(100vh - 60px);
   }
 
   .aai-sidebar__brand-text,
@@ -511,6 +522,6 @@
   }
 
   .aai-main {
-    padding: 18px 14px 36px;
+    padding: 18px 14px 48px;
   }
 }
