@@ -84,6 +84,13 @@ function App() {
         return;
       }
 
+      const pathname = window.location.pathname;
+      if (pathname.includes('/audience') || hash.startsWith('#audience') || hash.startsWith('#simulator')) {
+        setCurrentRoute('audience');
+        setCurrentParams(null);
+        return;
+      }
+
       const episodeMatch = hash.match(/^#episode\/tv\/(\d+)\/season\/(\d+)\/episode\/(\d+)/);
       if (episodeMatch) {
         setCurrentRoute('episode-detail');
@@ -345,6 +352,11 @@ function App() {
           />
         );
 
+      case 'audience':
+      case 'audienceai':
+      case 'simulator':
+        return <AudienceAIPage />;
+
       case 'cineai':
         return <CineAiPage />;
 
@@ -527,4 +539,6 @@ const AchievementToasts = () => {
 };
 
 export default App;
+
+
 
