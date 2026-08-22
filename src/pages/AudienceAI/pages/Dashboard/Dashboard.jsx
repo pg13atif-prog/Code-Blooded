@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import EngagementChart from '../../components/Charts/EngagementChart';
 import PredictionGauge from '../../components/Charts/PredictionGauge';
 import StatWidget from '../../components/Cards/StatWidget';
@@ -7,7 +7,7 @@ import './Dashboard.css';
 export default function Dashboard({ scenes = [], activeScene, onSelectScene, onNewSimulation, onSimulate, onViewInsights, onLoadDemo }) {
   return (
     <div className="aai-dashboard-exact">
-      {/* â”€â”€ Top Area: Hero + Personas â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Top Area: Hero + Personas ───────────────────────── */}
       <div className="aai-dashboard-top-row">
         
         <div className="aai-hero-card glass-panel">
@@ -76,7 +76,7 @@ export default function Dashboard({ scenes = [], activeScene, onSelectScene, onN
         </div>
       </div>
 
-      {/* â”€â”€ Middle Area: Chart + Stats â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Middle Area: Chart + Stats ─────────────────────── */}
       <div className="aai-dashboard-middle-row">
         <div className="aai-chart-wrapper">
           <EngagementChart />
@@ -97,7 +97,7 @@ export default function Dashboard({ scenes = [], activeScene, onSelectScene, onN
         </div>
       </div>
 
-      {/* â”€â”€ Bottom Area: Insights â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Bottom Area: Insights ──────────────────────────── */}
       <div className="aai-dashboard-bottom-row">
         <div className="aai-insight-card glass-panel" style={{ borderColor: 'rgba(168, 85, 247, 0.4)', boxShadow: '0 0 16px rgba(168, 85, 247, 0.1)' }}>
           <h4 className="aai-insight-title">Script Analysis (Act 1)</h4>
@@ -114,9 +114,9 @@ export default function Dashboard({ scenes = [], activeScene, onSelectScene, onN
         <div className="aai-insight-card glass-panel" style={{ borderColor: 'rgba(0, 224, 255, 0.4)', boxShadow: '0 0 16px rgba(0, 224, 255, 0.1)' }}>
           <h4 className="aai-insight-title">Feedback Summary</h4>
           <ul className="aai-insight-list">
-            <li>â€¢ Strong Emotional Connection to Protagonist</li>
-            <li>â€¢ Pacing in Act 3 Needs Adjustment</li>
-            <li>â€¢ Recommended: Deepen Antagonist's Motivation</li>
+            <li>• Strong Emotional Connection to Protagonist</li>
+            <li>• Pacing in Act 3 Needs Adjustment</li>
+            <li>• Recommended: Deepen Antagonist's Motivation</li>
           </ul>
         </div>
 

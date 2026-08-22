@@ -1,4 +1,4 @@
-﻿import './index.css';
+import './index.css';
 import React, { useState, useEffect } from 'react';
 import Dashboard from './pages/Dashboard/Dashboard';
 import SceneEditor from './pages/SceneEditor/SceneEditor';
@@ -32,12 +32,13 @@ const NAV_ITEMS = [
 
 function AudienceAIContent() {
   const { theme, glassSettings } = useTheme();
+
+  // -- App State --
   const [scenes, setScenes] = useState([]);
   const [activeSceneId, setActiveSceneId] = useState(null);
   const [activeRoute, setActiveRoute] = useState('dashboard');
-  const [isDemoMode, setIsDemoMode] = useState(false);
-  const [currentDemoIndex, setCurrentDemoIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [isDemoMode, setIsDemoMode] = useState(false);
   const [vpModalOpen, setVpModalOpen] = useState(false);
 
   useEffect(() => {
@@ -210,7 +211,7 @@ function AudienceAIContent() {
 
   return (
     <div className={`aai-layout ${theme === 'deepsea' ? 'theme-deepsea' : ''}`} style={layoutStyle}>
-      {/* Exact CineScope-styled Sidebar */}
+      {/* Exact Sidebar matching screenshot */}
       <aside className="aai-exact-sidebar glass-panel">
         <div className="aai-exact-sidebar__brand">
           <div className="aai-exact-sidebar__logo">A</div>
