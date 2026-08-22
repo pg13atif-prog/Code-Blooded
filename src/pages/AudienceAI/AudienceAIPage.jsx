@@ -1,4 +1,4 @@
-import './index.css';
+﻿import './index.css';
 import React, { useState, useEffect } from 'react';
 import Dashboard from './pages/Dashboard/Dashboard';
 import SceneEditor from './pages/SceneEditor/SceneEditor';
@@ -8,14 +8,26 @@ import History from './pages/History/History';
 import Settings from './pages/Settings/Settings';
 import { sceneService } from './services/sceneService';
 import { DEMO_SCENES, DEMO_SCENE } from './data/demoScene';
+import { 
+  LayoutDashboard, 
+  FileEdit, 
+  Sparkles, 
+  Layers, 
+  Clock, 
+  Settings as SettingsIcon,
+  Film,
+  Zap,
+  ChevronRight,
+  ChevronLeft
+} from './components/Common/Icons';
 
 const NAV_ITEMS = [
-  { id: 'dashboard', label: 'Dashboard', icon: '📊' },
-  { id: 'editor', label: 'Scene Editor', icon: '✏️' },
-  { id: 'simulation', label: 'Simulate', icon: '🎭' },
-  { id: 'insights', label: 'Insights', icon: '💡' },
-  { id: 'history', label: 'History', icon: '🕐' },
-  { id: 'settings', label: 'Settings', icon: '⚙️' },
+  { id: 'dashboard', label: 'Dashboard', Icon: LayoutDashboard },
+  { id: 'editor', label: 'Scene Editor', Icon: FileEdit },
+  { id: 'simulation', label: 'Simulate', Icon: Sparkles },
+  { id: 'insights', label: 'Insights', Icon: Layers },
+  { id: 'history', label: 'History', Icon: Clock },
+  { id: 'settings', label: 'Settings', Icon: SettingsIcon },
 ];
 
 export default function AudienceAIPage() {
@@ -194,7 +206,9 @@ export default function AudienceAIPage() {
       <aside className={`aai-sidebar ${sidebarCollapsed ? 'aai-sidebar--collapsed' : ''}`}>
         {/* Brand */}
         <div className="aai-sidebar__brand" onClick={() => setSidebarCollapsed(!sidebarCollapsed)}>
-          <span className="aai-sidebar__brand-icon">🎭</span>
+          <span className="aai-sidebar__brand-icon">
+            <Film size={20} className="text-amber" />
+          </span>
           {!sidebarCollapsed && (
             <span className="aai-sidebar__brand-text">
               Audience<span className="aai-sidebar__brand-ai">AI</span>
@@ -211,17 +225,20 @@ export default function AudienceAIPage() {
         {/* Nav */}
         <nav className="aai-sidebar__nav">
           <div className="aai-sidebar__nav-label">{sidebarCollapsed ? '' : 'WORKSPACE'}</div>
-          {NAV_ITEMS.map(item => (
-            <button
-              key={item.id}
-              className={`aai-sidebar__nav-item ${activeRoute === item.id ? 'aai-sidebar__nav-item--active' : ''}`}
-              onClick={() => setActiveRoute(item.id)}
-              title={item.label}
-            >
-              <span className="aai-sidebar__nav-icon">{item.icon}</span>
-              {!sidebarCollapsed && <span className="aai-sidebar__nav-label-text">{item.label}</span>}
-            </button>
-          ))}
+          {NAV_ITEMS.map(item => {
+            const ItemIcon = item.Icon;
+            return (
+              <button
+                key={item.id}
+                className={`aai-sidebar__nav-item ${activeRoute === item.id ? 'aai-sidebar__nav-item--active' : ''}`}
+                onClick={() => setActiveRoute(item.id)}
+                title={item.label}
+              >
+                <span className="aai-sidebar__nav-icon"><ItemIcon size={16} /></span>
+                {!sidebarCollapsed && <span className="aai-sidebar__nav-label-text">{item.label}</span>}
+              </button>
+            );
+          })}
         </nav>
 
         {/* Bottom controls */}
@@ -231,7 +248,7 @@ export default function AudienceAIPage() {
             onClick={handleToggleDemoMode}
             title={isDemoMode ? `Next Demo (${currentDemoIndex + 1}/${DEMO_SCENES.length})` : 'Load Demo Scene'}
           >
-            <span>⚡</span>
+            <Zap size={13} />
             {!sidebarCollapsed && (
               <span>
                 {isDemoMode ? `Demo: ${DEMO_SCENES[currentDemoIndex]?.title.split(' ')[0] || 'Next'} (${currentDemoIndex + 1}/${DEMO_SCENES.length})` : 'Demo Mode'}
@@ -251,7 +268,7 @@ export default function AudienceAIPage() {
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
             title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
-            {sidebarCollapsed ? '»' : '«'}
+            {sidebarCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
           </button>
         </div>
       </aside>
