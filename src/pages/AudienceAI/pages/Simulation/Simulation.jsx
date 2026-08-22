@@ -17,7 +17,11 @@ import {
   TrendingUp,
   Settings as SettingsIcon,
   RotateCcw,
-  Eye
+  Eye,
+  Film,
+  Feather,
+  Compass,
+  Heart
 } from '../../components/Common/Icons';
 import PageHeader from '../../components/Common/PageHeader';
 import Button from '../../components/Common/Button';
@@ -41,7 +45,7 @@ import { historyService } from '../../services/historyService';
 import './Simulation.css';
 
 /**
- * Live Audience Persona Simulation & Visualization Screen
+ * Live Audience Persona Simulation & Visualization Screen (Compact Minimal-Scroll Edition)
  * @param {Object} props
  * @param {Object} props.activeScene
  * @param {Function} props.onNavigate
@@ -68,6 +72,10 @@ export default function Simulation({
   const [inspectedReaction, setInspectedReaction] = useState(null);
   const [isRemixModalOpen, setIsRemixModalOpen] = useState(false);
 
+  // Tabbed view state for results (minimal scrolling)
+  const [resultsTab, setResultsTab] = useState('overview'); // 'overview' | 'personas' | 'feed'
+  const [selectedPersonaTabId, setSelectedPersonaTabId] = useState(null);
+
   // Modals & UI states
   const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
   const [validationWarning, setValidationWarning] = useState(null);
@@ -84,19 +92,34 @@ export default function Simulation({
     ? problemDetectionService.diagnoseScene(simResults, activeScene?.metrics || {}, activeScene)
     : null;
 
+  // Active persona reaction in persona tab
+  const currentPersonaReaction = simResults
+    ? (simResults.find(r => r.personaId === selectedPersonaTabId) || simResults[0])
+    : null;
+
+  const getPersonaIcon = (iconName) => {
+    switch (iconName) {
+      case 'Film': return <Film size={15} />;
+      case 'Feather': return <Feather size={15} />;
+      case 'Compass': return <Compass size={15} />;
+      case 'Heart': return <Heart size={15} />;
+      default: return <Sparkles size={15} />;
+    }
+  };
+
   // Toggle Persona Selection
   const handleTogglePersona = (personaId) => {
     if (selectedPersonaIds.includes(personaId)) {
       if (selectedPersonaIds.length === 1) {
-        setValidationWarning('At least one audience persona must remain selected for simulation.');
-        setTimeout(() => setValidationWarning(null), 3500);
+        setValidationWarning('You must keep at least 1 persona active to simulate audience response.');
         return;
       }
       setSelectedPersonaIds(prev => prev.filter(id => id !== personaId));
+      setValidationWarning(null);
     } else {
       setSelectedPersonaIds(prev => [...prev, personaId]);
+      setValidationWarning(null);
     }
-    setValidationWarning(null);
   };
 
   const handleSelectAll = () => {
@@ -171,7 +194,11 @@ export default function Simulation({
       }
 
       setSimResults(reactions);
+      if (reactions.length > 0) {
+        setSelectedPersonaTabId(reactions[0].personaId);
+      }
       setViewMode('results');
+      setResultsTab('overview');
     } catch (err) {
       console.error('Simulation failed:', err);
       if (err.code === 'MISSING_API_KEY' || err.code === 'INVALID_API_KEY') {
@@ -186,12 +213,12 @@ export default function Simulation({
 
   return (
     <div className="simulation-page">
-      {/* Top Banner */}
+      {/* Top Banner (Compact) */}
       <div className="sim-header-banner glass-panel">
         <div className="sim-header-left">
           <div className="sim-header-badge-row">
             <Badge variant="amber" size="sm" icon={<Sparkles size={12} />}>
-              {viewMode === 'results' ? 'Live Audience Simulation Results' : 'Simulation Setup & Pre-Flight'}
+              {viewMode === 'results' ? 'Simulation Results' : 'Simulation Setup'}
             </Badge>
             <span className="sim-disclaimer-pill">Simulated Audience</span>
             <span className="sim-scene-tag">{activeScene?.subtitle || 'Act I • Scene 1'}</span>
@@ -202,7 +229,7 @@ export default function Simulation({
           </h1>
           <p className="sim-scene-summary">
             {viewMode === 'results' 
-              ? `Live simulated audience responses evaluated across ${simResults?.length || 0} viewpoints with calibrated narrative diagnostics.`
+              ? `Live simulated audience evaluated across ${simResults?.length || 0} personas with narrative diagnostics.`
               : 'Configure simulated audience personas to independently evaluate scene pacing, narrative stakes, and emotional resonance.'}
           </p>
         </div>
@@ -214,8 +241,8 @@ export default function Simulation({
               <span className={`sim-pulse-dot ${viewMode === 'results' ? 'ready' : isReadyToStart ? 'ready' : 'warning'}`} />
               <span className="sim-status-text">
                 {viewMode === 'results' 
-                  ? `${simResults?.length || 0} Simulated Viewpoints Ready`
-                  : `${selectedCount} of ${personas.length} Personas Selected`}
+                  ? `${simResults?.length || 0} Viewpoints Ready`
+                  : `${selectedCount} of ${personas.length} Selected`}
               </span>
             </div>
           </div>
@@ -225,35 +252,35 @@ export default function Simulation({
               <>
                 <Button
                   variant="secondary"
-                  size="md"
-                  icon={<RotateCcw size={14} />}
+                  size="sm"
+                  icon={<RotateCcw size={13} />}
                   onClick={() => setViewMode('setup')}
                 >
-                  Configure Setup
+                  Configure
                 </Button>
                 <Button
                   variant="primary"
-                  size="md"
-                  icon={<BarChart3 size={15} />}
+                  size="sm"
+                  icon={<BarChart3 size={14} />}
                   onClick={() => onViewInsights(activeScene)}
                 >
-                  View Story Analytics
+                  Analytics
                 </Button>
               </>
             ) : (
               <>
                 <Button
                   variant="secondary"
-                  size="md"
-                  icon={<FileEdit size={14} />}
+                  size="sm"
+                  icon={<FileEdit size={13} />}
                   onClick={() => onNavigate('editor')}
                 >
                   Edit Scene
                 </Button>
                 <Button
                   variant="primary"
-                  size="md"
-                  icon={<Play size={15} />}
+                  size="sm"
+                  icon={<Play size={14} />}
                   onClick={handleStartSimulation}
                   disabled={!isReadyToStart || isSimulating}
                   className="start-sim-primary-btn"
@@ -389,7 +416,7 @@ export default function Simulation({
               </div>
 
               <Badge variant={isReadyToStart ? 'emerald' : 'rose'} size="md">
-                {isReadyToStart ? 'Ready for Gemini Simulation' : 'Selection Incomplete'}
+                {isReadyToStart ? 'Ready for Simulation' : 'Selection Incomplete'}
               </Badge>
             </div>
 
@@ -422,7 +449,7 @@ export default function Simulation({
 
               <div className="preflight-detail-item">
                 <span className="detail-label">AI Engine</span>
-                <span className="detail-value">Gemini 2.5 Flash</span>
+                <span className="detail-value">Multi-Provider AI Logic</span>
                 <span className="detail-subtext">Independent Multi-Persona Reasoning</span>
               </div>
             </div>
@@ -431,7 +458,7 @@ export default function Simulation({
               <div className="preflight-guidance-text">
                 <Info size={14} />
                 <span>
-                  Clicking <strong>Start Simulation</strong> initiates independent evaluation across all {selectedCount} active persona perspectives.
+                  Clicking <strong>Start Simulation</strong> initiates independent evaluation across {selectedCount} personas.
                 </span>
               </div>
 
@@ -461,80 +488,156 @@ export default function Simulation({
       )}
 
       {/* =========================================================================
-          VIEW MODE 2: LIVE AUDIENCE VISUALIZATION & CONSENSUS
+          VIEW MODE 2: LIVE RESULTS (COMPACT MINIMAL-SCROLL TABBED LAYOUT)
           ========================================================================= */}
       {viewMode === 'results' && (
-        <div className="sim-results-section">
-          {/* 1. Prominent Audience Insight & Primary Problem Diagnostic Card */}
-          {problemDiagnosis && (
-            <AudienceInsightCard
-              diagnosis={problemDiagnosis}
-              onImproveScene={() => setIsRemixModalOpen(true)}
-              onKeepScene={async () => {
-                if (activeScene && onUpdateScene) {
-                  const updated = {
-                    ...activeScene,
-                    status: 'Completed',
-                    acceptedByCreator: true,
-                    updatedAt: new Date().toISOString()
-                  };
-                  await onUpdateScene(updated);
-                }
-              }}
-              onReSimulate={handleStartSimulation}
-            />
-          )}
+        <div className="sim-results-container">
+          {/* Results Navigation Bar */}
+          <div className="sim-results-nav glass-panel">
+            <div className="results-tab-group">
+              <button
+                type="button"
+                className={`results-tab-btn ${resultsTab === 'overview' ? 'active' : ''}`}
+                onClick={() => setResultsTab('overview')}
+              >
+                <Sparkles size={14} />
+                <span>Overview & Diagnostics</span>
+              </button>
 
-          {/* 2. Top Consensus Insight Banner */}
-          {consensusData && (
-            <ConsensusBanner consensusData={consensusData} />
-          )}
-
-          {/* 2. Dual Column: Live Reaction Feed & Persona Breakdown */}
-          <div className="sim-visualization-grid">
-            {/* Left Column: Live Reaction Feed */}
-            <div className="feed-column">
-              <LiveReactionFeed 
-                reactions={simResults || []}
-                onSelectReaction={(reaction) => setInspectedReaction(reaction)}
-              />
-            </div>
-
-            {/* Right Column: Persona Score Breakdown */}
-            <div className="breakdown-column">
-              <PersonaBreakdown
-                personaRankings={consensusData?.personaRankings || []}
-                onSelectPersona={(personaId) => {
-                  const match = simResults?.find(r => r.personaId === personaId);
-                  if (match) setInspectedReaction(match);
+              <button
+                type="button"
+                className={`results-tab-btn ${resultsTab === 'personas' ? 'active' : ''}`}
+                onClick={() => {
+                  setResultsTab('personas');
+                  if (!selectedPersonaTabId && simResults?.length > 0) {
+                    setSelectedPersonaTabId(simResults[0].personaId);
+                  }
                 }}
-              />
+              >
+                <Users size={14} />
+                <span>Persona Deep Dives ({simResults?.length || 0})</span>
+              </button>
+
+              <button
+                type="button"
+                className={`results-tab-btn ${resultsTab === 'feed' ? 'active' : ''}`}
+                onClick={() => setResultsTab('feed')}
+              >
+                <Clock size={14} />
+                <span>Live Reaction Feed</span>
+              </button>
+            </div>
+
+            <div className="results-nav-actions">
+              <Button
+                variant="secondary"
+                size="sm"
+                icon={<RotateCcw size={13} />}
+                onClick={handleStartSimulation}
+              >
+                Re-Simulate
+              </Button>
             </div>
           </div>
 
-          {/* 3. Full Detailed Persona Reaction Cards Grid */}
-          <div className="results-subheading-row">
-            <div>
-              <h3 className="results-subheading-title">Detailed Audience Perspective Reactions</h3>
-              <p className="results-subheading-desc">
-                Candid viewpoint analysis, 6-metric gauges, observed issues vs interpretations, and creative suggestions.
-              </p>
-            </div>
-            <Button
-              variant="secondary"
-              size="sm"
-              icon={<RotateCcw size={13} />}
-              onClick={handleStartSimulation}
-            >
-              Re-Simulate Scene
-            </Button>
-          </div>
+          {/* TAB 1: OVERVIEW & DIAGNOSTICS */}
+          {resultsTab === 'overview' && (
+            <div className="sim-tab-overview-grid">
+              {/* Left Column: Problem Diagnosis Card */}
+              <div className="overview-left-col">
+                {problemDiagnosis && (
+                  <AudienceInsightCard
+                    diagnosis={problemDiagnosis}
+                    onImproveScene={() => setIsRemixModalOpen(true)}
+                    onKeepScene={async () => {
+                      if (activeScene && onUpdateScene) {
+                        const updated = {
+                          ...activeScene,
+                          status: 'Completed',
+                          acceptedByCreator: true,
+                          updatedAt: new Date().toISOString()
+                        };
+                        await onUpdateScene(updated);
+                      }
+                    }}
+                    onReSimulate={handleStartSimulation}
+                  />
+                )}
+              </div>
 
-          <div className="reactions-grid">
-            {simResults && simResults.map((reaction, idx) => (
-              <ReactionCard key={reaction.personaId || idx} reaction={reaction} />
-            ))}
-          </div>
+              {/* Right Column: Consensus Banner & Persona Ranking Breakdown */}
+              <div className="overview-right-col">
+                {consensusData && (
+                  <ConsensusBanner consensusData={consensusData} />
+                )}
+
+                <PersonaBreakdown
+                  personaRankings={consensusData?.personaRankings || []}
+                  selectedPersonaId={selectedPersonaTabId}
+                  onSelectPersona={(personaId) => {
+                    setSelectedPersonaTabId(personaId);
+                    setResultsTab('personas');
+                  }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* TAB 2: PERSONA DEEP DIVES */}
+          {resultsTab === 'personas' && (
+            <div className="sim-tab-personas-view">
+              {/* Persona Selector Pill Strip */}
+              <div className="persona-pills-strip glass-panel">
+                <span className="pills-strip-label">Select Persona:</span>
+                <div className="persona-pills-list">
+                  {simResults && simResults.map((reaction) => {
+                    const isSelected = (selectedPersonaTabId || simResults[0]?.personaId) === reaction.personaId;
+                    return (
+                      <button
+                        key={reaction.personaId}
+                        type="button"
+                        className={`persona-pill-tab pill-${reaction.colorKey || 'casual'} ${isSelected ? 'active' : ''}`}
+                        onClick={() => setSelectedPersonaTabId(reaction.personaId)}
+                      >
+                        <span className="persona-pill-tab-icon">{getPersonaIcon(reaction.icon)}</span>
+                        <span className="persona-pill-tab-name">{reaction.personaName}</span>
+                        <span className="persona-pill-tab-score">{reaction.overallScore}/100</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Selected Persona Reaction Card */}
+              {currentPersonaReaction && (
+                <div className="persona-single-card-wrap">
+                  <ReactionCard reaction={currentPersonaReaction} />
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* TAB 3: LIVE FEED & FULL COMPARISON */}
+          {resultsTab === 'feed' && (
+            <div className="sim-tab-feed-grid">
+              <div className="feed-col-left">
+                <LiveReactionFeed 
+                  reactions={simResults || []}
+                  onSelectReaction={(reaction) => {
+                    setSelectedPersonaTabId(reaction.personaId);
+                    setResultsTab('personas');
+                  }}
+                />
+              </div>
+              <div className="feed-col-right">
+                <div className="feed-all-cards-grid">
+                  {simResults && simResults.map((reaction, idx) => (
+                    <ReactionCard key={reaction.personaId || idx} reaction={reaction} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -580,46 +683,14 @@ export default function Simulation({
               const updated = {
                 ...activeScene,
                 content: improvedContent,
-                scriptContent: improvedContent,
                 wordCount,
-                readTime: `${Math.max(1, Math.ceil(wordCount / 200))} min read`,
-                isRemixed: true,
+                status: 'Draft',
                 updatedAt: new Date().toISOString()
               };
               await onUpdateScene(updated);
+              setIsRemixModalOpen(false);
+              setViewMode('setup');
             }
-          }}
-          onEditImprovedScene={async (improvedContent) => {
-            if (activeScene && onUpdateScene) {
-              const wordCount = improvedContent.trim().split(/\s+/).filter(Boolean).length;
-              const updated = {
-                ...activeScene,
-                content: improvedContent,
-                scriptContent: improvedContent,
-                wordCount,
-                readTime: `${Math.max(1, Math.ceil(wordCount / 200))} min read`,
-                isRemixed: true,
-                updatedAt: new Date().toISOString()
-              };
-              await onUpdateScene(updated);
-            }
-            onNavigate('editor');
-          }}
-          onSimulateImprovedScene={async (improvedContent) => {
-            if (activeScene && onUpdateScene) {
-              const wordCount = improvedContent.trim().split(/\s+/).filter(Boolean).length;
-              const updated = {
-                ...activeScene,
-                content: improvedContent,
-                scriptContent: improvedContent,
-                wordCount,
-                readTime: `${Math.max(1, Math.ceil(wordCount / 200))} min read`,
-                isRemixed: true,
-                updatedAt: new Date().toISOString()
-              };
-              await onUpdateScene(updated);
-            }
-            handleStartSimulation();
           }}
         />
       )}

@@ -574,3 +574,194 @@
     width: 100%;
   }
 }
+
+/* =========================================================================
+   COMPACT RESULTS TABBED LAYOUT (MINIMAL SCROLLING)
+   ========================================================================= */
+
+.sim-results-container {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Results Top Tab Navigation */
+.sim-results-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-medium);
+  background: rgba(14, 17, 26, 0.95);
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.results-tab-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.results-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.results-tab-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+}
+
+.results-tab-btn.active {
+  background: rgba(245, 158, 11, 0.14);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.15);
+}
+
+.results-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Tab 1: Overview 2-Column Grid */
+.sim-tab-overview-grid {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.overview-left-col,
+.overview-right-col {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Tab 2: Persona Deep Dives View */
+.sim-tab-personas-view {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.persona-pills-strip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  background: rgba(14, 17, 26, 0.85);
+  flex-wrap: wrap;
+}
+
+.pills-strip-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.persona-pills-list {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.persona-pill-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border-radius: 9999px;
+  border: 1px solid var(--border-subtle);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-secondary);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.persona-pill-tab:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.persona-pill-tab.active {
+  border-color: currentColor;
+  box-shadow: 0 0 14px currentColor;
+  font-weight: 700;
+}
+
+.persona-pill-tab-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.persona-pill-tab-name {
+  font-family: var(--font-body, 'Inter', sans-serif);
+}
+
+.persona-pill-tab-score {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 9999px;
+  background: rgba(0, 0, 0, 0.35);
+  font-family: var(--font-mono);
+}
+
+.persona-single-card-wrap {
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Tab 3: Feed Grid */
+.sim-tab-feed-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.feed-col-left,
+.feed-col-right {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.feed-all-cards-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+@media (max-width: 1100px) {
+  .sim-tab-overview-grid,
+  .sim-tab-feed-grid {
+    grid-template-columns: 1fr;
+  }
+}
