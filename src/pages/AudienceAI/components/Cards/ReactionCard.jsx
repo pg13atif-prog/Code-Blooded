@@ -9,8 +9,6 @@ import './ReactionCard.css';
  * @param {Object} props.reaction
  */
 export default function ReactionCard({ reaction }) {
-  if (!reaction) return null;
-
   const getPersonaIcon = (iconName) => {
     switch (iconName) {
       case 'Film': return <Film size={20} />;
@@ -30,7 +28,7 @@ export default function ReactionCard({ reaction }) {
       case 'suggestion':
         return <span className="issue-badge badge-suggestion">Suggestion</span>;
       default:
-        return <span className="issue-badge badge-observed">Observation</span>;
+        return <span className="issue-badge badge-observed">Note</span>;
     }
   };
 
@@ -49,43 +47,41 @@ export default function ReactionCard({ reaction }) {
         </div>
 
         <div className="reaction-score-badge">
-          <span className="reaction-score-num">{reaction.overallScore ?? 75}</span>
+          <span className="reaction-score-num">{reaction.overallScore}</span>
           <span className="reaction-score-denom">/100</span>
         </div>
       </div>
 
       {/* Persona Candid Reaction */}
-      {reaction.reaction && (
-        <div className="reaction-quote-box">
-          <p className="reaction-quote-text">"{reaction.reaction}"</p>
-        </div>
-      )}
+      <div className="reaction-quote-box">
+        <p className="reaction-quote-text">"{reaction.reaction}"</p>
+      </div>
 
       {/* 6-Dimension Mini Metric Grid */}
       <div className="reaction-metrics-mini-grid">
         <div className="mini-metric">
           <span className="mini-metric-label">Tension</span>
-          <span className="mini-metric-val">{reaction.tensionScore ?? 75}%</span>
+          <span className="mini-metric-val">{reaction.tensionScore}%</span>
         </div>
         <div className="mini-metric">
           <span className="mini-metric-label">Impact</span>
-          <span className="mini-metric-val">{reaction.emotionalImpactScore ?? 75}%</span>
+          <span className="mini-metric-val">{reaction.emotionalImpactScore}%</span>
         </div>
         <div className="mini-metric">
           <span className="mini-metric-label">Pacing</span>
-          <span className="mini-metric-val">{reaction.pacingScore ?? 75}%</span>
+          <span className="mini-metric-val">{reaction.pacingScore}%</span>
         </div>
         <div className="mini-metric">
           <span className="mini-metric-label">Consistency</span>
-          <span className="mini-metric-val">{reaction.consistencyScore ?? 80}%</span>
+          <span className="mini-metric-val">{reaction.consistencyScore}%</span>
         </div>
         <div className="mini-metric">
           <span className="mini-metric-label">Clarity</span>
-          <span className="mini-metric-val">{reaction.clarityScore ?? 80}%</span>
+          <span className="mini-metric-val">{reaction.clarityScore}%</span>
         </div>
         <div className="mini-metric">
           <span className="mini-metric-label">Humor</span>
-          <span className="mini-metric-val">{reaction.humorScore ?? 20}%</span>
+          <span className="mini-metric-val">{reaction.humorScore}%</span>
         </div>
       </div>
 
@@ -95,7 +91,7 @@ export default function ReactionCard({ reaction }) {
           <span className="feedback-section-title text-emerald">✓ Strengths Noticed:</span>
           <ul className="feedback-list">
             {reaction.strengths.map((str, idx) => (
-              <li key={idx} className="feedback-item">{typeof str === 'string' ? str : str?.description || String(str)}</li>
+              <li key={idx} className="feedback-item">{str}</li>
             ))}
           </ul>
         </div>
@@ -106,19 +102,14 @@ export default function ReactionCard({ reaction }) {
         <div className="reaction-feedback-section">
           <span className="feedback-section-title text-amber">Critique & Observations:</span>
           <div className="issues-list">
-            {reaction.issues.map((issue, idx) => {
-              const issueType = typeof issue === 'object' && issue?.type ? issue.type : 'observed_issue';
-              const issueDesc = typeof issue === 'object' ? (issue.description || issue.text || JSON.stringify(issue)) : String(issue);
-
-              return (
-                <div key={idx} className="issue-item">
-                  <div className="issue-badge-row">
-                    {getIssueBadge(issueType)}
-                  </div>
-                  <p className="issue-desc">{issueDesc}</p>
+            {reaction.issues.map((issue, idx) => (
+              <div key={idx} className="issue-item">
+                <div className="issue-badge-row">
+                  {getIssueBadge(issue.type)}
                 </div>
-              );
-            })}
+                <p className="issue-desc">{issue.description}</p>
+              </div>
+            ))}
           </div>
         </div>
       )}
@@ -129,7 +120,7 @@ export default function ReactionCard({ reaction }) {
           <span className="feedback-section-title text-indigo">💡 Persona Suggestions:</span>
           <ul className="feedback-list">
             {reaction.suggestions.map((sug, idx) => (
-              <li key={idx} className="feedback-item">{typeof sug === 'string' ? sug : sug?.description || String(sug)}</li>
+              <li key={idx} className="feedback-item">{sug}</li>
             ))}
           </ul>
         </div>

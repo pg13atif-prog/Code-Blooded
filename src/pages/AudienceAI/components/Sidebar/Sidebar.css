@@ -1,6 +1,8 @@
 .app-sidebar {
   width: var(--sidebar-width);
-  height: calc(100vh - 68px); position: sticky; top: 68px;
+  height: 100vh;
+  position: sticky;
+  top: 0;
   left: 0;
   display: flex;
   flex-direction: column;
@@ -304,4 +306,3 @@
     z-index: 99;
   }
 }
-
