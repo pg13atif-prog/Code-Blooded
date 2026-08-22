@@ -309,3 +309,27 @@ button, input, textarea, select {
   background: rgba(245, 158, 11, 0.35);
 }
 
+/* ==========================================================================
+   Cinescope Embedded Wrapper Overrides
+   ========================================================================== */
+.audienceai-cinescope-wrapper {
+  padding-top: 68px;
+  min-height: 100vh;
+  background: #08090d;
+  position: relative;
+  width: 100%;
+}
+
+.audienceai-cinescope-wrapper .app-layout {
+  min-height: calc(100vh - 68px);
+}
+
+.audienceai-cinescope-wrapper .app-sidebar {
+  top: 68px;
+  height: calc(100vh - 68px);
+}
+
+.audienceai-cinescope-wrapper .app-navbar {
+  top: 68px;
+  z-index: 90;
+}
