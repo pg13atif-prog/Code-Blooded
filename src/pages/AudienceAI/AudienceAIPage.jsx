@@ -1,4 +1,4 @@
-import './index.css';
+﻿import './index.css';
 import React, { useState, useEffect } from 'react';
 import Dashboard from './pages/Dashboard/Dashboard';
 import SceneEditor from './pages/SceneEditor/SceneEditor';
@@ -89,7 +89,7 @@ function AudienceAIContent() {
     try {
       const newScene = await sceneService.createScene({
         title: '',
-        subtitle: `Act I • Scene ${scenes.length + 1}`,
+        subtitle: `Act I â€¢ Scene ${scenes.length + 1}`,
         genre: 'Drama / Fiction',
         context: '',
         characters: ['Protagonist'],

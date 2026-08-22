@@ -1,16 +1,16 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { getAiPickForMe } from '../../services/ai';
 import { searchMedia } from '../../services/tmdb';
 import MovieCard from '../../components/MovieCard';
 import './CineAiTools.css';
 
 const VIBES = [
-  '🎲 Any Vibe',
-  '🔥 Mind-Blowing',
+  '✨ Any Vibe',
+  '🧠 Mind-Blowing',
   '🍿 Easy Watch',
-  '🌙 Dark & Gritty',
-  '💖 Date Night',
-  '⚡ High Octane'
+  '🖤 Dark & Gritty',
+  '❤️ Date Night',
+  '🔥 High Octane'
 ];
 
 const PickForMe = () => {
@@ -18,7 +18,7 @@ const PickForMe = () => {
   const [movie, setMovie] = useState(null);
   const [error, setError] = useState(null);
   const [seenTitles, setSeenTitles] = useState([]);
-  const [selectedVibe, setSelectedVibe] = useState('🎲 Any Vibe');
+  const [selectedVibe, setSelectedVibe] = useState('✨ Any Vibe');
 
   const handlePick = async (overrideVibe) => {
     const activeVibe = overrideVibe || selectedVibe;
@@ -35,7 +35,7 @@ const PickForMe = () => {
       if (!match) throw new Error("Could not find title on TMDB");
 
       setSeenTitles(prev => [...prev, match.title]);
-      const cleanRationale = (aiPick.rationale || '').replace(/^["'“]/, '').replace(/["'”]$/, '').trim();
+      const cleanRationale = (aiPick.rationale || '').replace(/^["'â€œ]/, '').replace(/["'â€]$/, '').trim();
       setMovie({ ...match, rationale: cleanRationale });
     } catch (err) {
       console.error(err);
@@ -75,7 +75,7 @@ const PickForMe = () => {
         {!movie && !loading && (
           <div className="pick-stage-card animated-entrance">
             <div className="pick-hero-icon-ring">
-              <span className="pick-hero-emoji">🎲</span>
+              <span className="pick-hero-emoji">ðŸŽ²</span>
             </div>
 
             <div className="pick-vibe-section">
@@ -101,9 +101,9 @@ const PickForMe = () => {
             </button>
 
             <div className="pick-stage-footer">
-              <span>⚡ Powered by CineAI</span>
-              <span className="dot">•</span>
-              <span>🎬 10,000+ Curated Bangers</span>
+              <span>âš¡ Powered by CineAI</span>
+              <span className="dot">â€¢</span>
+              <span>ðŸŽ¬ 10,000+ Curated Bangers</span>
             </div>
           </div>
         )}

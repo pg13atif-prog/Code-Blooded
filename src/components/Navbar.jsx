@@ -18,21 +18,22 @@ const MOBILE_SEARCH_TYPES = [
 
 /* â”€â”€ Dropdown menu configs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const discoverItems = [
-  { icon: 'ðŸŽ¬', label: 'Movies', desc: 'Browse the complete movie library.', hash: '#discover/movies' },
-  { icon: 'ðŸ“º', label: 'TV Shows', desc: 'Explore trending series & shows.', hash: '#discover/tv' },
-  { icon: 'ðŸ”¥', label: 'Trending', desc: 'What everyone is watching this week.', hash: '#discover/trending' },
+  { icon: '🎬', label: 'Movies', desc: 'Browse the complete movie library.', hash: '#discover/movies' },
+  { icon: '📺', label: 'TV Shows', desc: 'Explore trending series & shows.', hash: '#discover/tv' },
+  { icon: '🔥', label: 'Trending', desc: 'What everyone is watching this week.', hash: '#discover/trending' },
 ];
 
 const cineaiItems = [
-  { icon: 'ðŸŽ¬', label: 'What Should I Watch?', desc: 'AI-powered movie recommendations based on mood.', hash: '#cineai-tool/what-to-watch' },
-  { icon: 'ðŸŽ¯', label: 'Pick For Me', desc: 'Canâ€™t decide? Let AI spin the wheel for you.', hash: '#cineai-tool/pick-for-me' },
-  { icon: 'ðŸ“…', label: 'Movie Night Planner', desc: 'Answer quick questions to find your perfect movie.', hash: '#cineai-tool/planner' },
-  { icon: 'ðŸŽ­', label: 'Movie Debate', desc: 'Pick two movies and let AI declare the winner.', hash: '#cineai-tool/debate' },
+  { icon: '🎭', label: 'AudienceAI Simulator', desc: 'Simulate audience persona reactions & detect craft bottlenecks.', hash: '#audience' },
+  { icon: '✨', label: 'What Should I Watch?', desc: 'AI-powered movie recommendations based on mood.', hash: '#cineai-tool/what-to-watch' },
+  { icon: '🎲', label: 'Pick For Me', desc: "Can't decide? Let AI spin the wheel for you.", hash: '#cineai-tool/pick-for-me' },
+  { icon: '📅', label: 'Movie Night Planner', desc: 'Answer quick questions to find your perfect movie.', hash: '#cineai-tool/planner' },
+  { icon: '⚔️', label: 'Movie Debate', desc: 'Pick two movies and let AI declare the winner.', hash: '#cineai-tool/debate' },
 ];
 
 const friendsItems = [
-  { icon: 'ðŸ‘¥', label: 'My Friends', desc: 'View and manage your friends.', hash: '#friends' },
-  { icon: 'ðŸ¤', label: 'Movie Match', desc: 'Compare your movie taste with friends.', hash: '#social' },
+  { icon: '👥', label: 'My Friends', desc: 'View and manage your friends.', hash: '#friends' },
+  { icon: '🎯', label: 'Movie Match', desc: 'Compare your movie taste with friends.', hash: '#social' },
 ];
 
 /* â”€â”€ Framer Motion variants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
@@ -48,7 +49,7 @@ const profileDropdownVariants = {
   exit: { opacity: 0, x: "0%", y: -12, scale: 0.97, transition: { duration: 0.22, ease: [0.16, 1, 0.3, 1] } },
 };
 
-const Navbar = () => {
+const Navbar = ({ currentRoute }) => {
   const { currentUser, logout } = useAuth();
   const { showAlert, showToast } = useAlert();
   const [scrolled, setScrolled] = useState(false);
