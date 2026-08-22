@@ -46,10 +46,10 @@ export default function History({
   useEffect(() => {
     async function loadHistory() {
       const records = await historyService.getSimulationHistory();
-      setHistoryList(records);
+      setHistoryList(records || []);
     }
     loadHistory();
-  }, [scenes]);
+  }, []);
 
   const getBadgeVariant = (status) => {
     switch (status) {

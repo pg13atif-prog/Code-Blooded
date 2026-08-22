@@ -271,5 +271,12 @@ Generate the improved screenplay scene and return strictly JSON matching the res
     }
 
     throw lastError || new Error('Scene remix failed across all fallback AI providers.');
+  },
+
+  /**
+   * Alias for remixScene
+   */
+  async generateRemix(params) {
+    return this.remixScene(params);
   }
 };

@@ -1,10 +1,41 @@
-import React from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import EngagementChart from '../../components/Charts/EngagementChart';
 import PredictionGauge from '../../components/Charts/PredictionGauge';
 import StatWidget from '../../components/Cards/StatWidget';
+import { historyService } from '../../services/historyService';
 import './Dashboard.css';
 
-export default function Dashboard({ scenes = [], activeScene, onSelectScene, onNewSimulation, onSimulate, onViewInsights, onLoadDemo }) {
+export default function Dashboard({ 
+  scenes = [], 
+  activeScene, 
+  onSelectScene, 
+  onNewSimulation, 
+  onOpenActiveScene, 
+  onSimulate, 
+  onViewInsights, 
+  onLoadDemo 
+}) {
+  const [history, setHistory] = useState([]);
+
+  useEffect(() => {
+    try {
+      const list = historyService.getSimulationHistorySync ? historyService.getSimulationHistorySync() : [];
+      setHistory(list);
+    } catch (e) {
+      console.warn('History service sync unavailable:', e);
+    }
+  }, []);
+
+  const handleOpenActive = () => {
+    if (onOpenActiveScene) {
+      onOpenActiveScene();
+    } else if (scenes && scenes.length > 0 && onSelectScene) {
+      onSelectScene(scenes[0]);
+    } else if (onNewSimulation) {
+      onNewSimulation();
+    }
+  };
+
   return (
     <div className="aai-dashboard-exact">
       {/* ── Top Area: Hero + Personas ───────────────────────── */}
@@ -25,7 +56,7 @@ export default function Dashboard({ scenes = [], activeScene, onSelectScene, onN
           
           <div className="aai-hero-actions">
             <button className="aai-btn-gradient" onClick={onNewSimulation}>New Simulation</button>
-            <button className="aai-btn-outline" onClick={() => scenes.length > 0 ? onSelectScene?.(scenes[0]) : onNewSimulation?.()}>Open Active Scene</button>
+            <button className="aai-btn-outline" onClick={handleOpenActive}>Open Active Scene</button>
           </div>
         </div>
 
@@ -76,7 +107,7 @@ export default function Dashboard({ scenes = [], activeScene, onSelectScene, onN
         </div>
       </div>
 
-      {/* ── Middle Area: Chart + Stats ─────────────────────── */}
+      {/* ── Middle Area: Chart + Stats ──────────────────────── */}
       <div className="aai-dashboard-middle-row">
         <div className="aai-chart-wrapper">
           <EngagementChart />
