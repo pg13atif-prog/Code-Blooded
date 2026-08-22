@@ -48,7 +48,7 @@ const profileDropdownVariants = {
   exit: { opacity: 0, x: "0%", y: -12, scale: 0.97, transition: { duration: 0.22, ease: [0.16, 1, 0.3, 1] } },
 };
 
-const Navbar = () => {
+const Navbar = ({ currentRoute }) => {
   const { currentUser, logout } = useAuth();
   const { showAlert, showToast } = useAlert();
   const [scrolled, setScrolled] = useState(false);

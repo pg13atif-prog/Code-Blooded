@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+﻿import { useEffect, useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -406,7 +406,7 @@ function App() {
                 </>
               )}
               {status === "error" && (
-                <p className="movie-status">We couldn’t load content right now.</p>
+                <p className="movie-status">We couldnâ€™t load content right now.</p>
               )}
               {status === "success" && (
                 <>
@@ -446,7 +446,11 @@ function App() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
         >
+<<<<<<< HEAD
           {!['audience', 'audienceai', 'simulator'].includes(currentRoute) && <Navbar />}
+=======
+          <Navbar currentRoute={currentRoute} />
+>>>>>>> 317d1e7 (fix(navbar): guarantee navbar auto-hide on AudienceAI with hover sensor & round off hard square corners)
           <AnimatePresence mode="wait">
             <motion.div
               key={currentRoute + (currentParams ? JSON.stringify(currentParams) : '')}
@@ -517,9 +521,9 @@ const AchievementToasts = () => {
             exit={{ opacity: 0, y: -40, opacity: 0, scale: 0.85, transition: { duration: 0.18 } }}
             layout
           >
-            <div className="toast-trophy">🏆</div>
+            <div className="toast-trophy">ðŸ†</div>
             <div className="toast-body">
-              <div className="toast-title">🏆 Achievement Unlocked!</div>
+              <div className="toast-title">ðŸ† Achievement Unlocked!</div>
               <div className="toast-name">{t.name}</div>
               <div className="toast-desc">"{t.desc}"</div>
             </div>
@@ -529,7 +533,7 @@ const AchievementToasts = () => {
               onClick={() => handleDismiss(t.id)}
               aria-label="Dismiss"
             >
-              ✕
+              âœ•
             </button>
           </motion.div>
         ))}
