@@ -77,7 +77,9 @@ YOUR TASK:
 const buildScenePrompt = (scene, persona) => {
   const charactersList = Array.isArray(scene.characters) ? scene.characters.join(', ') : 'None listed';
   
-  return `Please evaluate the following story scene from your specific persona perspective (${persona.name}).
+  return `Analyze the following story scene with rigorous specificity. You MUST cite exact lines, phrases, or described moments from the scene text in every strength, issue, and suggestion. Generic feedback is unacceptable.
+
+PERSONA: ${persona.name}
 
 SCENE PAYLOAD:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

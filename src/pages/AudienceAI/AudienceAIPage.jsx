@@ -15,6 +15,7 @@ const NAV_ITEMS = [
   { id: 'simulation', label: 'Simulate', icon: '🎭' },
   { id: 'insights', label: 'Insights', icon: '💡' },
   { id: 'history', label: 'History', icon: '🕐' },
+  { id: 'settings', label: 'Settings', icon: '⚙️' },
 ];
 
 export default function AudienceAIPage() {
@@ -23,6 +24,7 @@ export default function AudienceAIPage() {
   const [activeRoute, setActiveRoute] = useState('dashboard');
   const [isDemoMode, setIsDemoMode] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   useEffect(() => {
     async function loadScenes() {
@@ -175,50 +177,71 @@ export default function AudienceAIPage() {
   };
 
   return (
-    <div className="audienceai-embed">
-      {/* Compact inline tab nav — replaces sidebar + breadcrumb toolbar */}
-      <div className="audienceai-embed__toolbar">
-        <div className="audienceai-embed__toolbar-left">
-          <span className="audienceai-embed__brand">
-            <span className="audienceai-embed__brand-icon">🎭</span>
-            Audience<span className="audienceai-embed__brand-ai">AI</span>
-          </span>
-          <nav className="audienceai-embed__tabs">
-            {NAV_ITEMS.map(item => (
-              <button
-                key={item.id}
-                className={`audienceai-embed__tab ${activeRoute === item.id ? 'audienceai-embed__tab--active' : ''}`}
-                onClick={() => setActiveRoute(item.id)}
-              >
-                <span className="audienceai-embed__tab-icon">{item.icon}</span>
-                <span className="audienceai-embed__tab-label">{item.label}</span>
-              </button>
-            ))}
-          </nav>
-        </div>
-        <div className="audienceai-embed__toolbar-right">
-          {activeScene && (
-            <span className="audienceai-embed__scene-name">
-              {activeScene.title || 'Untitled Scene'}
+    <div className="aai-layout">
+      {/* Sidebar */}
+      <aside className={`aai-sidebar ${sidebarCollapsed ? 'aai-sidebar--collapsed' : ''}`}>
+        {/* Brand */}
+        <div className="aai-sidebar__brand" onClick={() => setSidebarCollapsed(!sidebarCollapsed)}>
+          <span className="aai-sidebar__brand-icon">🎭</span>
+          {!sidebarCollapsed && (
+            <span className="aai-sidebar__brand-text">
+              Audience<span className="aai-sidebar__brand-ai">AI</span>
             </span>
           )}
+        </div>
+
+        {/* New Scene */}
+        <button className="aai-sidebar__new-btn" onClick={handleNewSimulation}>
+          <span>+</span>
+          {!sidebarCollapsed && <span>New Simulation</span>}
+        </button>
+
+        {/* Nav */}
+        <nav className="aai-sidebar__nav">
+          <div className="aai-sidebar__nav-label">{sidebarCollapsed ? '' : 'WORKSPACE'}</div>
+          {NAV_ITEMS.map(item => (
+            <button
+              key={item.id}
+              className={`aai-sidebar__nav-item ${activeRoute === item.id ? 'aai-sidebar__nav-item--active' : ''}`}
+              onClick={() => setActiveRoute(item.id)}
+              title={item.label}
+            >
+              <span className="aai-sidebar__nav-icon">{item.icon}</span>
+              {!sidebarCollapsed && <span className="aai-sidebar__nav-label-text">{item.label}</span>}
+            </button>
+          ))}
+        </nav>
+
+        {/* Bottom controls */}
+        <div className="aai-sidebar__bottom">
           <button
-            className={`audienceai-embed__demo-btn ${isDemoMode ? 'audienceai-embed__demo-btn--active' : ''}`}
+            className={`aai-sidebar__demo-btn ${isDemoMode ? 'aai-sidebar__demo-btn--active' : ''}`}
             onClick={handleToggleDemoMode}
+            title={isDemoMode ? 'Exit Demo Mode' : 'Load Demo Scene'}
           >
-            ⚡ {isDemoMode ? 'Exit Demo' : 'Demo'}
+            <span>⚡</span>
+            {!sidebarCollapsed && <span>{isDemoMode ? 'Exit Demo' : 'Demo Mode'}</span>}
           </button>
+
+          {!sidebarCollapsed && activeScene && (
+            <div className="aai-sidebar__scene-info">
+              <div className="aai-sidebar__scene-title">{activeScene.title || 'Untitled Scene'}</div>
+              <div className="aai-sidebar__scene-sub">{activeScene.subtitle || 'Act I'}</div>
+            </div>
+          )}
+
           <button
-            className="audienceai-embed__new-btn"
-            onClick={handleNewSimulation}
+            className="aai-sidebar__collapse-btn"
+            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
-            + New Scene
+            {sidebarCollapsed ? '»' : '«'}
           </button>
         </div>
-      </div>
+      </aside>
 
-      {/* Page content */}
-      <main className="audienceai-embed__content" key={activeRoute}>
+      {/* Main content */}
+      <main className="aai-main" key={activeRoute}>
         {renderCurrentPage()}
       </main>
     </div>
