@@ -9,29 +9,34 @@ import {
   Film, 
   Compass, 
   Flame, 
-  BarChart3 
+  BarChart3,
+  Zap,
+  Clock
 } from '../../components/Common/Icons';
 import PageHeader from '../../components/Common/PageHeader';
 import Button from '../../components/Common/Button';
 import SceneCard from '../../components/Cards/SceneCard';
 import Badge from '../../components/Common/Badge';
+import { DEMO_SCENES } from '../../data/demoScene';
 import './Dashboard.css';
 
 /**
- * Dashboard Page
+ * Dashboard Page with Interactive Demo Showcase
  * @param {Object} props
  * @param {Array} props.scenes
  * @param {Function} props.onSelectScene
  * @param {Function} props.onNewSimulation
  * @param {Function} props.onSimulate
  * @param {Function} props.onViewInsights
+ * @param {Function} [props.onLoadDemo]
  */
 export default function Dashboard({
   scenes = [],
   onSelectScene,
   onNewSimulation,
   onSimulate,
-  onViewInsights
+  onViewInsights,
+  onLoadDemo
 }) {
   return (
     <div className="dashboard-page">
@@ -77,7 +82,7 @@ export default function Dashboard({
         <div className="hero-feature-preview">
           <div className="persona-mini-grid">
             <div className="persona-mini-card mini-casual">
-              <span className="mini-icon">🍿</span>
+              <span className="mini-icon">🎬</span>
               <span className="mini-title">Casual Viewer</span>
               <span className="mini-tag">Hook & Pacing</span>
             </div>
@@ -100,12 +105,73 @@ export default function Dashboard({
         </div>
       </section>
 
-      {/* Recent Simulations Section */}
+      {/* Instant Demo Scenarios Showcase */}
       <section className="dashboard-section">
         <div className="section-header-row">
           <div>
-            <h2 className="section-title">Recent Simulations</h2>
-            <p className="section-subtitle">Scenes and story segments ready for review and audience testing</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+              <Zap size={18} className="text-amber" />
+              <h2 className="section-title">Instant Demo Showcase ({DEMO_SCENES.length} Scenarios)</h2>
+            </div>
+            <p className="section-subtitle">
+              Click any screenplay scenario to test instant multi-persona AI audience simulation.
+            </p>
+          </div>
+        </div>
+
+        <div className="demo-showcase-grid">
+          {DEMO_SCENES.map((demo) => (
+            <div key={demo.id} className="demo-showcase-card glass-panel">
+              <div className="demo-card-top">
+                <div className="demo-card-badges">
+                  <span className="demo-genre-pill">{demo.genre}</span>
+                  <span className="demo-read-pill">{demo.readTime}</span>
+                </div>
+                <span className="demo-words-tag">{demo.wordCount} words</span>
+              </div>
+
+              <div className="demo-card-body">
+                <h3 className="demo-card-title">{demo.title}</h3>
+                <span className="demo-card-subtitle">{demo.subtitle}</span>
+                <p className="demo-card-tagline">"{demo.tagline}"</p>
+                <p className="demo-card-context">{demo.context}</p>
+              </div>
+
+              <div className="demo-card-footer">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  icon={<BookOpen size={13} />}
+                  onClick={() => {
+                    if (onLoadDemo) onLoadDemo(demo, 'editor');
+                    else if (onSelectScene) onSelectScene(demo);
+                  }}
+                >
+                  Edit Script
+                </Button>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  icon={<Play size={13} />}
+                  onClick={() => {
+                    if (onLoadDemo) onLoadDemo(demo, 'simulation');
+                    else if (onSimulate) onSimulate(demo);
+                  }}
+                >
+                  Simulate Demo
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Recent User Simulations Section */}
+      <section className="dashboard-section">
+        <div className="section-header-row">
+          <div>
+            <h2 className="section-title">Your Story Workspace</h2>
+            <p className="section-subtitle">Custom scenes and story segments created in your workspace</p>
           </div>
 
           <Button
@@ -140,20 +206,24 @@ export default function Dashboard({
             <p>Write dialogue, context, and character intentions in the Scene Editor.</p>
           </div>
         </div>
-        <div className="workflow-divider" />
+
+        <div className="workflow-step-divider">→</div>
+
         <div className="workflow-step">
           <div className="step-number">02</div>
           <div className="step-info">
-            <h4>Configure Personas</h4>
-            <p>Select target audience archetypes from casual readers to critical theorists.</p>
+            <h4>Run AI Audience</h4>
+            <p>Simulate instant reactions across 4 calibrated viewer perspectives.</p>
           </div>
         </div>
-        <div className="workflow-divider" />
+
+        <div className="workflow-step-divider">→</div>
+
         <div className="workflow-step">
           <div className="step-number">03</div>
           <div className="step-info">
-            <h4>Review Insights</h4>
-            <p>Evaluate tension, emotional resonance, pacing, and continuity scores.</p>
+            <h4>Diagnose & Polish</h4>
+            <p>Review 6-metric diagnostics, consensus insights, and AI Scene Remixes.</p>
           </div>
         </div>
       </section>

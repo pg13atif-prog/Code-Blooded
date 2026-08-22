@@ -7,7 +7,7 @@ import Insights from './pages/Insights/Insights';
 import History from './pages/History/History';
 import Settings from './pages/Settings/Settings';
 import { sceneService } from './services/sceneService';
-import { DEMO_SCENE } from './data/demoScene';
+import { DEMO_SCENES, DEMO_SCENE } from './data/demoScene';
 
 const NAV_ITEMS = [
   { id: 'dashboard', label: 'Dashboard', icon: '📊' },
@@ -23,6 +23,7 @@ export default function AudienceAIPage() {
   const [activeSceneId, setActiveSceneId] = useState(null);
   const [activeRoute, setActiveRoute] = useState('dashboard');
   const [isDemoMode, setIsDemoMode] = useState(false);
+  const [currentDemoIndex, setCurrentDemoIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
@@ -47,19 +48,27 @@ export default function AudienceAIPage() {
     if (scene) setActiveSceneId(scene.id);
   };
 
-  const handleToggleDemoMode = async () => {
-    if (!isDemoMode) {
-      const exists = scenes.find(s => s.id === DEMO_SCENE.id);
+  const handleLoadDemoScene = async (demo, targetRoute = 'editor') => {
+    try {
+      const exists = scenes.find(s => s.id === demo.id);
+      let targetScene = exists;
       if (!exists) {
-        const savedDemo = await sceneService.saveScene(DEMO_SCENE);
-        setScenes(prev => [savedDemo, ...prev.filter(s => s.id !== DEMO_SCENE.id)]);
+        targetScene = await sceneService.saveScene(demo);
+        setScenes(prev => [targetScene, ...prev.filter(s => s.id !== demo.id)]);
       }
-      setActiveSceneId(DEMO_SCENE.id);
+      setActiveSceneId(targetScene.id);
       setIsDemoMode(true);
-      setActiveRoute('editor');
-    } else {
-      setIsDemoMode(false);
+      setActiveRoute(targetRoute);
+    } catch (err) {
+      console.error('Failed to load demo scene:', err);
     }
+  };
+
+  const handleToggleDemoMode = async () => {
+    const nextIndex = isDemoMode ? (currentDemoIndex + 1) % DEMO_SCENES.length : 0;
+    const targetDemo = DEMO_SCENES[nextIndex];
+    setCurrentDemoIndex(nextIndex);
+    await handleLoadDemoScene(targetDemo, 'editor');
   };
 
   const handleNewSimulation = async () => {
@@ -74,6 +83,7 @@ export default function AudienceAIPage() {
       });
       setScenes(prev => [newScene, ...prev]);
       setActiveSceneId(newScene.id);
+      setIsDemoMode(false);
       setActiveRoute('editor');
     } catch (err) {
       console.error('Failed to create new scene:', err);
@@ -123,6 +133,7 @@ export default function AudienceAIPage() {
             onNewSimulation={handleNewSimulation}
             onSimulate={handleSimulateScene}
             onViewInsights={handleViewInsights}
+            onLoadDemo={handleLoadDemoScene}
           />
         );
       case 'editor':
@@ -171,6 +182,7 @@ export default function AudienceAIPage() {
             onNewSimulation={handleNewSimulation}
             onSimulate={handleSimulateScene}
             onViewInsights={handleViewInsights}
+            onLoadDemo={handleLoadDemoScene}
           />
         );
     }
@@ -217,10 +229,14 @@ export default function AudienceAIPage() {
           <button
             className={`aai-sidebar__demo-btn ${isDemoMode ? 'aai-sidebar__demo-btn--active' : ''}`}
             onClick={handleToggleDemoMode}
-            title={isDemoMode ? 'Exit Demo Mode' : 'Load Demo Scene'}
+            title={isDemoMode ? `Next Demo (${currentDemoIndex + 1}/${DEMO_SCENES.length})` : 'Load Demo Scene'}
           >
             <span>⚡</span>
-            {!sidebarCollapsed && <span>{isDemoMode ? 'Exit Demo' : 'Demo Mode'}</span>}
+            {!sidebarCollapsed && (
+              <span>
+                {isDemoMode ? `Demo: ${DEMO_SCENES[currentDemoIndex]?.title.split(' ')[0] || 'Next'} (${currentDemoIndex + 1}/${DEMO_SCENES.length})` : 'Demo Mode'}
+              </span>
+            )}
           </button>
 
           {!sidebarCollapsed && activeScene && (
