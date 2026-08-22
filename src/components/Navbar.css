@@ -2538,3 +2538,59 @@
   }
 }
 
+/* ==========================================================================
+   AudienceAI Highlight & NEW Badge in Top Navbar
+   ========================================================================== */
+.navbar__link--audience-new {
+  position: relative;
+  transition: all 0.25s ease;
+}
+
+.navbar__link--audience-new:hover .navbar__link-label {
+  color: #f59e0b !important;
+  text-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+}
+
+.navbar__new-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3.5px;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(236, 72, 153, 0.18));
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  color: #fbbf24;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 1.5px 5.5px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.25);
+  animation: badgeGlowPulse 2.4s ease-in-out infinite;
+  margin-left: 4px;
+  transform: translateY(-1px);
+}
+
+.navbar__new-badge-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #f59e0b;
+  box-shadow: 0 0 5px #f59e0b;
+  animation: badgeDotBlink 1.8s ease-in-out infinite;
+}
+
+@keyframes badgeGlowPulse {
+  0%, 100% {
+    box-shadow: 0 0 6px rgba(245, 158, 11, 0.2);
+    border-color: rgba(245, 158, 11, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 14px rgba(245, 158, 11, 0.55), 0 0 4px rgba(236, 72, 153, 0.4);
+    border-color: rgba(245, 158, 11, 0.85);
+  }
+}
+
+@keyframes badgeDotBlink {
+  0%, 100% { opacity: 0.5; transform: scale(0.85); }
+  50% { opacity: 1; transform: scale(1.25); }
+}

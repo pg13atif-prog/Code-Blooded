@@ -192,36 +192,38 @@ export default function App() {
   };
 
   return (
-    <div className="app-layout">
-      {/* Sidebar Navigation */}
-      <Sidebar
-        activeRoute={activeRoute}
-        onNavigate={setActiveRoute}
-        onNewSimulation={handleNewSimulation}
-        collapsed={sidebarCollapsed}
-        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-        mobileOpen={mobileSidebarOpen}
-        onCloseMobile={() => setMobileSidebarOpen(false)}
-      />
-
-      {/* Main Content Layout */}
-      <div className="main-wrapper">
-        {/* Top Navbar */}
-        <Navbar
+    <div className="audienceai-cinescope-wrapper">
+      <div className="app-layout">
+        {/* Sidebar Navigation */}
+        <Sidebar
           activeRoute={activeRoute}
           onNavigate={setActiveRoute}
-          activeScene={activeScene}
-          allScenes={scenes}
-          onSelectScene={handleSelectScene}
-          onToggleMobileMenu={() => setMobileSidebarOpen(true)}
-          isDemoMode={isDemoMode}
-          onToggleDemoMode={handleToggleDemoMode}
+          onNewSimulation={handleNewSimulation}
+          collapsed={sidebarCollapsed}
+          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+          mobileOpen={mobileSidebarOpen}
+          onCloseMobile={() => setMobileSidebarOpen(false)}
         />
 
-        {/* Page Content Viewport */}
-        <main className="page-container" key={activeRoute}>
-          {renderCurrentPage()}
-        </main>
+        {/* Main Content Layout */}
+        <div className="main-wrapper">
+          {/* Top Navbar */}
+          <Navbar
+            activeRoute={activeRoute}
+            onNavigate={setActiveRoute}
+            activeScene={activeScene}
+            allScenes={scenes}
+            onSelectScene={handleSelectScene}
+            onToggleMobileMenu={() => setMobileSidebarOpen(true)}
+            isDemoMode={isDemoMode}
+            onToggleDemoMode={handleToggleDemoMode}
+          />
+
+          {/* Page Content Viewport */}
+          <main className="page-container" key={activeRoute}>
+            {renderCurrentPage()}
+          </main>
+        </div>
       </div>
     </div>
   );

@@ -470,12 +470,10 @@ const Navbar = () => {
   );
 
   /* ── Helper: nav item with optional dropdown ─────────────── */
-  const NavItem = ({ id, label, icon, hash, isActive, items, className }) => {
+  const NavItem = ({ id, label, icon, hash, isActive, items, className, badge }) => {
     const hasDropdown = items && items.length > 0;
     const isOpen = hasDropdown && openDropdown === id;
 
-    // Suppress dropdown only when on the exact main page (e.g. #cineai, #discover/movies)
-    // but allow it on sub-pages (e.g. #cineai-tool/debate)
     const isOnExactPage = currentPath === hash;
 
     const handleMouseEnter = () => {
@@ -492,7 +490,6 @@ const Navbar = () => {
 
     const handleItemClick = (e) => {
       if (hasDropdown && isOnExactPage) {
-        // Already on this section's main page — just navigate, don't toggle dropdown
         handleNavClick(e, hash);
         return;
       }
@@ -520,6 +517,12 @@ const Navbar = () => {
           <span className="navbar__link-label">
             {id === 'cineai' ? <>Cine<span className="navbar__ai-text">AI</span></> : label}
           </span>
+          {badge && (
+            <span className="navbar__new-badge">
+              <span className="navbar__new-badge-dot"></span>
+              {badge}
+            </span>
+          )}
           {hasDropdown && (
             <svg className={`navbar__chevron ${isOpen ? 'navbar__chevron--open' : ''}`} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="6 9 12 15 18 9"></polyline>
@@ -602,16 +605,18 @@ const Navbar = () => {
             className="navbar__link--cineai"
           />
           <NavItem
-            id="audience"
-            label="AudienceAI"
-            hash="#audience"
-            isActive={currentPath.startsWith('#audience') || currentPath.startsWith('#simulator')}
-          />
-          <NavItem
             id="friends"
             label="Friends"
             hash="#friends"
             isActive={currentPath.startsWith('#friends') || currentPath.startsWith('#social')}
+          />
+          <NavItem
+            id="audience"
+            label="AudienceAI"
+            hash="#audience"
+            isActive={currentPath.startsWith('#audience') || currentPath.startsWith('#simulator')}
+            badge="NEW"
+            className="navbar__link--audience-new"
           />
 
           {/* ── Mobile Menu Utility Items ─────────────────── */}
@@ -1269,6 +1274,8 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
+
 
 
 

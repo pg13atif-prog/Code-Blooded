@@ -313,23 +313,46 @@ button, input, textarea, select {
    Cinescope Embedded Wrapper Overrides
    ========================================================================== */
 .audienceai-cinescope-wrapper {
-  padding-top: 68px;
-  min-height: 100vh;
-  background: #08090d;
-  position: relative;
-  width: 100%;
+  margin-top: 68px !important;
+  padding-top: 0 !important;
+  min-height: calc(100vh - 68px) !important;
+  background: #08090d !important;
+  position: relative !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  display: block !important;
 }
 
 .audienceai-cinescope-wrapper .app-layout {
-  min-height: calc(100vh - 68px);
+  display: flex !important;
+  min-height: calc(100vh - 68px) !important;
+  width: 100% !important;
+  position: relative !important;
+  padding-top: 0 !important;
 }
 
 .audienceai-cinescope-wrapper .app-sidebar {
-  top: 68px;
-  height: calc(100vh - 68px);
+  position: sticky !important;
+  top: 68px !important;
+  height: calc(100vh - 68px) !important;
+  min-height: calc(100vh - 68px) !important;
+  z-index: 50 !important;
+}
+
+.audienceai-cinescope-wrapper .main-wrapper {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-width: 0 !important;
+  position: relative !important;
 }
 
 .audienceai-cinescope-wrapper .app-navbar {
-  top: 68px;
-  z-index: 90;
+  position: relative !important;
+  top: 0 !important;
+  height: 56px !important;
+  z-index: 20 !important;
+  background: rgba(15, 18, 27, 0.95) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(12px) !important;
 }
