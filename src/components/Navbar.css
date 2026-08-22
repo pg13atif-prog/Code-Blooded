@@ -1,5 +1,5 @@
-/* ============================================
-   Navbar Component Styles — Premium Refinement
+﻿/* ============================================
+   Navbar Component Styles â€” Premium Refinement
    ============================================ */
 
 .navbar {
@@ -16,7 +16,23 @@
   /* Do not use backdrop-filter here: it would block the dropdown's backdrop. */
   background: rgba(8, 8, 14, 0.88);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  transition: background 0.35s ease, border-color 0.35s ease;
+  transition: background 0.35s ease, border-color 0.35s ease, transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+}
+.navbar.navbar--autohide {
+  transform: translateY(-100%) !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.navbar-top-hover-sensor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 24px;
+  z-index: 1001;
+  background: transparent;
+  pointer-events: auto;
 }
 
 .navbar.scrolled {
@@ -94,7 +110,7 @@
   position: relative;
 }
 
-/* ── Nav Link ──────────────────────────────────────────────── */
+/* â”€â”€ Nav Link â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .navbar__link {
   position: relative;
   display: inline-flex;
@@ -138,7 +154,7 @@
   font-weight: 700;
 }
 
-/* ── Active underline — center-outward animation ──────────── */
+/* â”€â”€ Active underline â€” center-outward animation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .navbar__link-label::after {
   content: '';
   position: absolute;
@@ -162,7 +178,7 @@
   transform: scaleX(1);
 }
 
-/* ── CineAI — only "AI" text red ───────────────────────────── */
+/* â”€â”€ CineAI â€” only "AI" text red â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .navbar__ai-text {
   color: var(--color-accent, #e50914);
   transition: color 0.2s ease;
@@ -172,7 +188,7 @@
   color: #ff2a35;
 }
 
-/* ── Premium Dropdown (Discover / CineAI / Social) ────────── */
+/* â”€â”€ Premium Dropdown (Discover / CineAI / Social) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .navbar__dropdown-container {
   position: relative;
 }
@@ -722,7 +738,7 @@
   z-index: 999;
 }
 
-/* ── Responsive Rules ────────────────────────────────────── */
+/* â”€â”€ Responsive Rules â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 @media (max-width: 1100px) {
   .navbar__tagline {
     display: none;
@@ -989,7 +1005,7 @@
   }
 }
 
-/* ── Mobile Profile Section in Drawer ── */
+/* â”€â”€ Mobile Profile Section in Drawer â”€â”€ */
 @media (max-width: 860px) {
   .mobile-profile-section {
     margin-top: 0.5rem;
@@ -1054,7 +1070,7 @@
   }
 }
 
-/* ── Mobile Bottom Navigation Bar ──────────────────────────── */
+/* â”€â”€ Mobile Bottom Navigation Bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .mobile-bottom-nav {
   display: none;
 }
@@ -1131,7 +1147,7 @@
     filter: drop-shadow(0 0 6px rgba(229, 9, 20, 0.8));
   }
 
-  /* Hide top-bar profile on mobile — it's now in the bottom bar */
+  /* Hide top-bar profile on mobile â€” it's now in the bottom bar */
   .navbar__profile-container,
   .navbar__login-btn {
     display: none;
@@ -1425,7 +1441,7 @@
   transform: none !important;
 }
 
-/* ── Mobile SVG Notification Bell & Centered Liquid Glass Search Modal ── */
+/* â”€â”€ Mobile SVG Notification Bell & Centered Liquid Glass Search Modal â”€â”€ */
 .mobile-notif-icon-wrap {
   position: relative;
   display: flex;
@@ -1532,7 +1548,7 @@
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* ── Fixed Top Header (Liquid Glass) ── */
+/* â”€â”€ Fixed Top Header (Liquid Glass) â”€â”€ */
 .search-modal-fixed-header {
   flex-shrink: 0;
   padding: 1.25rem 1.4rem 1rem;
@@ -1570,7 +1586,7 @@
   gap: 0.65rem;
 }
 
-/* ── Signature Maroon / Liquid Glass Type Filter Dropdown ── */
+/* â”€â”€ Signature Maroon / Liquid Glass Type Filter Dropdown â”€â”€ */
 .search-modal-type-select .custom-select-trigger {
   padding: 0.45rem 0.9rem;
   font-size: 0.84rem;
@@ -1593,7 +1609,7 @@
   box-shadow: 0 0 20px rgba(185, 9, 11, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.35);
 }
 
-/* ── Signature Maroon / Liquid Glass Close Button ── */
+/* â”€â”€ Signature Maroon / Liquid Glass Close Button â”€â”€ */
 .search-modal-close-btn {
   width: 36px;
   height: 36px;
@@ -1621,7 +1637,7 @@
   transform: scale(1.06);
 }
 
-/* ── Fixed Search Input Bar (Liquid Glass Capsule) ── */
+/* â”€â”€ Fixed Search Input Bar (Liquid Glass Capsule) â”€â”€ */
 .search-modal-input-wrapper {
   width: 100%;
   display: flex;
@@ -1666,7 +1682,7 @@
   color: rgba(255, 255, 255, 0.4);
 }
 
-/* ── Clear Button (Signature Maroon Pill) ── */
+/* â”€â”€ Clear Button (Signature Maroon Pill) â”€â”€ */
 .search-modal-clear-btn {
   background: linear-gradient(135deg, #8b0000 0%, #b9090b 100%);
   border: 1px solid rgba(255, 255, 255, 0.25);
@@ -1706,7 +1722,7 @@
   }
 }
 
-/* ── Scrollable Body Area ── */
+/* â”€â”€ Scrollable Body Area â”€â”€ */
 .search-modal-scrollable-body {
   flex: 1;
   overflow-y: auto !important;
@@ -1747,14 +1763,14 @@
   box-shadow: 0 0 10px rgba(229, 9, 20, 0.5);
 }
 
-/* ── Live Suggestions Results List ── */
+/* â”€â”€ Live Suggestions Results List â”€â”€ */
 .search-modal-results-list {
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
 }
 
-/* ── Suggestion Card (Liquid Glass Physical Refraction) ── */
+/* â”€â”€ Suggestion Card (Liquid Glass Physical Refraction) â”€â”€ */
 .search-modal-item-card {
   display: flex;
   flex-direction: column;
@@ -1877,7 +1893,7 @@
   color: rgba(255, 255, 255, 0.55);
 }
 
-/* ── Signature Maroon / Dark Red Expand Button ── */
+/* â”€â”€ Signature Maroon / Dark Red Expand Button â”€â”€ */
 .search-item-expand-btn {
   width: 34px;
   height: 34px;
@@ -1918,7 +1934,7 @@
   transform: rotate(180deg);
 }
 
-/* ── Expandable Plot Summary Panel ── */
+/* â”€â”€ Expandable Plot Summary Panel â”€â”€ */
 .search-item-overview-panel {
   overflow: hidden;
   display: flex;
@@ -1971,7 +1987,7 @@
   margin-top: 0.35rem;
 }
 
-/* ── Signature Maroon / Dark Red View Details Button ── */
+/* â”€â”€ Signature Maroon / Dark Red View Details Button â”€â”€ */
 .search-item-view-details-btn {
   display: inline-flex;
   align-items: center;
@@ -1995,7 +2011,7 @@
   transform: translateY(-2px);
 }
 
-/* ── Signature Maroon / Liquid Glass See All Button ── */
+/* â”€â”€ Signature Maroon / Liquid Glass See All Button â”€â”€ */
 .search-modal-see-all-btn {
   padding: 0.95rem 1rem;
   margin-top: 0.4rem;
@@ -2051,7 +2067,7 @@
   display: block;
 }
 
-/* ── Recent Searches Card (Liquid Glass Refraction) ── */
+/* â”€â”€ Recent Searches Card (Liquid Glass Refraction) â”€â”€ */
 .search-modal-recent-card {
   background: 
     radial-gradient(ellipse at top right, rgba(185, 9, 11, 0.18) 0%, transparent 60%),
@@ -2159,7 +2175,7 @@
   background: #b9090b;
 }
 
-/* ── Welcome Hint & Quick Discovery Tags ── */
+/* â”€â”€ Welcome Hint & Quick Discovery Tags â”€â”€ */
 .search-modal-welcome-hint {
   text-align: center;
   padding: 2.5rem 1.5rem;
@@ -2219,7 +2235,7 @@
   transform: translateY(-2px);
 }
 
-/* ── Initial Search View Dashboard ── */
+/* â”€â”€ Initial Search View Dashboard â”€â”€ */
 .search-modal-initial-dashboard {
   display: flex;
   flex-direction: column;
@@ -2482,7 +2498,7 @@
   flex-shrink: 0;
 }
 
-/* ── Mobile Viewport Adaptations ── */
+/* â”€â”€ Mobile Viewport Adaptations â”€â”€ */
 @media (max-width: 768px) {
   .navbar__search-btn {
     display: none !important;

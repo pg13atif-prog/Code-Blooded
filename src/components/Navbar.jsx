@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+﻿import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
@@ -16,26 +16,26 @@ const MOBILE_SEARCH_TYPES = [
   { value: 'tv', label: 'TV Shows Only' }
 ];
 
-/* ── Dropdown menu configs ─────────────────────────────────── */
+/* â”€â”€ Dropdown menu configs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const discoverItems = [
-  { icon: '🎬', label: 'Movies', desc: 'Browse the complete movie library.', hash: '#discover/movies' },
-  { icon: '📺', label: 'TV Shows', desc: 'Explore trending series & shows.', hash: '#discover/tv' },
-  { icon: '🔥', label: 'Trending', desc: 'What everyone is watching this week.', hash: '#discover/trending' },
+  { icon: 'ðŸŽ¬', label: 'Movies', desc: 'Browse the complete movie library.', hash: '#discover/movies' },
+  { icon: 'ðŸ“º', label: 'TV Shows', desc: 'Explore trending series & shows.', hash: '#discover/tv' },
+  { icon: 'ðŸ”¥', label: 'Trending', desc: 'What everyone is watching this week.', hash: '#discover/trending' },
 ];
 
 const cineaiItems = [
-  { icon: '🎬', label: 'What Should I Watch?', desc: 'AI-powered movie recommendations based on mood.', hash: '#cineai-tool/what-to-watch' },
-  { icon: '🎯', label: 'Pick For Me', desc: 'Can’t decide? Let AI spin the wheel for you.', hash: '#cineai-tool/pick-for-me' },
-  { icon: '📅', label: 'Movie Night Planner', desc: 'Answer quick questions to find your perfect movie.', hash: '#cineai-tool/planner' },
-  { icon: '🎭', label: 'Movie Debate', desc: 'Pick two movies and let AI declare the winner.', hash: '#cineai-tool/debate' },
+  { icon: 'ðŸŽ¬', label: 'What Should I Watch?', desc: 'AI-powered movie recommendations based on mood.', hash: '#cineai-tool/what-to-watch' },
+  { icon: 'ðŸŽ¯', label: 'Pick For Me', desc: 'Canâ€™t decide? Let AI spin the wheel for you.', hash: '#cineai-tool/pick-for-me' },
+  { icon: 'ðŸ“…', label: 'Movie Night Planner', desc: 'Answer quick questions to find your perfect movie.', hash: '#cineai-tool/planner' },
+  { icon: 'ðŸŽ­', label: 'Movie Debate', desc: 'Pick two movies and let AI declare the winner.', hash: '#cineai-tool/debate' },
 ];
 
 const friendsItems = [
-  { icon: '👥', label: 'My Friends', desc: 'View and manage your friends.', hash: '#friends' },
-  { icon: '🤝', label: 'Movie Match', desc: 'Compare your movie taste with friends.', hash: '#social' },
+  { icon: 'ðŸ‘¥', label: 'My Friends', desc: 'View and manage your friends.', hash: '#friends' },
+  { icon: 'ðŸ¤', label: 'Movie Match', desc: 'Compare your movie taste with friends.', hash: '#social' },
 ];
 
-/* ── Framer Motion variants ────────────────────────────────── */
+/* â”€â”€ Framer Motion variants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const dropdownVariants = {
   hidden: { opacity: 0, x: "-50%", y: -16, scale: 0.97 },
   visible: { opacity: 1, x: "-50%", y: 0, scale: 1, transition: { duration: 0.24, ease: [0.16, 1, 0.3, 1] } },
@@ -443,7 +443,7 @@ const Navbar = () => {
   const username = rawUsername ? rawUsername.slice(0, 14) : 'User';
   const avatarLetter = username ? username.charAt(0).toUpperCase() : '?';
 
-  /* ── Helper: render premium dropdown ──────────────────────── */
+  /* â”€â”€ Helper: render premium dropdown â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   const renderPremiumDropdown = (items) => (
     <motion.div
       className="nav-dropdown"
@@ -469,7 +469,7 @@ const Navbar = () => {
     </motion.div>
   );
 
-  /* ── Helper: nav item with optional dropdown ─────────────── */
+  /* â”€â”€ Helper: nav item with optional dropdown â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   const NavItem = ({ id, label, icon, hash, isActive, items, className, badge }) => {
     const hasDropdown = items && items.length > 0;
     const isOpen = hasDropdown && openDropdown === id;
@@ -582,7 +582,7 @@ const Navbar = () => {
             </button>
           </li>
 
-          {/* ── Desktop nav items ──────────────────────────── */}
+          {/* â”€â”€ Desktop nav items â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
           <NavItem
             id="home"
             label="Home"
@@ -619,16 +619,16 @@ const Navbar = () => {
             className="navbar__link--audience-new"
           />
 
-          {/* ── Mobile Menu Utility Items ─────────────────── */}
+          {/* â”€â”€ Mobile Menu Utility Items â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
           <li className="mobile-drawer-item">
             <a href="#achievements" onClick={(e) => { handleNavClick(e, '#achievements'); setIsMobileMenuOpen(false); }}>
-              <span className="mobile-drawer-icon">🏆</span>
+              <span className="mobile-drawer-icon">ðŸ†</span>
               <span>Achievements</span>
             </a>
           </li>
           <li className="mobile-drawer-item">
             <button type="button" onClick={() => { setIsNotificationsOpen(true); setIsMobileMenuOpen(false); }}>
-              <span className="mobile-drawer-icon">🔔</span>
+              <span className="mobile-drawer-icon">ðŸ””</span>
               <span>Notifications {notifications.length > 0 ? `(${notifications.length})` : ''}</span>
             </button>
           </li>
@@ -826,12 +826,12 @@ const Navbar = () => {
         );
       })()}
 
-      {/* ── Unified Spotlight Search Modal (Desktop & Mobile) ── */}
+      {/* â”€â”€ Unified Spotlight Search Modal (Desktop & Mobile) â”€â”€ */}
       {isSearchModalOpen && createPortal((
         <div ref={searchModalRef} className="search-modal-overlay" onClick={() => setIsSearchModalOpen(false)}>
           <div className="search-modal-container" onClick={(e) => e.stopPropagation()}>
 
-            {/* ── Fixed Top Header (Title + Filter Selector + Close Button + Search Input) ── */}
+            {/* â”€â”€ Fixed Top Header (Title + Filter Selector + Close Button + Search Input) â”€â”€ */}
             <div className="search-modal-fixed-header">
               <div className="search-modal-header-top">
                 <h2 className="search-modal-title">Search</h2>
@@ -887,13 +887,13 @@ const Navbar = () => {
                     onClick={() => setSearchQuery('')}
                     aria-label="Clear query"
                   >
-                    ✕
+                    âœ•
                   </button>
                 )}
               </div>
             </div>
 
-            {/* ── Scrollable Body Area (Only Results / Recents Scroll) ── */}
+            {/* â”€â”€ Scrollable Body Area (Only Results / Recents Scroll) â”€â”€ */}
             <div className="search-modal-scrollable-body">
               {searchQuery.trim().length > 1 ? (
                 (() => {
@@ -924,7 +924,7 @@ const Navbar = () => {
                                 {item.poster ? (
                                   <img src={item.poster} alt={item.title || item.name} />
                                 ) : (
-                                  <div className="search-item-no-poster">🎬</div>
+                                  <div className="search-item-no-poster">ðŸŽ¬</div>
                                 )}
                               </div>
 
@@ -933,7 +933,7 @@ const Navbar = () => {
 
                                 <div className="search-item-meta">
                                   <span className="search-meta-type">{item.mediaType === 'tv' ? 'TV Show' : 'Movie'}</span>
-                                  {item.year && item.year !== '—' && (
+                                  {item.year && item.year !== 'â€”' && (
                                     <>
                                       <span className="search-meta-sep">|</span>
                                       <span className="search-meta-year">{item.year}</span>
@@ -943,7 +943,7 @@ const Navbar = () => {
                                     <>
                                       <span className="search-meta-sep">|</span>
                                       <span className="search-meta-rating">
-                                        <span className="search-meta-star">★</span> {item.rating}
+                                        <span className="search-meta-star">â˜…</span> {item.rating}
                                       </span>
                                     </>
                                   )}
@@ -1064,13 +1064,13 @@ const Navbar = () => {
                             {item.poster ? (
                               <img src={item.poster} alt={item.title} className="search-popular-poster" />
                             ) : (
-                              <div className="search-popular-no-poster">🎬</div>
+                              <div className="search-popular-no-poster">ðŸŽ¬</div>
                             )}
                             <div className="search-popular-info">
                               <h5 className="search-popular-title">{item.title}</h5>
                               <div className="search-popular-meta">
                                 <span className="search-popular-type">{item.mediaType === 'tv' ? 'TV Show' : 'Movie'}</span>
-                                {item.year && item.year !== '—' && (
+                                {item.year && item.year !== 'â€”' && (
                                   <>
                                     <span>&bull;</span>
                                     <span>{item.year}</span>
@@ -1079,7 +1079,7 @@ const Navbar = () => {
                                 {item.rating && item.rating !== 'N/A' && Number(item.rating) > 0 && (
                                   <>
                                     <span>&bull;</span>
-                                    <span className="search-popular-rating">★ {item.rating}</span>
+                                    <span className="search-popular-rating">â˜… {item.rating}</span>
                                   </>
                                 )}
                               </div>
@@ -1105,7 +1105,7 @@ const Navbar = () => {
       {isNotificationsOpen && (
         <div className="modal-overlay notif-modal-overlay" onClick={handleCloseNotificationsModal}>
           <div className="modal-content notifications-modal" onClick={e => e.stopPropagation()}>
-            <button className="modal-close" onClick={handleCloseNotificationsModal}>✕</button>
+            <button className="modal-close" onClick={handleCloseNotificationsModal}>âœ•</button>
             <h2>Notifications</h2>
             {notifications.length === 0 && incomingRequestsList.length === 0 ? (
               <p style={{ color: 'rgba(255,255,255,0.5)', textAlign: 'center', padding: '2rem' }}>You have no notifications.</p>
@@ -1163,7 +1163,7 @@ const Navbar = () => {
                           </div>
                           <strong>{notif.fromName}</strong>
                         </div>
-                        <button onClick={() => handleDismissNotification(notif)} className="notif-dismiss-btn" title="Dismiss">✕</button>
+                        <button onClick={() => handleDismissNotification(notif)} className="notif-dismiss-btn" title="Dismiss">âœ•</button>
                       </div>
                       <p className="notif-card-body">
                         recommended you <strong>{notif.movie?.title || 'a movie'}</strong>
@@ -1203,7 +1203,7 @@ const Navbar = () => {
       {isLogoutModalOpen && (
         <div className="modal-overlay" onClick={() => setIsLogoutModalOpen(false)}>
           <div className="modal-content logout-confirm-modal" onClick={e => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setIsLogoutModalOpen(false)} aria-label="Close modal">✕</button>
+            <button className="modal-close" onClick={() => setIsLogoutModalOpen(false)} aria-label="Close modal">âœ•</button>
             <div className="logout-modal-header">
               <span className={`logout-modal-icon ${currentUser?.isAnonymous ? 'guest-warning-icon' : ''}`}>
                 {currentUser?.isAnonymous ? (
@@ -1226,7 +1226,7 @@ const Navbar = () => {
             {currentUser?.isAnonymous ? (
               <div className="guest-logout-warning-box">
                 <p className="glw-title">
-                  <strong>⚠️ Warning: Your Data Will Be Lost!</strong>
+                  <strong>âš ï¸ Warning: Your Data Will Be Lost!</strong>
                 </p>
                 <p className="glw-desc">
                   You are logged in as a Guest. If you log out without linking your account to Google or an Email, all your saved watchlist, favorites, watched history, and achievements will be <strong>permanently deleted</strong>.
@@ -1251,7 +1251,7 @@ const Navbar = () => {
                     }, 100);
                   }}
                 >
-                  🛡️ Link Account First (Keep Data)
+                  ðŸ›¡ï¸ Link Account First (Keep Data)
                 </button>
               )}
               <div className="logout-modal-btn-row">
