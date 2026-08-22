@@ -84,6 +84,18 @@ const CineAiPage = () => {
       <div className="cineai-glow-2"></div>
 
       <div className="cineai-hub-header">
+        <div className="cineai-app-switcher">
+          <button className="cineai-app-switch-btn active">
+            CineAI
+          </button>
+          <button 
+            className="cineai-app-switch-btn"
+            onClick={() => window.location.hash = '#audience'}
+          >
+            AudienceAI
+          </button>
+        </div>
+
         <h1>
           Cine<span className="ai-gradient-text">AI</span> Engine
         </h1>
