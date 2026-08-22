@@ -5,7 +5,7 @@ import { apiKeyService } from '../../services/apiKeyService';
 import './ApiKeyModal.css';
 
 /**
- * ApiKeyModal for configuring Gemini API credentials
+ * ApiKeyModal for configuring AI engine credentials securely
  * @param {Object} props
  * @param {boolean} props.isOpen
  * @param {Function} props.onClose
@@ -16,10 +16,10 @@ export default function ApiKeyModal({
   onClose,
   onKeySaved
 }) {
-  const [keyInput, setKeyInput] = useState(apiKeyService.getKey());
-  const [showKey, setShowKey] = useState(false);
+  const [keyInput, setKeyInput] = useState('');
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [error, setError] = useState(null);
+  const hasExistingKey = apiKeyService.hasKey();
 
   if (!isOpen) return null;
 
@@ -27,15 +27,16 @@ export default function ApiKeyModal({
     e.preventDefault();
     const trimmed = keyInput.trim();
     if (!trimmed) {
-      setError('Please enter a valid Gemini API Key.');
+      setError('Please enter a valid API Key.');
       return;
     }
-    if (trimmed.length < 10) {
-      setError('The API key seems too short. Please verify your Google AI Studio key.');
+    if (trimmed.length < 8) {
+      setError('The API key seems too short. Please verify your key.');
       return;
     }
 
-    apiKeyService.setKey(trimmed);
+    const provider = apiKeyService.getProvider(trimmed);
+    apiKeyService.setProviderKey(provider, trimmed);
     setError(null);
     setSavedSuccess(true);
     if (onKeySaved) onKeySaved(trimmed);
@@ -53,9 +54,11 @@ export default function ApiKeyModal({
             <Sparkles size={24} className="text-amber" />
           </div>
           <div>
-            <h3 className="api-modal-title">Configure Gemini API Key</h3>
+            <h3 className="api-modal-title">Configure AI API Key</h3>
             <p className="api-modal-subtitle">
-              AudienceAI utilizes Google Gemini to simulate independent fictional audience reactions.
+              {hasExistingKey 
+                ? 'An active AI provider is already connected. You can optionally supply a custom key to override.' 
+                : 'AudienceAI requires an AI provider key to simulate audience persona reactions.'}
             </p>
           </div>
         </div>
@@ -63,38 +66,27 @@ export default function ApiKeyModal({
         <form onSubmit={handleSave} className="api-modal-form">
           <div className="api-input-group">
             <div className="api-label-row">
-              <label className="api-field-label">Gemini API Key</label>
-              <a
-                href="https://aistudio.google.com/app/apikey"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="api-get-key-link"
-              >
-                <span>Get key from Google AI Studio</span>
-                <ArrowUpRight size={12} />
-              </a>
+              <label className="api-field-label">
+                {hasExistingKey ? 'Custom Override Key' : 'Enter API Key'}
+              </label>
+              <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                Groq / OpenRouter / Gemini
+              </span>
             </div>
 
             <div className="api-input-wrapper">
               <input
-                type={showKey ? 'text' : 'password'}
+                type="password"
                 className={`api-key-input ${error ? 'input-error' : ''}`}
                 value={keyInput}
                 onChange={(e) => {
                   setKeyInput(e.target.value);
                   if (error) setError(null);
                 }}
-                placeholder="AIzaSy..."
+                placeholder={hasExistingKey ? "•••••••••••••••• (Leave blank to keep existing)" : "Paste key (e.g. gsk_... or sk-...)"}
+                autoComplete="off"
                 autoFocus
               />
-              <button
-                type="button"
-                className="api-toggle-visibility"
-                onClick={() => setShowKey(!showKey)}
-                title={showKey ? 'Hide key' : 'Show key'}
-              >
-                <Eye size={15} />
-              </button>
             </div>
 
             {error && (
@@ -106,10 +98,9 @@ export default function ApiKeyModal({
           </div>
 
           <div className="api-notice-box">
-            <span className="api-notice-title">Security & Storage:</span>
+            <span className="api-notice-title">Security & Privacy:</span>
             <p className="api-notice-text">
-              Your API key is stored securely in your local browser's storage and directly communicates with 
-              Google Gemini without intermediary tracking.
+              Keys are stored securely in encrypted local browser storage and never logged or exposed in the user interface.
             </p>
           </div>
 
@@ -120,7 +111,7 @@ export default function ApiKeyModal({
               type="button"
               onClick={onClose}
             >
-              Cancel
+              Close
             </Button>
             <Button
               variant="primary"

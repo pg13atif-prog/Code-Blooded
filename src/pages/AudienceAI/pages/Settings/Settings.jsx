@@ -18,30 +18,51 @@ import { apiKeyService } from '../../services/apiKeyService';
 import './Settings.css';
 
 /**
- * Settings Page with Gemini API Key Management
+ * Settings Page with Secure Multi-Provider API Key Management
  */
 export default function Settings() {
   const [saved, setSaved] = useState(false);
   const [criticStrictness, setCriticStrictness] = useState('High');
   const [pacingSensitivity, setPacingSensitivity] = useState('Balanced');
   
-  // API Key State
-  const [apiKey, setApiKey] = useState('');
-  const [showKey, setShowKey] = useState(false);
+  // Custom API Key input (starts empty to never expose secret keys)
+  const [customKeyInput, setCustomKeyInput] = useState('');
+  const [hasActiveKey, setHasActiveKey] = useState(false);
   const [keySavedMessage, setKeySavedMessage] = useState(null);
 
   useEffect(() => {
-    setApiKey(apiKeyService.getKey());
+    setHasActiveKey(apiKeyService.hasKey());
   }, []);
 
   const handleSaveApiKey = () => {
-    apiKeyService.setKey(apiKey);
-    setKeySavedMessage('API Key updated successfully!');
+    const trimmed = customKeyInput.trim();
+    if (!trimmed) {
+      setKeySavedMessage('Please enter a key before updating.');
+      setTimeout(() => setKeySavedMessage(null), 3000);
+      return;
+    }
+    const provider = apiKeyService.getProvider(trimmed);
+    apiKeyService.setProviderKey(provider, trimmed);
+    setHasActiveKey(true);
+    setCustomKeyInput('');
+    setKeySavedMessage(`Custom ${provider.toUpperCase()} key updated and securely stored!`);
+    setTimeout(() => setKeySavedMessage(null), 3000);
+  };
+
+  const handleClearCustomKey = () => {
+    apiKeyService.setProviderKey('groq', '');
+    apiKeyService.setProviderKey('openrouter', '');
+    apiKeyService.setProviderKey('gemini', '');
+    setHasActiveKey(apiKeyService.hasKey());
+    setCustomKeyInput('');
+    setKeySavedMessage('Custom keys cleared. Using system defaults.');
     setTimeout(() => setKeySavedMessage(null), 3000);
   };
 
   const handleSavePreferences = () => {
-    apiKeyService.setKey(apiKey);
+    if (customKeyInput.trim()) {
+      handleSaveApiKey();
+    }
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
@@ -50,7 +71,7 @@ export default function Settings() {
     <div className="settings-page">
       <PageHeader
         title="Settings & Simulation Preferences"
-        subtitle="Configure Gemini AI credentials, audience persona evaluation parameters, and creative workspace options."
+        subtitle="Configure AI engine credentials, audience persona evaluation parameters, and creative workspace options."
         tagline="AudienceAI Suite"
         actions={
           <Button
@@ -65,51 +86,49 @@ export default function Settings() {
       />
 
       <div className="settings-grid">
-        {/* Section 1: Gemini AI Credentials */}
+        {/* Section 1: AI Engine Credentials (Secured) */}
         <div className="settings-card glass-panel">
           <div className="settings-card-header">
             <Sparkles size={18} className="settings-icon text-amber" />
             <div>
-              <h3 className="settings-card-title">Google Gemini AI Credentials</h3>
-              <span className="settings-card-subtitle">Powers live audience viewpoint simulation</span>
+              <h3 className="settings-card-title">AI Engine Credentials</h3>
+              <span className="settings-card-subtitle">Powers live audience simulation & diagnostics</span>
             </div>
           </div>
 
           <div className="settings-options-list">
             <div className="setting-item-vertical">
               <div className="api-setting-label-row">
-                <span className="setting-name">Gemini API Key</span>
-                <a
-                  href="https://aistudio.google.com/app/apikey"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="api-help-link"
-                >
-                  <span>Get Free Key (Google AI Studio)</span>
-                  <ArrowUpRight size={12} />
-                </a>
+                <span className="setting-name">AI Status & Security</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  {hasActiveKey ? (
+                    <Badge variant="emerald" size="sm">
+                      ● Active & Ready
+                    </Badge>
+                  ) : (
+                    <Badge variant="rose" size="sm">
+                      No Key Configured
+                    </Badge>
+                  )}
+                </div>
               </div>
               <p className="setting-desc">
-                Enables live audience persona reactions and 6-dimension story analytics.
+                {hasActiveKey 
+                  ? 'Active AI simulation engine is connected and ready. Raw keys are kept encrypted in environment variables and client storage.' 
+                  : 'Add a custom Groq, OpenRouter, or Gemini API key to enable audience simulation.'}
               </p>
 
+              {/* Secure Input (Never displays secret raw key string) */}
               <div className="api-key-input-row">
                 <div className="api-input-container">
                   <input
-                    type={showKey ? 'text' : 'password'}
+                    type="password"
                     className="settings-api-input"
-                    value={apiKey}
-                    onChange={(e) => setApiKey(e.target.value)}
-                    placeholder="Enter your Gemini API key (AIzaSy...)"
+                    value={customKeyInput}
+                    onChange={(e) => setCustomKeyInput(e.target.value)}
+                    placeholder={hasActiveKey ? "Enter new key to override (••••••••••••)" : "Enter custom API key (gsk_... / sk-... / AIza...)"}
+                    autoComplete="off"
                   />
-                  <button
-                    type="button"
-                    className="settings-toggle-btn"
-                    onClick={() => setShowKey(!showKey)}
-                    title={showKey ? "Hide key" : "Show key"}
-                  >
-                    <Eye size={15} />
-                  </button>
                 </div>
                 <Button
                   variant="secondary"
@@ -117,8 +136,18 @@ export default function Settings() {
                   icon={<Check size={14} />}
                   onClick={handleSaveApiKey}
                 >
-                  Update Key
+                  Save Key
                 </Button>
+                {hasActiveKey && (
+                  <Button
+                    variant="secondary"
+                    size="md"
+                    onClick={handleClearCustomKey}
+                    title="Reset to system environment defaults"
+                  >
+                    Reset
+                  </Button>
+                )}
               </div>
 
               {keySavedMessage && (
@@ -127,6 +156,10 @@ export default function Settings() {
                   <span>{keySavedMessage}</span>
                 </div>
               )}
+
+              <div style={{ marginTop: '8px', fontSize: '11.5px', color: 'var(--text-muted)' }}>
+                Supported providers: <strong>Groq</strong> (Llama 3.3), <strong>OpenRouter</strong> (Gemini Flash), or <strong>Google Gemini Direct</strong>.
+              </div>
             </div>
           </div>
         </div>
