@@ -97,54 +97,8 @@ export const historyService = {
       console.error('Error parsing simulation history:', e);
     }
 
-    // Default seeded history for initial showcase
-    return [
-      {
-        id: 'sim-seed-1',
-        sceneId: 'scene-1',
-        sceneTitle: 'The Betrayal',
-        sceneSubtitle: 'Act II • Scene 4',
-        genre: 'Sci-Fi / Drama',
-        timestamp: new Date(Date.now() - 3600000).toISOString(),
-        formattedDate: 'Today, 10:45 AM',
-        audienceCount: 4,
-        primaryIssue: 'Pacing',
-        primaryIssueSummary: '3 of 4 personas felt the reveal happened abruptly.',
-        overallScore: 84,
-        status: 'Completed',
-        results: []
-      },
-      {
-        id: 'sim-seed-2',
-        sceneId: 'scene-2',
-        sceneTitle: 'The Rooftop Confession',
-        sceneSubtitle: 'Act I • Scene 2',
-        genre: 'Romance / Drama',
-        timestamp: new Date(Date.now() - 86400000).toISOString(),
-        formattedDate: 'Yesterday, 3:15 PM',
-        audienceCount: 3,
-        primaryIssue: 'Character Motivation',
-        primaryIssueSummary: 'Emotional stakes needed clearer justification.',
-        overallScore: 78,
-        status: 'Completed',
-        results: []
-      },
-      {
-        id: 'sim-seed-3',
-        sceneId: 'scene-3',
-        sceneTitle: 'The Heist Departure',
-        sceneSubtitle: 'Act I • Scene 1',
-        genre: 'Cyberpunk Thriller',
-        timestamp: new Date(Date.now() - 172800000).toISOString(),
-        formattedDate: '2 days ago',
-        audienceCount: 4,
-        primaryIssue: 'Clarity',
-        primaryIssueSummary: 'Spatial layout in harbor docks was slightly unclear.',
-        overallScore: 68,
-        status: 'Needs Review',
-        results: []
-      }
-    ];
+    // Return empty array when no simulation has been run
+    return [];
   },
 
   /**

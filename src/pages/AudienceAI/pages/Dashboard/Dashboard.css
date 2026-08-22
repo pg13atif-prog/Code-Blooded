@@ -207,3 +207,46 @@
   font-size: 13.5px;
   color: var(--text-secondary);
 }
+
+/* ── Empty State: No Analysis ────────────────────────── */
+.aai-no-analysis-card {
+  padding: 56px 32px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  border-radius: 20px;
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.02);
+  margin-top: 8px;
+}
+
+.aai-no-analysis-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 24px rgba(239, 68, 68, 0.2);
+  margin-bottom: 4px;
+}
+
+.aai-no-analysis-card h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+}
+
+.aai-no-analysis-card p {
+  font-size: 14px;
+  color: var(--text-muted);
+  max-width: 480px;
+  line-height: 1.6;
+  margin: 0;
+}

@@ -3,22 +3,6 @@ import './CineAiPage.css';
 
 const AI_TOOLS = [
   {
-    id: 'audience-simulator',
-    title: 'AudienceAI Simulator',
-    description: 'Simulate how diverse fictional audience personas react to your screenplay scene, detect narrative craft bottlenecks, and remix drafts in real-time.',
-    accentColor: '#f59e0b',
-    ctaLabel: 'Simulate Audience',
-    href: '#audience',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-        <circle cx="9" cy="7" r="4"></circle>
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-      </svg>
-    )
-  },
-  {
     id: 'what-to-watch',
     title: 'What Should I Watch?',
     description: 'Describe your exact mood, genre blend, or vibe in plain English and get 6 hyper-tailored recommendations.',
