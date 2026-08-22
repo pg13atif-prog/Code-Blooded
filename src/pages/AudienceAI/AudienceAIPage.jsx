@@ -1,4 +1,4 @@
-﻿import './index.css';
+import './index.css';
 import React, { useState, useEffect } from 'react';
 import Dashboard from './pages/Dashboard/Dashboard';
 import SceneEditor from './pages/SceneEditor/SceneEditor';
@@ -6,7 +6,6 @@ import Simulation from './pages/Simulation/Simulation';
 import Insights from './pages/Insights/Insights';
 import History from './pages/History/History';
 import Settings from './pages/Settings/Settings';
-import TopNav from './components/Common/TopNav';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import VisualPreferencesModal from './components/Common/VisualPreferencesModal';
 import { sceneService } from './services/sceneService';
@@ -251,7 +250,6 @@ function AudienceAIContent() {
 
       {/* Main Container */}
       <main className="aai-exact-main">
-        <TopNav />
         {renderCurrentPage()}
       </main>
 
