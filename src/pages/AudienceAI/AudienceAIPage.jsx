@@ -1,265 +1,113 @@
 import './index.css';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Dashboard from './pages/Dashboard/Dashboard';
 import SceneEditor from './pages/SceneEditor/SceneEditor';
 import Simulation from './pages/Simulation/Simulation';
 import Insights from './pages/Insights/Insights';
 import History from './pages/History/History';
 import Settings from './pages/Settings/Settings';
-import { sceneService } from './services/sceneService';
-import { DEMO_SCENES, DEMO_SCENE } from './data/demoScene';
+import TopNav from './components/Common/TopNav';
+import { ThemeProvider, useTheme } from './context/ThemeContext';
+import VisualPreferencesModal from './components/Common/VisualPreferencesModal';
 
 const NAV_ITEMS = [
-  { id: 'dashboard', label: 'Dashboard', icon: '📊' },
-  { id: 'editor', label: 'Scene Editor', icon: '✏️' },
-  { id: 'simulation', label: 'Simulate', icon: '🎭' },
-  { id: 'insights', label: 'Insights', icon: '💡' },
-  { id: 'history', label: 'History', icon: '🕐' },
-  { id: 'settings', label: 'Settings', icon: '⚙️' },
+  { id: 'dashboard', label: 'Dashboard', icon: (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+  )},
+  { id: 'editor', label: 'Scene Editor', icon: (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+  )},
+  { id: 'simulation', label: 'Simulate', icon: (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+  )},
+  { id: 'insights', label: 'Insights', icon: (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+  )},
+  { id: 'history', label: 'History', icon: (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+  )}
 ];
 
-export default function AudienceAIPage() {
-  const [scenes, setScenes] = useState([]);
-  const [activeSceneId, setActiveSceneId] = useState(null);
+function AudienceAIContent() {
+  const { theme, glassSettings } = useTheme();
   const [activeRoute, setActiveRoute] = useState('dashboard');
-  const [isDemoMode, setIsDemoMode] = useState(false);
-  const [currentDemoIndex, setCurrentDemoIndex] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-
-  useEffect(() => {
-    async function loadScenes() {
-      try {
-        const loaded = await sceneService.getScenes();
-        setScenes(loaded);
-        if (loaded.length > 0) setActiveSceneId(loaded[0].id);
-      } catch (err) {
-        console.error('Error loading scenes:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    loadScenes();
-  }, []);
-
-  const activeScene = scenes.find(s => s.id === activeSceneId) || scenes[0] || null;
-
-  const handleSelectScene = (scene) => {
-    if (scene) setActiveSceneId(scene.id);
-  };
-
-  const handleLoadDemoScene = async (demo, targetRoute = 'editor') => {
-    try {
-      const exists = scenes.find(s => s.id === demo.id);
-      let targetScene = exists;
-      if (!exists) {
-        targetScene = await sceneService.saveScene(demo);
-        setScenes(prev => [targetScene, ...prev.filter(s => s.id !== demo.id)]);
-      }
-      setActiveSceneId(targetScene.id);
-      setIsDemoMode(true);
-      setActiveRoute(targetRoute);
-    } catch (err) {
-      console.error('Failed to load demo scene:', err);
-    }
-  };
-
-  const handleToggleDemoMode = async () => {
-    const nextIndex = isDemoMode ? (currentDemoIndex + 1) % DEMO_SCENES.length : 0;
-    const targetDemo = DEMO_SCENES[nextIndex];
-    setCurrentDemoIndex(nextIndex);
-    await handleLoadDemoScene(targetDemo, 'editor');
-  };
-
-  const handleNewSimulation = async () => {
-    try {
-      const newScene = await sceneService.createScene({
-        title: '',
-        subtitle: `Act I • Scene ${scenes.length + 1}`,
-        genre: 'Drama / Fiction',
-        context: '',
-        characters: ['Protagonist'],
-        content: ''
-      });
-      setScenes(prev => [newScene, ...prev]);
-      setActiveSceneId(newScene.id);
-      setIsDemoMode(false);
-      setActiveRoute('editor');
-    } catch (err) {
-      console.error('Failed to create new scene:', err);
-    }
-  };
-
-  const handleSimulateScene = async (scene) => {
-    if (scene) {
-      const saved = await sceneService.saveScene(scene);
-      setScenes(prev => prev.map(s => s.id === saved.id ? saved : s));
-      setActiveSceneId(saved.id);
-    }
-    setActiveRoute('simulation');
-  };
-
-  const handleViewInsights = (scene) => {
-    if (scene) setActiveSceneId(scene.id);
-    setActiveRoute('insights');
-  };
-
-  const handleUpdateScene = async (updatedScene) => {
-    try {
-      const saved = await sceneService.saveScene(updatedScene);
-      setScenes(prev => prev.map(s => s.id === saved.id ? saved : s));
-      return saved;
-    } catch (err) {
-      console.error('Failed to update scene:', err);
-    }
-  };
+  const [vpModalOpen, setVpModalOpen] = useState(false);
 
   const renderCurrentPage = () => {
-    if (isLoading) {
-      return (
-        <div className="audienceai-loading">
-          <div className="audienceai-loading__spinner"></div>
-          <p>Loading workspace...</p>
-        </div>
-      );
-    }
-
     switch (activeRoute) {
-      case 'dashboard':
-        return (
-          <Dashboard
-            scenes={scenes}
-            onSelectScene={(scene) => { handleSelectScene(scene); setActiveRoute('editor'); }}
-            onNewSimulation={handleNewSimulation}
-            onSimulate={handleSimulateScene}
-            onViewInsights={handleViewInsights}
-            onLoadDemo={handleLoadDemoScene}
-          />
-        );
-      case 'editor':
-        return (
-          <SceneEditor
-            activeScene={activeScene}
-            onUpdateScene={handleUpdateScene}
-            onSimulate={handleSimulateScene}
-          />
-        );
-      case 'simulation':
-        return (
-          <Simulation
-            activeScene={activeScene}
-            onNavigate={setActiveRoute}
-            onViewInsights={handleViewInsights}
-            onUpdateScene={handleUpdateScene}
-          />
-        );
-      case 'insights':
-        return (
-          <Insights
-            activeScene={activeScene}
-            onNavigate={setActiveRoute}
-            onSimulate={handleSimulateScene}
-            onUpdateScene={handleUpdateScene}
-          />
-        );
-      case 'history':
-        return (
-          <History
-            scenes={scenes}
-            onSelectScene={(scene) => { handleSelectScene(scene); setActiveRoute('editor'); }}
-            onSimulate={handleSimulateScene}
-            onViewInsights={handleViewInsights}
-            onUpdateScene={handleUpdateScene}
-          />
-        );
-      case 'settings':
-        return <Settings />;
-      default:
-        return (
-          <Dashboard
-            scenes={scenes}
-            onSelectScene={handleSelectScene}
-            onNewSimulation={handleNewSimulation}
-            onSimulate={handleSimulateScene}
-            onViewInsights={handleViewInsights}
-            onLoadDemo={handleLoadDemoScene}
-          />
-        );
+      case 'dashboard': return <Dashboard />;
+      case 'editor': return <SceneEditor />;
+      case 'simulation': return <Simulation />;
+      case 'insights': return <Insights />;
+      case 'history': return <History />;
+      case 'settings': return <Settings />;
+      default: return <Dashboard />;
     }
+  };
+
+  const layoutStyle = {
+    '--glass-blur-value': `${glassSettings.backdropBlur}px`,
+    '--glass-opacity-value': glassSettings.surfaceOpacity,
   };
 
   return (
-    <div className="aai-layout">
-      {/* Sidebar */}
-      <aside className={`aai-sidebar ${sidebarCollapsed ? 'aai-sidebar--collapsed' : ''}`}>
-        {/* Brand */}
-        <div className="aai-sidebar__brand" onClick={() => setSidebarCollapsed(!sidebarCollapsed)}>
-          <span className="aai-sidebar__brand-icon">🎭</span>
-          {!sidebarCollapsed && (
-            <span className="aai-sidebar__brand-text">
-              Audience<span className="aai-sidebar__brand-ai">AI</span>
-            </span>
-          )}
+    <div className={`aai-layout ${theme === 'deepsea' ? 'theme-deepsea' : ''}`} style={layoutStyle}>
+      
+      {/* Exact Sidebar matching screenshot */}
+      <aside className="aai-exact-sidebar glass-panel">
+        <div className="aai-exact-sidebar__brand">
+          <div className="aai-exact-sidebar__logo">A</div>
+          <span className="aai-exact-sidebar__brand-name">AudienceAI</span>
         </div>
-
-        {/* New Scene */}
-        <button className="aai-sidebar__new-btn" onClick={handleNewSimulation}>
-          <span>+</span>
-          {!sidebarCollapsed && <span>New Simulation</span>}
+        
+        <button className="aai-exact-sidebar__new-btn">
+          New Simulation
         </button>
-
-        {/* Nav */}
-        <nav className="aai-sidebar__nav">
-          <div className="aai-sidebar__nav-label">{sidebarCollapsed ? '' : 'WORKSPACE'}</div>
+        
+        <nav className="aai-exact-sidebar__nav">
           {NAV_ITEMS.map(item => (
             <button
               key={item.id}
-              className={`aai-sidebar__nav-item ${activeRoute === item.id ? 'aai-sidebar__nav-item--active' : ''}`}
+              className={`aai-exact-sidebar__nav-item ${activeRoute === item.id ? 'aai-exact-sidebar__nav-item--active' : ''}`}
               onClick={() => setActiveRoute(item.id)}
-              title={item.label}
             >
-              <span className="aai-sidebar__nav-icon">{item.icon}</span>
-              {!sidebarCollapsed && <span className="aai-sidebar__nav-label-text">{item.label}</span>}
+              {activeRoute === item.id && <span className="aai-sidebar-active-dot"></span>}
+              {item.icon}
+              <span>{item.label}</span>
             </button>
           ))}
         </nav>
-
-        {/* Bottom controls */}
-        <div className="aai-sidebar__bottom">
-          <button
-            className={`aai-sidebar__demo-btn ${isDemoMode ? 'aai-sidebar__demo-btn--active' : ''}`}
-            onClick={handleToggleDemoMode}
-            title={isDemoMode ? `Next Demo (${currentDemoIndex + 1}/${DEMO_SCENES.length})` : 'Load Demo Scene'}
+        
+        <div className="aai-exact-sidebar__bottom">
+          <button 
+            className={`aai-exact-sidebar__nav-item ${activeRoute === 'settings' ? 'aai-exact-sidebar__nav-item--active' : ''}`}
+            onClick={() => setActiveRoute('settings')}
           >
-            <span>⚡</span>
-            {!sidebarCollapsed && (
-              <span>
-                {isDemoMode ? `Demo: ${DEMO_SCENES[currentDemoIndex]?.title.split(' ')[0] || 'Next'} (${currentDemoIndex + 1}/${DEMO_SCENES.length})` : 'Demo Mode'}
-              </span>
-            )}
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            <span>Settings</span>
           </button>
-
-          {!sidebarCollapsed && activeScene && (
-            <div className="aai-sidebar__scene-info">
-              <div className="aai-sidebar__scene-title">{activeScene.title || 'Untitled Scene'}</div>
-              <div className="aai-sidebar__scene-sub">{activeScene.subtitle || 'Act I'}</div>
-            </div>
-          )}
-
-          <button
-            className="aai-sidebar__collapse-btn"
-            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-            title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          >
-            {sidebarCollapsed ? '»' : '«'}
+          <button className="aai-exact-sidebar__nav-item" onClick={() => setVpModalOpen(true)}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
+            <span>Demo Mode</span>
           </button>
         </div>
       </aside>
 
-      {/* Main content */}
-      <main className="aai-main" key={activeRoute}>
+      {/* Main Container */}
+      <main className="aai-exact-main">
+        <TopNav />
         {renderCurrentPage()}
       </main>
+
+      <VisualPreferencesModal isOpen={vpModalOpen} onClose={() => setVpModalOpen(false)} />
     </div>
+  );
+}
+
+export default function AudienceAIPage() {
+  return (
+    <ThemeProvider>
+      <AudienceAIContent />
+    </ThemeProvider>
   );
 }

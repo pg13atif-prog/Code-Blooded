@@ -446,7 +446,7 @@ function App() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
         >
-          <Navbar />
+          {!['audience', 'audienceai', 'simulator'].includes(currentRoute) && <Navbar />}
           <AnimatePresence mode="wait">
             <motion.div
               key={currentRoute + (currentParams ? JSON.stringify(currentParams) : '')}
