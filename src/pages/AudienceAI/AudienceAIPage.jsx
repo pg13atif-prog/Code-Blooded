@@ -1,34 +1,35 @@
 import './index.css';
 import React, { useState, useEffect } from 'react';
-import Sidebar from './components/Sidebar/Sidebar';
-import Navbar from './components/Navbar/Navbar';
 import Dashboard from './pages/Dashboard/Dashboard';
 import SceneEditor from './pages/SceneEditor/SceneEditor';
 import Simulation from './pages/Simulation/Simulation';
 import Insights from './pages/Insights/Insights';
 import History from './pages/History/History';
 import Settings from './pages/Settings/Settings';
-import { sceneService, normalizeScene } from './services/sceneService';
+import { sceneService } from './services/sceneService';
 import { DEMO_SCENE } from './data/demoScene';
 
-export default function App() {
+const NAV_ITEMS = [
+  { id: 'dashboard', label: 'Dashboard', icon: '📊' },
+  { id: 'editor', label: 'Scene Editor', icon: '✏️' },
+  { id: 'simulation', label: 'Simulate', icon: '🎭' },
+  { id: 'insights', label: 'Insights', icon: '💡' },
+  { id: 'history', label: 'History', icon: '🕐' },
+];
+
+export default function AudienceAIPage() {
   const [scenes, setScenes] = useState([]);
   const [activeSceneId, setActiveSceneId] = useState(null);
   const [activeRoute, setActiveRoute] = useState('dashboard');
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [isDemoMode, setIsDemoMode] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Initialize scenes from persistent service
   useEffect(() => {
     async function loadScenes() {
       try {
         const loaded = await sceneService.getScenes();
         setScenes(loaded);
-        if (loaded.length > 0) {
-          setActiveSceneId(loaded[0].id);
-        }
+        if (loaded.length > 0) setActiveSceneId(loaded[0].id);
       } catch (err) {
         console.error('Error loading scenes:', err);
       } finally {
@@ -41,15 +42,11 @@ export default function App() {
   const activeScene = scenes.find(s => s.id === activeSceneId) || scenes[0] || null;
 
   const handleSelectScene = (scene) => {
-    if (scene) {
-      setActiveSceneId(scene.id);
-    }
+    if (scene) setActiveSceneId(scene.id);
   };
 
-  // Toggle Demo Mode with "The Betrayal"
   const handleToggleDemoMode = async () => {
     if (!isDemoMode) {
-      // Activate Demo Mode: ensure DEMO_SCENE is available
       const exists = scenes.find(s => s.id === DEMO_SCENE.id);
       if (!exists) {
         const savedDemo = await sceneService.saveScene(DEMO_SCENE);
@@ -63,7 +60,6 @@ export default function App() {
     }
   };
 
-  // Create brand new blank scene workflow
   const handleNewSimulation = async () => {
     try {
       const newScene = await sceneService.createScene({
@@ -74,7 +70,6 @@ export default function App() {
         characters: ['Protagonist'],
         content: ''
       });
-
       setScenes(prev => [newScene, ...prev]);
       setActiveSceneId(newScene.id);
       setActiveRoute('editor');
@@ -107,12 +102,12 @@ export default function App() {
     }
   };
 
-  // Dynamic Route Renderer
   const renderCurrentPage = () => {
     if (isLoading) {
       return (
-        <div className="loading-container glass-panel" style={{ padding: '60px', textAlign: 'center' }}>
-          <p style={{ color: 'var(--text-muted)' }}>Loading story workspace...</p>
+        <div className="audienceai-loading">
+          <div className="audienceai-loading__spinner"></div>
+          <p>Loading workspace...</p>
         </div>
       );
     }
@@ -122,16 +117,12 @@ export default function App() {
         return (
           <Dashboard
             scenes={scenes}
-            onSelectScene={(scene) => {
-              handleSelectScene(scene);
-              setActiveRoute('editor');
-            }}
+            onSelectScene={(scene) => { handleSelectScene(scene); setActiveRoute('editor'); }}
             onNewSimulation={handleNewSimulation}
             onSimulate={handleSimulateScene}
             onViewInsights={handleViewInsights}
           />
         );
-
       case 'editor':
         return (
           <SceneEditor
@@ -140,7 +131,6 @@ export default function App() {
             onSimulate={handleSimulateScene}
           />
         );
-
       case 'simulation':
         return (
           <Simulation
@@ -150,7 +140,6 @@ export default function App() {
             onUpdateScene={handleUpdateScene}
           />
         );
-
       case 'insights':
         return (
           <Insights
@@ -160,24 +149,18 @@ export default function App() {
             onUpdateScene={handleUpdateScene}
           />
         );
-
       case 'history':
         return (
           <History
             scenes={scenes}
-            onSelectScene={(scene) => {
-              handleSelectScene(scene);
-              setActiveRoute('editor');
-            }}
+            onSelectScene={(scene) => { handleSelectScene(scene); setActiveRoute('editor'); }}
             onSimulate={handleSimulateScene}
             onViewInsights={handleViewInsights}
             onUpdateScene={handleUpdateScene}
           />
         );
-
       case 'settings':
         return <Settings />;
-
       default:
         return (
           <Dashboard
@@ -192,41 +175,52 @@ export default function App() {
   };
 
   return (
-    <div className="audienceai-cinescope-wrapper">
-      <div className="app-layout">
-        {/* Sidebar Navigation */}
-        <Sidebar
-          activeRoute={activeRoute}
-          onNavigate={setActiveRoute}
-          onNewSimulation={handleNewSimulation}
-          collapsed={sidebarCollapsed}
-          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-          mobileOpen={mobileSidebarOpen}
-          onCloseMobile={() => setMobileSidebarOpen(false)}
-        />
-
-        {/* Main Content Layout */}
-        <div className="main-wrapper">
-          {/* Top Navbar */}
-          <Navbar
-            activeRoute={activeRoute}
-            onNavigate={setActiveRoute}
-            activeScene={activeScene}
-            allScenes={scenes}
-            onSelectScene={handleSelectScene}
-            onToggleMobileMenu={() => setMobileSidebarOpen(true)}
-            isDemoMode={isDemoMode}
-            onToggleDemoMode={handleToggleDemoMode}
-          />
-
-          {/* Page Content Viewport */}
-          <main className="page-container" key={activeRoute}>
-            {renderCurrentPage()}
-          </main>
+    <div className="audienceai-embed">
+      {/* Compact inline tab nav — replaces sidebar + breadcrumb toolbar */}
+      <div className="audienceai-embed__toolbar">
+        <div className="audienceai-embed__toolbar-left">
+          <span className="audienceai-embed__brand">
+            <span className="audienceai-embed__brand-icon">🎭</span>
+            Audience<span className="audienceai-embed__brand-ai">AI</span>
+          </span>
+          <nav className="audienceai-embed__tabs">
+            {NAV_ITEMS.map(item => (
+              <button
+                key={item.id}
+                className={`audienceai-embed__tab ${activeRoute === item.id ? 'audienceai-embed__tab--active' : ''}`}
+                onClick={() => setActiveRoute(item.id)}
+              >
+                <span className="audienceai-embed__tab-icon">{item.icon}</span>
+                <span className="audienceai-embed__tab-label">{item.label}</span>
+              </button>
+            ))}
+          </nav>
+        </div>
+        <div className="audienceai-embed__toolbar-right">
+          {activeScene && (
+            <span className="audienceai-embed__scene-name">
+              {activeScene.title || 'Untitled Scene'}
+            </span>
+          )}
+          <button
+            className={`audienceai-embed__demo-btn ${isDemoMode ? 'audienceai-embed__demo-btn--active' : ''}`}
+            onClick={handleToggleDemoMode}
+          >
+            ⚡ {isDemoMode ? 'Exit Demo' : 'Demo'}
+          </button>
+          <button
+            className="audienceai-embed__new-btn"
+            onClick={handleNewSimulation}
+          >
+            + New Scene
+          </button>
         </div>
       </div>
+
+      {/* Page content */}
+      <main className="audienceai-embed__content" key={activeRoute}>
+        {renderCurrentPage()}
+      </main>
     </div>
   );
 }
-
-
