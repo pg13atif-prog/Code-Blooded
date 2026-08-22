@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Users, 
   Sparkles, 
@@ -8,15 +8,15 @@ import {
   FileEdit, 
   Info, 
   Layers,
-  CheckCircle2,
-  Clock,
-  ArrowRight,
-  AlertCircle,
-  FileText,
-  Check,
-  TrendingUp,
-  Settings as SettingsIcon,
-  RotateCcw,
+  CheckCircle2, 
+  Clock, 
+  ArrowRight, 
+  AlertCircle, 
+  FileText, 
+  Check, 
+  TrendingUp, 
+  Settings as SettingsIcon, 
+  RotateCcw, 
   Eye,
   Film,
   Feather,
@@ -45,7 +45,7 @@ import { historyService } from '../../services/historyService';
 import './Simulation.css';
 
 /**
- * Live Audience Persona Simulation & Visualization Screen (Compact Minimal-Scroll Edition)
+ * Live Audience Persona Simulation & Visualization Screen (Refined Tabbed Layout)
  * @param {Object} props
  * @param {Object} props.activeScene
  * @param {Function} props.onNavigate
@@ -81,6 +81,14 @@ export default function Simulation({
   const [validationWarning, setValidationWarning] = useState(null);
   const [viewMode, setViewMode] = useState(activeScene?.simulationResults ? 'results' : 'setup'); // 'setup' | 'results'
 
+  // Update simResults when activeScene changes
+  useEffect(() => {
+    if (activeScene?.simulationResults) {
+      setSimResults(activeScene.simulationResults);
+      setViewMode('results');
+    }
+  }, [activeScene]);
+
   const selectedCount = selectedPersonaIds.length;
   const isReadyToStart = selectedCount > 0;
   const activePersonas = personas.filter(p => selectedPersonaIds.includes(p.id));
@@ -111,15 +119,15 @@ export default function Simulation({
   const handleTogglePersona = (personaId) => {
     if (selectedPersonaIds.includes(personaId)) {
       if (selectedPersonaIds.length === 1) {
-        setValidationWarning('You must keep at least 1 persona active to simulate audience response.');
+        setValidationWarning('At least one audience persona must remain selected for simulation.');
+        setTimeout(() => setValidationWarning(null), 3500);
         return;
       }
       setSelectedPersonaIds(prev => prev.filter(id => id !== personaId));
-      setValidationWarning(null);
     } else {
       setSelectedPersonaIds(prev => [...prev, personaId]);
-      setValidationWarning(null);
     }
+    setValidationWarning(null);
   };
 
   const handleSelectAll = () => {
@@ -171,40 +179,29 @@ export default function Simulation({
       // Diagnose problems for audit history
       const diagnosis = problemDetectionService.diagnoseScene(reactions, aggregatedMetrics, activeScene);
 
-      // Record in historical simulation log
-      await historyService.recordSimulationSession({
-        scene: activeScene,
-        results: reactions,
-        metrics: aggregatedMetrics,
-        problemDiagnosis: diagnosis
-      });
-
-      // Update scene with results and save persistently
+      // Update scene with real results
       const updatedScene = {
         ...activeScene,
         simulationResults: reactions,
         metrics: aggregatedMetrics,
-        status: 'Completed',
-        lastSimulated: 'Just now',
-        updatedAt: new Date().toISOString()
+        problemDiagnosis: diagnosis,
+        status: 'Simulated',
+        lastSimulatedAt: new Date().toISOString()
       };
+
+      setSimResults(reactions);
+      setViewMode('results');
+      setResultsTab('overview');
 
       if (onUpdateScene) {
         await onUpdateScene(updatedScene);
       }
 
-      setSimResults(reactions);
-      if (reactions.length > 0) {
-        setSelectedPersonaTabId(reactions[0].personaId);
-      }
-      setViewMode('results');
-      setResultsTab('overview');
+      // Add to simulation history
+      historyService.addEntry(updatedScene, reactions, aggregatedMetrics);
     } catch (err) {
-      console.error('Simulation failed:', err);
-      if (err.code === 'MISSING_API_KEY' || err.code === 'INVALID_API_KEY') {
-        setIsApiKeyModalOpen(true);
-      }
-      setSimError(err.message || 'Simulation encountered an error. Please try again.');
+      console.error('Simulation execution failed:', err);
+      setSimError(err.message || 'Simulation encountered an unexpected error. Please check your Gemini API key and try again.');
     } finally {
       setIsSimulating(false);
       setSimProgress(null);
@@ -213,87 +210,68 @@ export default function Simulation({
 
   return (
     <div className="simulation-page">
-      {/* Top Banner (Compact) */}
+      {/* Top Scene Context Banner */}
       <div className="sim-header-banner glass-panel">
         <div className="sim-header-left">
           <div className="sim-header-badge-row">
             <Badge variant="amber" size="sm" icon={<Sparkles size={12} />}>
-              {viewMode === 'results' ? 'Simulation Results' : 'Simulation Setup'}
+              Gemini Audience Simulator
             </Badge>
-            <span className="sim-disclaimer-pill">Simulated Audience</span>
             <span className="sim-scene-tag">{activeScene?.subtitle || 'Act I • Scene 1'}</span>
           </div>
 
-          <h1 className="sim-scene-title">
-            {activeScene?.title ? `Simulate: ${activeScene.title}` : 'Untitled Scene Simulation'}
-          </h1>
+          <h1 className="sim-scene-title">{activeScene?.title || 'The Betrayal'}</h1>
           <p className="sim-scene-summary">
-            {viewMode === 'results' 
-              ? `Live simulated audience evaluated across ${simResults?.length || 0} personas with narrative diagnostics.`
-              : 'Configure simulated audience personas to independently evaluate scene pacing, narrative stakes, and emotional resonance.'}
+            {activeScene?.context || 'Simulate realistic multi-perspective audience reception and uncover blindspots across diverse demographic and critical archetypes.'}
           </p>
         </div>
 
         <div className="sim-header-right">
           <div className="sim-status-box">
-            <span className="sim-status-label">Audience Status</span>
+            <span className="sim-status-label">Engine Status</span>
             <div className="sim-status-indicator">
-              <span className={`sim-pulse-dot ${viewMode === 'results' ? 'ready' : isReadyToStart ? 'ready' : 'warning'}`} />
+              <span className={`sim-pulse-dot ${apiKeyService.hasKey() ? 'ready' : 'warning'}`} />
               <span className="sim-status-text">
-                {viewMode === 'results' 
-                  ? `${simResults?.length || 0} Viewpoints Ready`
-                  : `${selectedCount} of ${personas.length} Selected`}
+                {apiKeyService.hasKey() ? 'Gemini 2.5 Active' : 'API Key Required'}
               </span>
             </div>
           </div>
 
           <div className="sim-action-row">
-            {viewMode === 'results' ? (
-              <>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  icon={<RotateCcw size={13} />}
-                  onClick={() => setViewMode('setup')}
-                >
-                  Configure
-                </Button>
-                <Button
-                  variant="primary"
-                  size="sm"
-                  icon={<BarChart3 size={14} />}
-                  onClick={() => onViewInsights(activeScene)}
-                >
-                  Analytics
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  icon={<FileEdit size={13} />}
-                  onClick={() => onNavigate('editor')}
-                >
-                  Edit Scene
-                </Button>
-                <Button
-                  variant="primary"
-                  size="sm"
-                  icon={<Play size={14} />}
-                  onClick={handleStartSimulation}
-                  disabled={!isReadyToStart || isSimulating}
-                  className="start-sim-primary-btn"
-                >
-                  Start Simulation
-                </Button>
-              </>
+            {viewMode === 'results' && (
+              <Button
+                variant="secondary"
+                size="md"
+                icon={<Sliders size={14} />}
+                onClick={() => setViewMode('setup')}
+              >
+                Configure Personas
+              </Button>
             )}
+
+            <Button
+              variant="primary"
+              size="md"
+              icon={<Play size={14} />}
+              onClick={handleStartSimulation}
+              disabled={isSimulating || !isReadyToStart}
+              className="start-sim-primary-btn"
+            >
+              {isSimulating ? 'Simulating...' : (viewMode === 'results' ? 'Re-Simulate Scene' : 'Run Simulation')}
+            </Button>
           </div>
         </div>
       </div>
 
-      {/* Error Alert Banner */}
+      {/* Validation Warning Alert */}
+      {validationWarning && (
+        <div className="sim-warning-banner">
+          <AlertCircle size={16} />
+          <span>{validationWarning}</span>
+        </div>
+      )}
+
+      {/* Simulation Error Alert */}
       {simError && (
         <div className="sim-error-banner">
           <div className="sim-error-content">
@@ -303,107 +281,77 @@ export default function Simulation({
               <p className="sim-error-desc">{simError}</p>
             </div>
           </div>
-          <div className="sim-error-actions">
-            <Button
-              variant="secondary"
-              size="sm"
-              icon={<SettingsIcon size={13} />}
-              onClick={() => setIsApiKeyModalOpen(true)}
-            >
-              API Key Settings
-            </Button>
-            <Button
-              variant="amber"
-              size="sm"
-              onClick={handleStartSimulation}
-            >
-              Retry
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* Warning Alert Banner */}
-      {validationWarning && (
-        <div className="sim-warning-banner">
-          <AlertCircle size={16} />
-          <span>{validationWarning}</span>
-          <button 
-            type="button" 
-            className="sim-warning-close" 
-            onClick={() => setValidationWarning(null)}
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => setIsApiKeyModalOpen(true)}
           >
-            ×
-          </button>
+            Update API Key
+          </Button>
         </div>
       )}
 
       {/* =========================================================================
-          VIEW MODE 1: SETUP & PERSONA SELECTION
+          VIEW MODE 1: PERSONA SETUP & PRE-FLIGHT
           ========================================================================= */}
       {viewMode === 'setup' && (
         <>
-          {/* Controls Bar */}
-          <div className="sim-controls-bar glass-panel">
-            <div className="sim-controls-left">
-              <div className="sim-personas-count">
-                <Users size={16} />
-                <span>Audience Personas ({selectedCount}/{personas.length} Selected)</span>
-              </div>
-
-              <div className="sim-quick-select-btns">
-                <button
-                  type="button"
-                  className="sim-text-btn"
-                  onClick={handleSelectAll}
-                  disabled={selectedCount === personas.length}
-                >
-                  Select All (4)
-                </button>
-              </div>
+          {/* Persona Selection Header */}
+          <div className="persona-selection-header">
+            <div>
+              <h2 className="section-title">Select Audience Personas ({selectedCount} of {personas.length} Active)</h2>
+              <p className="section-subtitle">
+                Choose the lens through which you want your scene evaluated. Each persona possesses unique taste profiles, patience thresholds, and expectations.
+              </p>
             </div>
 
-            <div className="sim-tuning-options">
-              <span className="tuning-label">Simulation Mode:</span>
-              <div className="depth-selector">
-                <button
-                  type="button"
-                  className={`depth-tab ${simulationDepth === 'standard' ? 'active' : ''}`}
-                  onClick={() => setSimulationDepth('standard')}
-                >
-                  Standard Evaluation
-                </button>
-                <button
-                  type="button"
-                  className={`depth-tab ${simulationDepth === 'deep' ? 'active' : ''}`}
-                  onClick={() => setSimulationDepth('deep')}
-                >
-                  Deep Subtext Probe
-                </button>
-              </div>
+            <div className="persona-selection-actions">
+              <Button
+                variant="ghost"
+                size="sm"
+                icon={<CheckCircle2 size={14} />}
+                onClick={handleSelectAll}
+              >
+                Select All
+              </Button>
             </div>
           </div>
 
-          {/* 4 Audience Persona Cards Grid */}
-          <div className="persona-cards-grid">
+          {/* Persona Selection Grid */}
+          <div className="personas-selection-grid">
             {personas.map((persona) => {
               const isSelected = selectedPersonaIds.includes(persona.id);
-              const isLast = isSelected && selectedCount === 1;
-
               return (
                 <PersonaCard
                   key={persona.id}
                   persona={persona}
                   isSelected={isSelected}
-                  onToggleSelect={handleTogglePersona}
-                  isLastSelected={isLast}
+                  onToggleSelect={() => handleTogglePersona(persona.id)}
+                  onInspect={() => {
+                    // Inspect default persona spec
+                    const match = simResults?.find(r => r.personaId === persona.id);
+                    setInspectedReaction(match || {
+                      personaId: persona.id,
+                      personaName: persona.name,
+                      icon: persona.icon,
+                      colorKey: persona.colorKey,
+                      role: persona.role,
+                      avatarDesc: persona.avatarDesc,
+                      demographics: persona.demographics,
+                      overallScore: 75,
+                      reaction: `Configured to evaluate scene through the ${persona.name} lens.`,
+                      strengths: ['Archetypal viewpoint initialized.'],
+                      observedIssues: [],
+                      suggestions: []
+                    });
+                  }}
                 />
               );
             })}
           </div>
 
-          {/* Pre-Flight Summary Card */}
-          <section className="sim-preflight-card glass-panel">
+          {/* Pre-flight Execution Summary Card */}
+          <section className="preflight-summary-card glass-panel">
             <div className="preflight-header">
               <div className="preflight-header-left">
                 <div className="preflight-icon-box">
@@ -416,7 +364,7 @@ export default function Simulation({
               </div>
 
               <Badge variant={isReadyToStart ? 'emerald' : 'rose'} size="md">
-                {isReadyToStart ? 'Ready for Simulation' : 'Selection Incomplete'}
+                {isReadyToStart ? 'Ready for Gemini Simulation' : 'Selection Incomplete'}
               </Badge>
             </div>
 
@@ -449,7 +397,7 @@ export default function Simulation({
 
               <div className="preflight-detail-item">
                 <span className="detail-label">AI Engine</span>
-                <span className="detail-value">Multi-Provider AI Logic</span>
+                <span className="detail-value">Gemini 2.5 Flash</span>
                 <span className="detail-subtext">Independent Multi-Persona Reasoning</span>
               </div>
             </div>
@@ -458,7 +406,7 @@ export default function Simulation({
               <div className="preflight-guidance-text">
                 <Info size={14} />
                 <span>
-                  Clicking <strong>Start Simulation</strong> initiates independent evaluation across {selectedCount} personas.
+                  Clicking <strong>Start Simulation</strong> initiates independent evaluation across all {selectedCount} active persona perspectives.
                 </span>
               </div>
 
@@ -532,6 +480,14 @@ export default function Simulation({
               <Button
                 variant="secondary"
                 size="sm"
+                icon={<Sparkles size={13} className="text-amber" />}
+                onClick={() => setIsRemixModalOpen(true)}
+              >
+                AI Scene Remix
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
                 icon={<RotateCcw size={13} />}
                 onClick={handleStartSimulation}
               >
@@ -542,43 +498,47 @@ export default function Simulation({
 
           {/* TAB 1: OVERVIEW & DIAGNOSTICS */}
           {resultsTab === 'overview' && (
-            <div className="sim-tab-overview-grid">
-              {/* Left Column: Problem Diagnosis Card */}
-              <div className="overview-left-col">
-                {problemDiagnosis && (
-                  <AudienceInsightCard
-                    diagnosis={problemDiagnosis}
-                    onImproveScene={() => setIsRemixModalOpen(true)}
-                    onKeepScene={async () => {
-                      if (activeScene && onUpdateScene) {
-                        const updated = {
-                          ...activeScene,
-                          status: 'Completed',
-                          acceptedByCreator: true,
-                          updatedAt: new Date().toISOString()
-                        };
-                        await onUpdateScene(updated);
-                      }
+            <div className="sim-tab-overview-container">
+              {/* 1. Full-Width Top Consensus Banner */}
+              {consensusData && (
+                <ConsensusBanner consensusData={consensusData} />
+              )}
+
+              {/* 2. Side-by-Side Balanced Split Grid */}
+              <div className="sim-overview-split-grid">
+                {/* Left Column: Problem Diagnosis Card */}
+                <div className="overview-diag-col">
+                  {problemDiagnosis && (
+                    <AudienceInsightCard
+                      diagnosis={problemDiagnosis}
+                      onImproveScene={() => setIsRemixModalOpen(true)}
+                      onKeepScene={async () => {
+                        if (activeScene && onUpdateScene) {
+                          const updated = {
+                            ...activeScene,
+                            status: 'Completed',
+                            acceptedByCreator: true,
+                            updatedAt: new Date().toISOString()
+                          };
+                          await onUpdateScene(updated);
+                        }
+                      }}
+                      onReSimulate={handleStartSimulation}
+                    />
+                  )}
+                </div>
+
+                {/* Right Column: Persona Viewpoint Breakdown */}
+                <div className="overview-breakdown-col">
+                  <PersonaBreakdown
+                    personaRankings={consensusData?.personaRankings || []}
+                    selectedPersonaId={selectedPersonaTabId}
+                    onSelectPersona={(personaId) => {
+                      setSelectedPersonaTabId(personaId);
+                      setResultsTab('personas');
                     }}
-                    onReSimulate={handleStartSimulation}
                   />
-                )}
-              </div>
-
-              {/* Right Column: Consensus Banner & Persona Ranking Breakdown */}
-              <div className="overview-right-col">
-                {consensusData && (
-                  <ConsensusBanner consensusData={consensusData} />
-                )}
-
-                <PersonaBreakdown
-                  personaRankings={consensusData?.personaRankings || []}
-                  selectedPersonaId={selectedPersonaTabId}
-                  onSelectPersona={(personaId) => {
-                    setSelectedPersonaTabId(personaId);
-                    setResultsTab('personas');
-                  }}
-                />
+                </div>
               </div>
             </div>
           )}
@@ -588,7 +548,7 @@ export default function Simulation({
             <div className="sim-tab-personas-view">
               {/* Persona Selector Pill Strip */}
               <div className="persona-pills-strip glass-panel">
-                <span className="pills-strip-label">Select Persona:</span>
+                <span className="pills-strip-label">Select Persona Lens:</span>
                 <div className="persona-pills-list">
                   {simResults && simResults.map((reaction) => {
                     const isSelected = (selectedPersonaTabId || simResults[0]?.personaId) === reaction.personaId;
@@ -683,14 +643,46 @@ export default function Simulation({
               const updated = {
                 ...activeScene,
                 content: improvedContent,
+                scriptContent: improvedContent,
                 wordCount,
-                status: 'Draft',
+                readTime: `${Math.max(1, Math.ceil(wordCount / 200))} min read`,
+                isRemixed: true,
                 updatedAt: new Date().toISOString()
               };
               await onUpdateScene(updated);
-              setIsRemixModalOpen(false);
-              setViewMode('setup');
             }
+          }}
+          onEditImprovedScene={async (improvedContent) => {
+            if (activeScene && onUpdateScene) {
+              const wordCount = improvedContent.trim().split(/\s+/).filter(Boolean).length;
+              const updated = {
+                ...activeScene,
+                content: improvedContent,
+                scriptContent: improvedContent,
+                wordCount,
+                readTime: `${Math.max(1, Math.ceil(wordCount / 200))} min read`,
+                isRemixed: true,
+                updatedAt: new Date().toISOString()
+              };
+              await onUpdateScene(updated);
+            }
+            onNavigate('editor');
+          }}
+          onSimulateImprovedScene={async (improvedContent) => {
+            if (activeScene && onUpdateScene) {
+              const wordCount = improvedContent.trim().split(/\s+/).filter(Boolean).length;
+              const updated = {
+                ...activeScene,
+                content: improvedContent,
+                scriptContent: improvedContent,
+                wordCount,
+                readTime: `${Math.max(1, Math.ceil(wordCount / 200))} min read`,
+                isRemixed: true,
+                updatedAt: new Date().toISOString()
+              };
+              await onUpdateScene(updated);
+            }
+            handleStartSimulation();
           }}
         />
       )}

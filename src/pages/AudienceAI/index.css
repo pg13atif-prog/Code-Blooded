@@ -382,9 +382,7 @@
 .aai-main {
   flex: 1;
   padding: 24px 36px 60px;
-  max-width: 1440px;
   width: 100%;
-  margin: 0 auto;
   box-sizing: border-box;
   min-width: 0;
   display: flex;
