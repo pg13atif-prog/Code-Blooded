@@ -218,3 +218,44 @@
 .aai-exact-main::-webkit-scrollbar {
   display: none;
 }
+
+/* App Switcher Toggle */
+.aai-app-switcher {
+  display: flex;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  padding: 4px;
+  margin: 0 16px 20px 16px;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.05);
+}
+
+.aai-app-switch-btn {
+  flex: 1;
+  padding: 8px 4px;
+  border: none;
+  background: transparent;
+  color: #8492a6;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.aai-app-switch-btn.active {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.aai-app-switch-btn:not(.active):hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Force hide global Cinescope Navbar when AudienceAI layout is present */
+body:has(.aai-layout) #navbar {
+  display: none !important;
+}
