@@ -6,6 +6,7 @@ import Simulation from './pages/Simulation/Simulation';
 import Insights from './pages/Insights/Insights';
 import History from './pages/History/History';
 import Settings from './pages/Settings/Settings';
+import Footer from './components/Footer/Footer';
 import { sceneService } from './services/sceneService';
 import { DEMO_SCENES, DEMO_SCENE } from './data/demoScene';
 import { 
@@ -276,6 +277,7 @@ export default function AudienceAIPage() {
       {/* Main content */}
       <main className="aai-main" key={activeRoute}>
         {renderCurrentPage()}
+        <Footer onNavigate={setActiveRoute} />
       </main>
     </div>
   );

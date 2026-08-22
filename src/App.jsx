@@ -457,7 +457,7 @@ function App() {
               {renderContent()}
             </motion.div>
           </AnimatePresence>
-          {!['audience', 'audienceai', 'simulator'].includes(currentRoute) && <Footer />}
+          <Footer />
           <AchievementToasts />
         </motion.div>
       )}
