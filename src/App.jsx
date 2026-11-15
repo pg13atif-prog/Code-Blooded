@@ -26,7 +26,6 @@ import FriendsPage from "./pages/FriendsPage";
 import UserListPage from "./pages/UserListPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import PersonDetailPage from "./pages/PersonDetailPage";
-import AudienceAIPage from "./pages/AudienceAI/AudienceAIPage";
 
 // CineAI Tools
 import MoviePlanner from "./pages/cineai/MoviePlanner";
@@ -81,13 +80,6 @@ function App() {
         }
         setCurrentRoute('reset-password');
         setCurrentParams({ oobCode });
-        return;
-      }
-
-      const pathname = window.location.pathname;
-      if (pathname.includes('/audience') || hash.startsWith('#audience') || hash.startsWith('#simulator')) {
-        setCurrentRoute('audience');
-        setCurrentParams(null);
         return;
       }
 
@@ -181,12 +173,6 @@ function App() {
         case '#discover':
           setCurrentRoute('discover');
           setCurrentParams({ tab: 'movies' });
-          break;
-        case '#audience':
-        case '#audienceai':
-        case '#simulator':
-          setCurrentRoute('audience');
-          setCurrentParams(null);
           break;
         case '#cineai':
           setCurrentRoute('cineai');
@@ -352,11 +338,6 @@ function App() {
           />
         );
 
-      case 'audience':
-      case 'audienceai':
-      case 'simulator':
-        return <AudienceAIPage />;
-
       case 'cineai':
         return <CineAiPage />;
 
@@ -446,7 +427,7 @@ function App() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
         >
-          {!['audience', 'audienceai', 'simulator'].includes(currentRoute) && <Navbar currentRoute={currentRoute} />}
+          <Navbar currentRoute={currentRoute} />
           <AnimatePresence mode="wait">
             <motion.div
               key={currentRoute + (currentParams ? JSON.stringify(currentParams) : '')}

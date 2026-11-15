@@ -24,7 +24,6 @@ const discoverItems = [
 ];
 
 const cineaiItems = [
-  { icon: '🎭', label: 'AudienceAI Simulator', desc: 'Simulate audience persona reactions & detect craft bottlenecks.', hash: '#audience' },
   { icon: '✨', label: 'What Should I Watch?', desc: 'AI-powered movie recommendations based on mood.', hash: '#cineai-tool/what-to-watch' },
   { icon: '🎲', label: 'Pick For Me', desc: "Can't decide? Let AI spin the wheel for you.", hash: '#cineai-tool/pick-for-me' },
   { icon: '📅', label: 'Movie Night Planner', desc: 'Answer quick questions to find your perfect movie.', hash: '#cineai-tool/planner' },
@@ -610,14 +609,6 @@ const Navbar = ({ currentRoute }) => {
             label="Friends"
             hash="#friends"
             isActive={currentPath.startsWith('#friends') || currentPath.startsWith('#social')}
-          />
-          <NavItem
-            id="audience"
-            label="AudienceAI"
-            hash="#audience"
-            isActive={currentPath.startsWith('#audience') || currentPath.startsWith('#simulator')}
-            badge="NEW"
-            className="navbar__link--audience-new"
           />
 
           {/* â”€â”€ Mobile Menu Utility Items â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}

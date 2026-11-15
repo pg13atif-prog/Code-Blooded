@@ -2556,18 +2556,8 @@
 }
 
 /* ==========================================================================
-   AudienceAI Highlight & NEW Badge in Top Navbar
+   NEW Badge in Top Navbar
    ========================================================================== */
-.navbar__link--audience-new {
-  position: relative;
-  transition: all 0.25s ease;
-}
-
-.navbar__link--audience-new:hover .navbar__link-label {
-  color: #f59e0b !important;
-  text-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
-}
-
 .navbar__new-badge {
   display: inline-flex;
   align-items: center;
