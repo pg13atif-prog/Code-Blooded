@@ -11,11 +11,9 @@ export default defineConfig(({ mode }) => {
         ignored: ['**/screenshots/**'],
       },
       proxy: {
-        '/api/tmdb': {
-          target: 'https://cine-scope-ivory-one.vercel.app',
-          changeOrigin: true,
-          secure: false,
-        }
+        // The api/ functions (TMDB, ratings, AI, search) hold the API keys on the server;
+        // in development they are reached through the live site.
+        '/api': { target: 'https://cinescopeai.xyz', changeOrigin: true }
       }
     },
     build: {

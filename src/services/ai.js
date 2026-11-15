@@ -1,31 +1,16 @@
 import { getMovieFactSheet, getTMDBContextForPrompt } from './tmdb';
 
-const openRouterApiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
-const groqApiKey = import.meta.env.VITE_GROQ_API_KEY;
-
-const executeGroqRequest = async (model, systemInstruction, userPrompt, temperature) => {
-  const body = {
-    model,
-    messages: [
-      { role: "system", content: systemInstruction },
-      { role: "user", content: userPrompt }
-    ],
-    temperature,
-    response_format: { type: "json_object" }
-  };
-
-  const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+// The AI keys live on the server: every request goes through /api/ai (api/ai.js), which adds the key.
+const callAiProxy = async (provider, model, systemInstruction, userPrompt, temperature, useJsonFormat) => {
+  const response = await fetch("/api/ai", {
     method: "POST",
-    headers: {
-      "Authorization": `Bearer ${groqApiKey}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(body)
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ provider, model, system: systemInstruction, user: userPrompt, temperature, json: useJsonFormat })
   });
 
   if (!response.ok) {
     const errText = await response.text();
-    throw new Error(`Groq API error (${model}): ${response.status} ${errText}`);
+    throw new Error(`${provider} API error (${model}): ${response.status} ${errText}`);
   }
 
   const data = await response.json();
@@ -34,45 +19,15 @@ const executeGroqRequest = async (model, systemInstruction, userPrompt, temperat
   return JSON.parse(cleanText);
 };
 
-const executeRequest = async (model, systemInstruction, userPrompt, temperature, useJsonFormat) => {
-  const body = {
-    model,
-    messages: [
-      { role: "system", content: systemInstruction },
-      { role: "user", content: userPrompt }
-    ],
-    temperature
-  };
+const executeGroqRequest = (model, systemInstruction, userPrompt, temperature) =>
+  callAiProxy("groq", model, systemInstruction, userPrompt, temperature, true);
 
-  if (useJsonFormat) {
-    body.response_format = { type: "json_object" };
-  }
-
-  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${openRouterApiKey}`,
-      "Content-Type": "application/json",
-      "HTTP-Referer": window.location.origin,
-      "X-Title": "CineScope"
-    },
-    body: JSON.stringify(body)
-  });
-
-  if (!response.ok) {
-    const errText = await response.text();
-    throw new Error(`OpenRouter API error (${model}): ${response.status} ${errText}`);
-  }
-
-  const data = await response.json();
-  const text = data.choices[0].message.content;
-  const cleanText = text.replace(/```json/g, '').replace(/```/g, '').trim();
-  return JSON.parse(cleanText);
-};
+const executeRequest = (model, systemInstruction, userPrompt, temperature, useJsonFormat) =>
+  callAiProxy("openrouter", model, systemInstruction, userPrompt, temperature, useJsonFormat);
 
 const callOpenRouter = async (systemInstruction, userPrompt, temperature = 0.7) => {
   // 1. Try Groq Cloud API (LLaMA Models) first
-  if (groqApiKey) {
+  {
     const groqModels = [
       "llama-3.3-70b-versatile",
       "llama-3.1-8b-instant"
@@ -87,7 +42,7 @@ const callOpenRouter = async (systemInstruction, userPrompt, temperature = 0.7) 
   }
 
   // 2. Try OpenRouter as fallback
-  if (openRouterApiKey) {
+  {
     const openRouterModels = [
       "openai/gpt-oss-120b",
       "qwen/qwen-2.5-72b-instruct",
@@ -103,7 +58,7 @@ const callOpenRouter = async (systemInstruction, userPrompt, temperature = 0.7) 
   }
 
   // 3. Failover to OpenRouter free router
-  if (openRouterApiKey) {
+  {
     try {
       return await executeRequest("openrouter/free", systemInstruction, userPrompt, temperature, true);
     } catch (err) {

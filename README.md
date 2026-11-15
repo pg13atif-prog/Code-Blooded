@@ -170,16 +170,16 @@ VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
 VITE_FIREBASE_APP_ID=your_app_id
 VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id
 
-# AI API Keys
-VITE_GROQ_API_KEY=your_groq_api_key
-VITE_OPENROUTER_API_KEY=your_openrouter_api_key
+# AI API Keys (server only: read by api/ai.js, never sent to the browser)
+GROQ_API_KEY=your_groq_api_key
+OPENROUTER_API_KEY=your_openrouter_api_key
 
-# OTT Search API Keys (Alternating Serper & Tavily Rotation)
-VITE_SERPER_API_KEY=your_serper_api_key
-VITE_TAVILY_API_KEY=your_tavily_api_key
+# OTT Search API Keys (server only: read by api/search.js)
+SERPER_API_KEY=your_serper_api_key
+TAVILY_API_KEY=your_tavily_api_key
 ```
 
-> ⚠️ **Security Note**: Never commit your `.env` file or secret keys to the repository. Frontend `VITE_*` variables are bundled into the client build.
+> ⚠️ **Security Note**: Never commit your `.env` file or secret keys to the repository. Frontend `VITE_*` variables are bundled into the client build, so anyone can read them: only public values (Firebase config) may use the `VITE_` prefix. Paid API keys (Groq, OpenRouter, Serper, Tavily) must use the names without `VITE_`; the browser reaches them only through the `api/` functions.
 
 ---
 

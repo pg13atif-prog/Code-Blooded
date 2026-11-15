@@ -10,9 +10,6 @@
  * - Opens the official title page directly in a new tab upon resolution.
  */
 
-const serperApiKey = import.meta.env.VITE_SERPER_API_KEY;
-const tavilyApiKey = import.meta.env.VITE_TAVILY_API_KEY;
-const groqApiKey = import.meta.env.VITE_GROQ_API_KEY;
 
 // Global counter for cycling search engine assignment per title open
 let titleOpenCounter = 0;
@@ -77,71 +74,27 @@ const extractValidPlatformUrl = (links = [], providerName = '') => {
 };
 
 /**
- * Serper.dev Google Search API
+ * Web search through /api/search (api/search.js), which holds the Serper and Tavily keys on the server.
  */
-const fetchSerperUrl = async (movieTitle, providerName) => {
-  if (!serperApiKey) return null;
-  const query = `watch "${movieTitle}" on ${providerName} official`;
-
+const fetchSearchUrl = async (engine, movieTitle, providerName) => {
   try {
-    const res = await fetch("https://google.serper.dev/search", {
+    const res = await fetch("/api/search", {
       method: "POST",
-      headers: {
-        "X-API-KEY": serperApiKey,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        q: query,
-        num: 5
-      })
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ engine, title: movieTitle, provider: providerName })
     });
-
     if (res.ok) {
-      const data = await res.json();
-      if (data.organic && data.organic.length > 0) {
-        const links = data.organic.map(o => o.link);
-        return extractValidPlatformUrl(links, providerName);
-      }
+      const { links } = await res.json();
+      if (links && links.length > 0) return extractValidPlatformUrl(links, providerName);
     }
   } catch (err) {
-    console.warn(`Serper API error for ${providerName}:`, err.message);
+    console.warn(`${engine} search error for ${providerName}:`, err.message);
   }
   return null;
 };
 
-/**
- * Tavily Search API
- */
-const fetchTavilyUrl = async (movieTitle, providerName) => {
-  if (!tavilyApiKey) return null;
-  const query = `watch "${movieTitle}" on ${providerName} official`;
-
-  try {
-    const res = await fetch("https://api.tavily.com/search", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        api_key: tavilyApiKey,
-        query: query,
-        search_depth: "basic",
-        max_results: 5
-      })
-    });
-
-    if (res.ok) {
-      const data = await res.json();
-      if (data.results && data.results.length > 0) {
-        const links = data.results.map(r => r.url);
-        return extractValidPlatformUrl(links, providerName);
-      }
-    }
-  } catch (err) {
-    console.warn(`Tavily API error for ${providerName}:`, err.message);
-  }
-  return null;
-};
+const fetchSerperUrl = (movieTitle, providerName) => fetchSearchUrl("serper", movieTitle, providerName);
+const fetchTavilyUrl = (movieTitle, providerName) => fetchSearchUrl("tavily", movieTitle, providerName);
 
 /**
  * Synchronous / Static Fallback URL generator
